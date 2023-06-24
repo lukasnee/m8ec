@@ -1,0 +1,3 @@
+[submodule "extern/ILI9341-STM32-HAL"]
+	path = extern/ILI9341-STM32-HAL
+	url = https://github.com/ardnew/ILI9341-STM32-HAL.git
