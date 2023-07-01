@@ -70,6 +70,9 @@ void StartDefaultTask(void *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+#include "ILI9341/ili9341.h"
+#include "ILI9341/ili9341_gfx.h"
+
 /* USER CODE END 0 */
 
 /**
@@ -288,10 +291,24 @@ void StartDefaultTask(void *argument) {
   /* init code for USB_HOST */
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
+  ili9341_t *screen =
+      ili9341_new(&hspi1, TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port,
+                  TFT_CS_Pin, TFT_DC_GPIO_Port, TFT_DC_Pin, isoLandscape, NULL,
+                  0, NULL, 0, itsNONE, itnNONE);
+
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+  ili9341_text_attr_t textAttr = {
+      .font = &ili9341_font_16x26,
+      .fg_color = ILI9341_WHITE,
+      .bg_color = ILI9341_BLACK,
+      .origin_x = 10,
+      .origin_y = 10,
+  };
+
+    ili9341_fill_screen(screen, ILI9341_BLACK);
+    ili9341_draw_string(screen, textAttr, "Hello World!");
+  for (;;) {
+    osDelay(200);
   }
   /* USER CODE END 5 */
 }
