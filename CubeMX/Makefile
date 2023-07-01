@@ -86,7 +86,10 @@ Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_bot.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_scsi.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp.c \
-Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c  
+Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c \
+../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c \
+../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c \
+../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -135,7 +138,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F411xE
+-DSTM32F411xE \
+-DSTM32F4
 
 
 # AS includes
@@ -159,7 +163,8 @@ C_INCLUDES =  \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-I../extern/ILI9341-STM32-HAL
 
 
 # compile gcc flags
