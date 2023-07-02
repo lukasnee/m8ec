@@ -27,7 +27,7 @@ if args.flash:
         print("Error: build failed skipping flash")
         sys.exit(1) 
     print("Flashing project")
-    subprocess.call(["st-flash", "--format", "ihex", "write", ".build/CubeMX/firmware.hex"])
+    subprocess.call(["st-flash", "--format", "ihex", "write", ".build/firmware/firmware.hex"])
 
 if args.reset:
     print("Resetting board")
