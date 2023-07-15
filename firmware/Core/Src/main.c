@@ -69,6 +69,7 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static volatile int uxTopUsedPriority;
 
 #include "ILI9341/ili9341.h"
 #include "ILI9341/ili9341_gfx.h"
@@ -81,6 +82,7 @@ void StartDefaultTask(void *argument);
   */
 int main(void) {
   /* USER CODE BEGIN 1 */
+    uxTopUsedPriority = configMAX_PRIORITIES - 1;
 
   /* USER CODE END 1 */
 

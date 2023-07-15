@@ -9,8 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
 
-option(DEBUG "debug build?" OFF)
-
 set(CMAKE_AR /usr/bin/arm-none-eabi-ar)
 
 add_executable(${PROJECT_NAME} 

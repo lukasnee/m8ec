@@ -1,0 +1,94 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "reset target",
+            "group": "none",
+            "type": "shell",
+            "linux": {
+                "command": "python tools/m8ec.py -r"
+            },
+            "presentation": {
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "build m8ec",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "linux": {
+                "command": "python tools/m8ec.py -b",
+                "problemMatcher": "$gcc"
+            },
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "build flash reset m8ec",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "type": "shell",
+            "linux": {
+                "command": "python tools/m8ec.py -bfr",
+                "problemMatcher": "$gcc"
+            },
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "preLaunchTask_m8ec",
+            "group": "none",
+            "dependsOn": [
+                "build_m8ec_debug",
+                "launch_openocd"
+            ],
+            "dependsOrder": "sequence",
+            "hide": true,
+        },
+        {
+            "label": "build_m8ec_debug",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "type": "shell",
+            "linux": {
+                "command": "python tools/m8ec.py -bd",
+                "problemMatcher": "$gcc"
+            },
+            "presentation": {
+                "focus": true
+            },
+            "hide": true
+        },
+        {
+            "label": "launch_openocd",
+            "command": "openocd",
+            "type": "shell",
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^(Info |Warn |Error):(.*)$",
+                    "severity": 1,
+                    "message": 2
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Open On-Chip Debugger.*",
+                    "endsPattern": ".*watchpoints.*"
+                }
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "isBackground": true
+        }
+    ]
+}
