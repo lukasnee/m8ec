@@ -60,6 +60,10 @@ graph LR
 -   [ ] Get the audio in working with the Black Pill.
 -   [ ] Try to get the audio working with the M8 headless via a USB client. From reading online, it's tricky.
 
+# Documentation
+
+-  [Accessing ST-Link/V2 USB Device in WSL](docs/wsl-stlink.md)
+
 # Looking Into Future
 
 -   [ ] MIDI in/out? If supported by the M8 headless.
