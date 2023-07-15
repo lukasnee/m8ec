@@ -5,5 +5,5 @@
     },
     "python.formatting.provider": "none",
     "python.analysis.typeCheckingMode": "basic",
-    "cortex-debug.variableUseNaturalFormat": true
+    "cortex-debug.variableUseNaturalFormat": true,
 }
