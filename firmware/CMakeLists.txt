@@ -71,6 +71,7 @@ add_executable(${PROJECT_NAME}
     ../extern/freertos-addons/c++/Source/cqueue.cpp
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
     ../extern/freertos-addons/c++/Source/cthread.cpp
+    ../extern/fibsys/fibsys.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -100,6 +101,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     Drivers/CMSIS/Include
     ../extern/ILI9341-STM32-HAL
     ../extern/freertos-addons/c++/Source/include
+    ../extern/fibsys/include
+    ../include
 )
 
 set(MCU_FLAGS
