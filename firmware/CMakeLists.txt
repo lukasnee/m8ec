@@ -72,6 +72,7 @@ add_executable(${PROJECT_NAME}
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
     ../extern/freertos-addons/c++/Source/cthread.cpp
     ../extern/fibsys/fibsys.cpp
+    ../source/m8ec.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
