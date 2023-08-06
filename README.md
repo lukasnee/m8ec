@@ -60,7 +60,7 @@ graph LR
 -   [ ] Get the audio in working with the Black Pill.
 -   [ ] Try to get the audio working with the M8 headless via a USB client. From reading online, it's tricky.
 
-# Building Firmware From Source (Linux)
+# Building Firmware From Source (Linux Ubuntu)
 
 > Note: The project was originally launched in WSL Ubuntu.
 
@@ -88,7 +88,26 @@ graph LR
 
 1. Build using the project tool:
 
--  [Accessing ST-Link/V2 USB Device in WSL](docs/wsl-stlink.md)
+    ```bash
+    python3 tools/m8ec.py -b
+    ```
+
+# Flashing the Firmware (Linux Ubuntu)
+
+1. Install ST-Link tools on Ubuntu.
+
+    ```bash
+    sudo apt-get install -y stlink-tools
+    ```
+1. Plug in ST-LINK/V2 SWD interface to the target MCU.
+1. Plug in ST-LINK/V2 USB interface to your PC.
+1. Run `st-info --probe` to check if ST-Link is connected.
+    > If using WSL, follow the instructions on [Accessing ST-Link/V2 USB Device in WSL](docs/wsl-stlink.md)
+1. Flash using the project tool:
+
+    ```bash
+    python3 tools/m8ec.py -f
+    ```
 
 # Looking Into Future
 
