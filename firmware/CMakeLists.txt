@@ -138,7 +138,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     # -g	default debug information
     # -g3	maximal debug information
 
-    $<$<CONFIG:Debug>:-g -gdwarf-2 -DDEBUG>
+    $<$<CONFIG:Debug>:-ggdb -Og -DDEBUG>
 
     # -O3 compiler tries to reduce code size and execution time, O3 is highest standard optimization.
     # -Os Optimize for size. -Os enables all -O2 optimizations except those that often increase code size
