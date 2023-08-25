@@ -2,6 +2,17 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Open m8ec STM32CubeMX project",
+            "group": "none",
+            "type": "shell",
+            "linux": {
+                "command": "/mnt/c/Program\\ Files/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX.exe firmware/firmware.ioc"
+            },
+            "presentation": {
+                "focus": false,
+                "panel": "shared"
+            }
+        },
         {
             "label": "Reset target",
             "group": "none",
