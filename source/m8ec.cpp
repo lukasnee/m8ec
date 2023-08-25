@@ -17,38 +17,57 @@
 
 #include "fibsys/fibsys.hpp"
 
+#include <cstdint>
+
 #define FIBSYS_PANIC() // TODO
 
 namespace m8ec {
 
 class Main : public fibsys::Thread {
-public: 
+public:
     using Thread::Thread;
 
     void init(ili9341_t *screen) {
         this->screen = screen;
-        if(!this->screen) {
+        if (!this->screen) {
             FIBSYS_PANIC();
             return;
         }
         this->Start();
     }
 
+    void write(const std::uint8_t *data, std::size_t size) {
+        if (!this->screen) {
+            return;
+        }
+        // ili9341_draw_string(this->screen, textAttr, "m8ec::launch()");
+        for (std::size_t i = 0; i < size; ++i) {
+            if (data[i] == '\n') {
+                this->textAttr.origin_x = 0;
+                this->textAttr.origin_y += 10;
+                continue;
+            }
+            ili9341_draw_char(this->screen, this->textAttr, data[i]);
+            this->textAttr.origin_x += 7;
+        }
+    }
+
 private:
     void Run() final override {
-        ili9341_text_attr_t textAttr = {
-            .font = &ili9341_font_16x26,
+        ili9341_fill_screen(this->screen, ILI9341_BLACK);
+        this->textAttr = {
+            .font = &ili9341_font_7x10,
             .fg_color = ILI9341_WHITE,
             .bg_color = ILI9341_BLACK,
-            .origin_x = 10,
-            .origin_y = 10,
+            .origin_x = 0,
+            .origin_y = 0,
         };
-        ili9341_fill_screen(this->screen, ILI9341_BLACK);
-        ili9341_draw_string(this->screen, textAttr, "m8ec::launch()");
         while (true) {
             Thread::Delay(200);
         }
     }
+
+    ili9341_text_attr_t textAttr;
     ili9341_t *screen = nullptr;
 };
 
@@ -57,3 +76,18 @@ static Main main("main", 1024, 1);
 } // namespace m8ec
 
 extern "C" void m8ec_launch(ili9341_t *screen) { m8ec::main.init(screen); }
+
+#include <errno.h>
+#include <sys/unistd.h>
+
+/**
+ * @brief Standard output redirection to the screen
+ */
+extern "C" int _write(int fd, char *ptr, int len) {
+    if ((fd != STDOUT_FILENO) && (fd != STDERR_FILENO)) {
+        errno = EBADF;
+        return -1;
+    }
+    m8ec::main.write(reinterpret_cast<std::uint8_t *>(ptr), len);
+    return len;
+}
