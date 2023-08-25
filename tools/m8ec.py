@@ -3,13 +3,21 @@ import argparse
 import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-d", "--debug", help="enable debug", action="store_true")
+parser.add_argument("-c", "--clean", help="clean build", action="store_true")
 parser.add_argument("-b", "--build", help="build project", action="store_true")
+parser.add_argument("-d", "--debug", help="enable debug", action="store_true")
 parser.add_argument("-f", "--flash", help="flash project", action="store_true")
 parser.add_argument("-r", "--reset", help="reset board", action="store_true")
 args = parser.parse_args()
 
 BUILD_DIR = ".build"
+
+if args.clean:
+    print("Cleaning project")
+    error = subprocess.call(["rm", "-rf", BUILD_DIR])
+    if error != 0:
+        print("Error: clean failed")
+        sys.exit(1)
 
 if args.build:
     print("Building project")
