@@ -2,7 +2,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "reset target",
+        {
+            "label": "Reset target",
             "group": "none",
             "type": "shell",
             "linux": {
@@ -14,7 +15,7 @@
             }
         },
         {
-            "label": "build m8ec",
+            "label": "Build m8ec",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -29,7 +30,7 @@
             }
         },
         {
-            "label": "build flash reset m8ec",
+            "label": "Build, flash and reset m8ec",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -44,17 +45,7 @@
             }
         },
         {
-            "label": "preLaunchTask_m8ec",
-            "group": "none",
-            "dependsOn": [
-                "build_m8ec_debug",
-                "launch_openocd"
-            ],
-            "dependsOrder": "sequence",
-            "hide": true,
-        },
-        {
-            "label": "build_m8ec_debug",
+            "label": "Build m8ec [debug]",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -70,7 +61,7 @@
             "hide": true
         },
         {
-            "label": "launch_openocd",
+            "label": "Launch OpenOCD",
             "command": "openocd",
             "type": "shell",
             "problemMatcher": {
@@ -89,6 +80,16 @@
                 "reveal": "always"
             },
             "isBackground": true
-        }
+        },
+        {
+            "label": "preLaunchTask_m8ec",
+            "group": "none",
+            "dependsOn": [
+                "Build m8ec [debug]",
+                "Launch OpenOCD"
+            ],
+            "dependsOrder": "sequence",
+            "hide": true,
+        },
     ]
 }
