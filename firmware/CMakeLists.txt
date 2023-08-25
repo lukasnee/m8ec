@@ -115,7 +115,6 @@ set(MCU_FLAGS
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     ${MCU_FLAGS}
-
     -fstack-usage
     -Wall
     -Wextra
@@ -126,7 +125,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     # -fno-threadsafe-statics
     # -fno-rtti
     
-    # -fno-exceptions # big change in code size and performace
+    -fno-exceptions # big change in code size and performace
 
     # -c -x assembler-with-cpp 
 
