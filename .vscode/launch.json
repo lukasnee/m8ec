@@ -11,10 +11,12 @@
             "servertype": "external",
             "gdbTarget": "localhost:3333",
             "preLaunchTask": "preLaunchTask_m8ec",
-            "rtos": "auto",
+            "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/firmware",
             "executable": "${workspaceRoot}/.build/firmware/firmware",
             "svdFile": "${workspaceRoot}/tools/STM32F411.svd",
+            "cpu": "cortex-m4",
+            "numberOfProcessors": 1
         },
     ]
 }
