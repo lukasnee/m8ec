@@ -22,6 +22,7 @@
 #include "cmsis_os.h"
 #include "usb_host.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341/ili9341.h"
@@ -86,8 +87,7 @@ int main(void) {
 
     /* MCU Configuration--------------------------------------------------------*/
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick.
-     */
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
     /* USER CODE BEGIN Init */
@@ -256,7 +256,7 @@ static void MX_GPIO_Init(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOA, TFT_CS_Pin | TFT_RESET_Pin | TFT_DC_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, TFT_CS_Pin | TFT_RESET_Pin | TFT_DC_Pin | USB_OTG_VBUS_OUT_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pins : TFT_CS_Pin TFT_DC_Pin */
     GPIO_InitStruct.Pin = TFT_CS_Pin | TFT_DC_Pin;
@@ -265,12 +265,12 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : TFT_RESET_Pin */
-    GPIO_InitStruct.Pin = TFT_RESET_Pin;
+    /*Configure GPIO pins : TFT_RESET_Pin USB_OTG_VBUS_OUT_Pin */
+    GPIO_InitStruct.Pin = TFT_RESET_Pin | USB_OTG_VBUS_OUT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(TFT_RESET_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 /* USER CODE BEGIN 4 */
@@ -286,11 +286,11 @@ static void MX_GPIO_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument) {
     /* init code for USB_HOST */
-    MX_USB_HOST_Init();
     /* USER CODE BEGIN 5 */
     m8ec_launch(ili9341_new(&hspi1, TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port,
                             TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE));
-
+    osDelay(1000);
+    MX_USB_HOST_Init();
     while (1) {
         osDelay(1000);
     }
