@@ -116,7 +116,6 @@ set(MCU_FLAGS
 target_compile_options(${PROJECT_NAME} PRIVATE
     ${MCU_FLAGS}
 
-    -specs=nano.specs
     -fstack-usage
     -Wall
     -Wextra
@@ -157,8 +156,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
     -u _printf_float # enables floating point in printf
     
     -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-    # --specs=nosys.specs # already defined in .cmake toolchain file
-    -specs=nano.specs
+    --specs=nosys.specs 
     -static
     -Wl,--gc-sections
 
