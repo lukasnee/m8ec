@@ -65,6 +65,7 @@ add_executable(${PROJECT_NAME}
     Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_scsi.c
     Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp.c
     Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c
+    Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c

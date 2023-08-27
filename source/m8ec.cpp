@@ -14,6 +14,8 @@
 #include "ILI9341/ili9341_gfx.h"
 
 #include "usb_host.h" // TODO decouple
+#include "stm32f4xx_hal.h" // TODO decouple
+extern UART_HandleTypeDef huart1;
 
 #include "fibsys/fibsys.hpp"
 
@@ -40,6 +42,8 @@ public:
         if (!this->screen) {
             return;
         }
+        HAL_UART_Transmit(&huart1, const_cast<std::uint8_t *>(data), size, 10);
+        return;
         // ili9341_draw_string(this->screen, textAttr, "m8ec::launch()");
         for (std::size_t i = 0; i < size; ++i) {
             if (data[i] == '\n') {
