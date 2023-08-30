@@ -89,25 +89,22 @@ void MX_USB_HOST_Init(void)
   {
     Error_Handler();
   }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_MSC_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_HID_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_MTP_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
   if (USBH_Start(&hUsbHostFS) != USBH_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN USB_HOST_Init_PostTreatment */
-
+    CDC_LineCodingTypeDef linecoding;
+    linecoding.b.bCharFormat = 0;
+    linecoding.b.bDataBits = 8;
+    linecoding.b.bParityType = 0;
+    linecoding.b.dwDTERate = 115200;
+    USBH_CDC_SetLineCoding(&hUsbHostFS, &linecoding);
   /* USER CODE END USB_HOST_Init_PostTreatment */
+}
+
+uint8_t m8ec_virtual_com_ready() {
+    return Appli_state == APPLICATION_READY;
 }
 
 /*

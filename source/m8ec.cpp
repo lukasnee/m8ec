@@ -13,17 +13,81 @@
 
 #include "ILI9341/ili9341_gfx.h"
 
-#include "usb_host.h" // TODO decouple
 #include "stm32f4xx_hal.h" // TODO decouple
-extern UART_HandleTypeDef huart1;
+#include "usb_host.h"      // TODO decouple
+#include "usbh_cdc.h"      // TODO decouple
 
+extern UART_HandleTypeDef huart1;     // TODO decouple
+extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 #include "fibsys/fibsys.hpp"
 
 #include <cstdint>
+#include <cstdio>
 
 #define FIBSYS_PANIC() // TODO
 
+namespace helpers {
+void hexdump(uint8_t *data, uint32_t length, uint32_t width = 16) {
+    for (uint32_t i = 0; i < length; ++i) {
+        if (i % width == 0) {
+            printf("\n");
+        }
+        printf("%02x ", data[i]);
+    }
+    printf("\n");
+}
+} // namespace helpers
 namespace m8ec {
+
+fibsys::BinarySemaphore &serial_sem() {
+    static fibsys::BinarySemaphore sem;
+    return sem;
+}
+
+bool serial_write(uint8_t *data, uint32_t length, TickType_t timeout = 10);
+bool serial_write(uint8_t *data, uint32_t length, TickType_t timeout) {
+    const auto status = USBH_CDC_Transmit(&hUsbHostFS, data, length);
+    if (USBH_OK != status) {
+        printf("error: USBH_CDC_Transmit: %d\n", status);
+        return false;
+    }
+    if (!serial_sem().Take(timeout)) {
+        printf("writeSem.Take failed\n");
+        return false;
+    }
+    return true;
+}
+
+bool serial_read(uint8_t *data, uint32_t length, TickType_t timeout = 10);
+bool serial_read(uint8_t *data, uint32_t length, TickType_t timeout) {
+    const auto status = USBH_CDC_Receive(&hUsbHostFS, data, length);
+    if (USBH_OK != status) {
+        printf("error: USBH_CDC_Receive: %d\n", status);
+        return false;
+    }
+    if (!serial_sem().Take(timeout)) {
+        printf("readSem.Take failed\n");
+        return false;
+    }
+    return true;
+}
+void m8_enable() {
+    uint8_t buf[] = {'E'};
+    serial_write(buf, 1);
+}
+
+void m8_reset() {
+    uint8_t buf[] = {'R'};
+    serial_write(buf, 1);
+}
+
+bool m8_read(uint8_t *pbuff, uint32_t length) {
+    if (!serial_read(pbuff, length)) {
+        printf("serial_read failed\n");
+        return false;
+    }
+    return true;
+}
 
 class Main : public fibsys::Thread {
 public:
@@ -67,7 +131,27 @@ private:
             .origin_y = 0,
         };
         while (true) {
-            Thread::Delay(200);
+            Thread::Delay(1000);
+            bool m8_already_init = false;
+            if (!m8ec_virtual_com_ready()) {
+                continue;
+            }
+            if (!m8_already_init) {
+                Thread::Delay(10);
+                m8_enable();
+                Thread::Delay(10);
+                m8_reset();
+                m8_already_init = true;
+            }
+
+            while (1) {
+                Thread::Delay(1000);
+                uint8_t buff[512];
+                if (!m8_read(buff, sizeof(buff))) {
+                    continue;
+                }
+                helpers::hexdump(buff, sizeof(buff));
+            }
         }
     }
 
@@ -95,3 +179,6 @@ extern "C" int _write(int fd, char *ptr, int len) {
     m8ec::main.write(reinterpret_cast<std::uint8_t *>(ptr), len);
     return len;
 }
+
+void m8ec_serial_write_callback() { m8ec::serial_sem().Give(); }
+void m8ec_serial_read_callback() { m8ec::serial_sem().Give(); }

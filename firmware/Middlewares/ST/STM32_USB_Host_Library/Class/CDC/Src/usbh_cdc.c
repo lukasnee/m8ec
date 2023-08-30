@@ -48,6 +48,8 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_cdc.h"
 
+#include "m8ec/m8ec.h"
+
 /** @addtogroup USBH_LIB
 * @{
 */
@@ -310,6 +312,11 @@ static USBH_StatusTypeDef USBH_CDC_ClassRequest(USBH_HandleTypeDef *phost)
   USBH_StatusTypeDef status;
   CDC_HandleTypeDef *CDC_Handle = (CDC_HandleTypeDef *) phost->pActiveClass->pData;
 
+  /** @attention Dirtyware M8 headless as a USB device appears not to respond to CDC GetLineCoding request. It is probably not 
+   * implemented in full standard compliance. We know what LineCoding to expect, so we can skip the request and go straight to
+   */
+  phost->pUser(phost, HOST_USER_CLASS_ACTIVE);
+  return USBH_OK;
   /* Issue the get line coding request */
   status = GetLineCoding(phost, &CDC_Handle->LineCoding);
   if (status == USBH_OK)
@@ -787,6 +794,7 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
 __weak void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost)
 {
   /* Prevent unused argument(s) compilation warning */
+  m8ec_serial_write_callback();
   UNUSED(phost);
 }
 
@@ -797,6 +805,7 @@ __weak void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost)
 */
 __weak void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost)
 {
+  m8ec_serial_read_callback();
   /* Prevent unused argument(s) compilation warning */
   UNUSED(phost);
 }

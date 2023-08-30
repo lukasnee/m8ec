@@ -41,8 +41,6 @@ Core/Src/freertos.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
-USB_HOST/App/usb_host.c \
-USB_HOST/Target/usbh_conf.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
@@ -72,12 +70,15 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
+USB_HOST/App/usb_host.c \
+USB_HOST/Target/usbh_conf.c \
+USB_HOST/Target/usbh_platform.c \
 Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c \
 Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c \
 Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c \
 Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c \
-Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c \
+Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c \
 Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c \
@@ -151,16 +152,16 @@ AS_INCLUDES =  \
 # C includes
 C_INCLUDES =  \
 -ICore/Inc \
--IUSB_HOST/App \
--IUSB_HOST/Target \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IMiddlewares/Third_Party/FreeRTOS/Source/include \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+-IUSB_HOST/App \
+-IUSB_HOST/Target \
 -IMiddlewares/ST/STM32_USB_Host_Library/Core/Inc \
--IMiddlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc \
+-IMiddlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/HID/Inc \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc \
 -IMiddlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc \
