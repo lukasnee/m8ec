@@ -11,18 +11,22 @@
 #include "m8ec/m8ec.h"
 #include "m8ec/m8ec.hpp"
 
+#include "m8ec/command.hpp"
+#include "m8ec/slip.h"
+
 #include "ILI9341/ili9341_gfx.h"
 
 #include "stm32f4xx_hal.h" // TODO decouple
 #include "usb_host.h"      // TODO decouple
 #include "usbh_cdc.h"      // TODO decouple
 
-extern UART_HandleTypeDef huart1;     // TODO decouple
-extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 #include "fibsys/fibsys.hpp"
 
 #include <cstdint>
 #include <cstdio>
+
+extern UART_HandleTypeDef huart1;     // TODO decouple
+extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 
 #define FIBSYS_PANIC() // TODO
 
@@ -38,6 +42,18 @@ void hexdump(uint8_t *data, uint32_t length, uint32_t width = 16) {
 }
 } // namespace helpers
 namespace m8ec {
+
+struct Config {
+    static constexpr uint32_t serial_read_size = 512;
+};
+
+static uint8_t slip_buffer[Config::serial_read_size];
+static const slip_descriptor_s slip_descriptor = {
+    .buf = slip_buffer,
+    .buf_size = sizeof(slip_buffer),
+    .recv_message = process_command,
+};
+static slip_handler_s slip;
 
 fibsys::BinarySemaphore &serial_sem() {
     static fibsys::BinarySemaphore sem;
@@ -71,12 +87,12 @@ bool serial_read(uint8_t *data, uint32_t length, TickType_t timeout) {
     }
     return true;
 }
-void m8_enable() {
+void m8_enable_display() {
     uint8_t buf[] = {'E'};
     serial_write(buf, 1);
 }
 
-void m8_reset() {
+void m8_reset_display() {
     uint8_t buf[] = {'R'};
     serial_write(buf, 1);
 }
@@ -130,6 +146,7 @@ private:
             .origin_x = 0,
             .origin_y = 0,
         };
+        slip_init(&slip, &slip_descriptor);
         while (true) {
             Thread::Delay(1000);
             bool m8_already_init = false;
@@ -138,20 +155,34 @@ private:
             }
             if (!m8_already_init) {
                 Thread::Delay(10);
-                m8_enable();
+                m8_enable_display();
                 Thread::Delay(10);
-                m8_reset();
+                m8_reset_display();
                 m8_already_init = true;
             }
 
             while (1) {
-                Thread::Delay(1000);
-                uint8_t buff[512];
+                Thread::Delay(1000); // TODO tihs is to to reduce log spam, remove later
+                uint8_t buff[Config::serial_read_size];
                 if (!m8_read(buff, sizeof(buff))) {
                     continue;
                 }
-                helpers::hexdump(buff, sizeof(buff));
+                // helpers::hexdump(buff, sizeof(buff));
+                uint8_t *cur = buff;
+                const uint8_t *end = buff + sizeof(buff);
+                while (cur < end) {
+                    int n = slip_read_byte(&slip, *(cur++));
+                    if (n != SLIP_NO_ERROR) {
+                        if (n == SLIP_ERROR_INVALID_PACKET) {
+                            m8_reset_display();
+                        }
+                        else {
+                            printf("Error: SLIP: %d\n", n);
+                        }
+                    }
+                }
             }
+            // render_screen(); // TODO
         }
     }
 
