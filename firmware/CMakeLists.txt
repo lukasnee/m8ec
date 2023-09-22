@@ -77,6 +77,8 @@ add_executable(${PROJECT_NAME}
     ../extern/fibsys/EventDrivenReaderWriter.cpp
     ../source/m8ec.cpp
     ../source/slip.c
+    ../source/periph/Uart.cpp
+    ../source/periph/Uart1.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
