@@ -10,13 +10,24 @@
 
 #pragma once
 
+#define FIBSYS_PANIC() // TODO
+
 #include "thread.hpp"
 #include "ticks.hpp"
+#include "semaphore.hpp"
+#include "queue.hpp"
+#include "mutex.hpp"
 
 namespace fibsys {
 
-using Thread = cpp_freertos::Thread;
+using cpp_freertos::Thread;
+using cpp_freertos::BinarySemaphore;
+using cpp_freertos::Queue;
+using cpp_freertos::MutexStandard;
+using cpp_freertos::MutexRecursive;
+using cpp_freertos::LockGuard;
 
+void delay_ms(std::size_t ms);
 std::size_t get_uptime_ticks();
 std::size_t get_uptime_ms();
 

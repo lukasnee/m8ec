@@ -74,6 +74,7 @@ add_executable(${PROJECT_NAME}
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
     ../extern/freertos-addons/c++/Source/cthread.cpp
     ../extern/fibsys/fibsys.cpp
+    ../extern/fibsys/EventDrivenReaderWriter.cpp
     ../source/m8ec.cpp
     ../source/slip.c
 )

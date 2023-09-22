@@ -12,6 +12,10 @@
 
 namespace fibsys {
 
+void delay_ms(std::size_t ms) {
+    // cannot use cpp_freertos::Thread::Delay(ms); because it's not static method of Thread for some reason
+    vTaskDelay(ms);
+}
 std::size_t get_uptime_ticks() { return static_cast<std::size_t>(cpp_freertos::Ticks::GetTicks()); }
 
 std::size_t get_uptime_ms() {
