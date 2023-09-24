@@ -54,7 +54,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
-    .stack_size = 128 * 4,
+  .stack_size = 1024,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
@@ -341,16 +341,14 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument) {
+void StartDefaultTask(void *argument)
+{
     /* init code for USB_HOST */
     /* USER CODE BEGIN 5 */
+    MX_USB_HOST_Init();
     m8ec_launch(ili9341_new(&hspi1, TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port,
                             TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE));
-    osDelay(1000);
-    MX_USB_HOST_Init();
-    while (1) {
-        osDelay(1000);
-    }
+    osThreadTerminate(defaultTaskHandle);
     /* USER CODE END 5 */
 }
 
