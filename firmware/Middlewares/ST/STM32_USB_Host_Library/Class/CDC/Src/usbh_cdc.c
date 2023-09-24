@@ -79,6 +79,7 @@ EndBSPDependencies */
 * @{
 */
 #define USBH_CDC_BUFFER_SIZE                 1024
+#define USBH_CDC_RX_BUFFER_SIZE              64
 /**
 * @}
 */
@@ -173,7 +174,7 @@ static USBH_StatusTypeDef USBH_CDC_InterfaceInit(USBH_HandleTypeDef *phost)
     return USBH_FAIL;
   }
 
-  phost->pActiveClass->pData = (CDC_HandleTypeDef *)USBH_malloc(sizeof(CDC_HandleTypeDef));
+  phost->pActiveClass->pData = (CDC_HandleTypeDef *)USBH_malloc(sizeof(CDC_HandleTypeDef) + USBH_CDC_RX_BUFFER_SIZE);
   CDC_Handle = (CDC_HandleTypeDef *) phost->pActiveClass->pData;
 
   if (CDC_Handle == NULL)
@@ -259,6 +260,10 @@ static USBH_StatusTypeDef USBH_CDC_InterfaceInit(USBH_HandleTypeDef *phost)
 }
 
 
+static uint8_t *USBH_CDC_GetRxBufferData(USBH_HandleTypeDef *phost)
+{
+  return (uint8_t *)(phost->pActiveClass->pData + sizeof(CDC_HandleTypeDef));
+}
 
 /**
   * @brief  USBH_CDC_InterfaceDeInit
@@ -738,6 +743,10 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
   switch (CDC_Handle->data_rx_state)
   {
 
+    case CDC_IDLE:
+      /*Always receive and wait for data*/
+      USBH_CDC_Receive(phost, USBH_CDC_GetRxBufferData(phost), USBH_CDC_RX_BUFFER_SIZE);
+      break;
     case CDC_RECEIVE_DATA:
 
       USBH_BulkReceiveData(phost,
@@ -757,6 +766,7 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
       if (URB_Status == USBH_URB_DONE)
       {
         length = USBH_LL_GetLastXferSize(phost, CDC_Handle->DataItf.InPipe);
+        USBH_CDC_ReceiveCallback(phost, CDC_Handle->pRxData, length);
 
         if (((CDC_Handle->RxDataLength - length) > 0U) && (length > CDC_Handle->DataItf.InEpSize))
         {
@@ -767,7 +777,6 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
         else
         {
           CDC_Handle->data_rx_state = CDC_IDLE;
-          USBH_CDC_ReceiveCallback(phost);
         }
 
 #if (USBH_USE_OS == 1U)
@@ -787,27 +796,29 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
 }
 
 /**
-* @brief  The function informs user that data have been received
+* @brief  The function informs user that data have been sent
 *  @param  pdev: Selected device
 * @retval None
 */
 __weak void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost)
 {
   /* Prevent unused argument(s) compilation warning */
-  m8ec_serial_write_callback();
   UNUSED(phost);
 }
 
 /**
-* @brief  The function informs user that data have been sent
+* @brief  The function informs user that new data have been received
 *  @param  pdev: Selected device
+*  @param  data: Pointer to received packet
+*  @param  size: size of received packet
 * @retval None
 */
-__weak void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost)
+__weak void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size)
 {
-  m8ec_serial_read_callback();
   /* Prevent unused argument(s) compilation warning */
   UNUSED(phost);
+  UNUSED(data);
+  UNUSED(size);
 }
 
 /**

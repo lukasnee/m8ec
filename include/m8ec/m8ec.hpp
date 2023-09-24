@@ -10,7 +10,9 @@
 
 #pragma once
 
+#include <cstdint>
 namespace m8ec {
 
+    static constexpr std::uint32_t usb_cdc_rx_stream_buffer_size = 128;
 
 } // namespace m8ec

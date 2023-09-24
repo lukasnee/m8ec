@@ -11,7 +11,28 @@ set(ROOT ${CMAKE_SOURCE_DIR})
 
 set(CMAKE_AR /usr/bin/arm-none-eabi-ar)
 
-add_executable(${PROJECT_NAME} 
+set(PLATFORM_STM32F4xx_INCLUDE
+    Core/Inc
+    USB_HOST/App
+    USB_HOST/Target
+    Drivers/STM32F4xx_HAL_Driver/Inc
+    Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
+    Middlewares/Third_Party/FreeRTOS/Source/include
+    Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+    Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+    Middlewares/ST/STM32_USB_Host_Library/Core/Inc
+    Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
+    Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
+    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc
+    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc
+    Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
+    Drivers/CMSIS/Device/ST/STM32F4xx/Include
+    Drivers/CMSIS/Include
+    ../extern/ILI9341-STM32-HAL
+    ../platform/STM32F4xx/include
+)
+
+set(PLATFORM_STM32F4xx_SRC
     startup_stm32f411xe.s
     Core/Src/main.c
     Core/Src/freertos.c
@@ -69,16 +90,27 @@ add_executable(${PROJECT_NAME}
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
+)
+
+# TODO option to select platform
+set(PLATFORM_INCLUDE ${PLATFORM_STM32F4xx_INCLUDE} )
+set(PLATFORM_SRC ${PLATFORM_STM32F4xx_SRC})
+
+add_executable(${PROJECT_NAME} 
+    ${PLATFORM_SRC}
     ../extern/freertos-addons/c++/Source/cmutex.cpp
     ../extern/freertos-addons/c++/Source/cqueue.cpp
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
     ../extern/freertos-addons/c++/Source/cthread.cpp
-    ../extern/fibsys/fibsys.cpp
-    ../extern/fibsys/EventDrivenReaderWriter.cpp
+    ../extern/fonas/src/fonas.cpp
+    ../extern/fonas/src/EventDrivenReaderWriter.cpp
+    ../extern/fonas/src/EventDrivenWriter.cpp
+    ../extern/fonas/src/StreamBuffer.cpp
     ../source/m8ec.cpp
     ../source/slip.c
     ../source/periph/Uart.cpp
     ../source/periph/Uart1.cpp
+    ../source/periph/UsbCdc.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -87,28 +119,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     -DSTM32F4
     -DCPP_FREERTOS_NO_EXCEPTIONS
     -DCPP_FREERTOS_NO_CPP_STRINGS
+    -DFONAS
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
-    Core/Inc
-    USB_HOST/App
-    USB_HOST/Target
-    Drivers/STM32F4xx_HAL_Driver/Inc
-    Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
-    Middlewares/Third_Party/FreeRTOS/Source/include
-    Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
-    Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
-    Middlewares/ST/STM32_USB_Host_Library/Core/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
-    Drivers/CMSIS/Device/ST/STM32F4xx/Include
-    Drivers/CMSIS/Include
-    ../extern/ILI9341-STM32-HAL
+    ${PLATFORM_INCLUDE}
     ../extern/freertos-addons/c++/Source/include
-    ../extern/fibsys/include
+    ../extern/fonas/include
     ../include
 )
 

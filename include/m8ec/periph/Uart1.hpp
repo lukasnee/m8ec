@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "fibsys/EventDrivenReaderWriter.hpp"
+#include "fonas/EventDrivenReaderWriter.hpp"
 
 namespace m8ec::periph {
 
-class Uart1 : public fibsys::EventDrivenReaderWriter {
+class Uart1 : public fonas::EventDrivenReaderWriter {
 
 public:
     static Uart1 &get_instance();

@@ -19,9 +19,6 @@ extern "C"
 
     void m8ec_launch(ili9341_t *screen);
 
-    void m8ec_serial_write_callback();
-    void m8ec_serial_read_callback();
-
 #ifdef __cplusplus
 }
 #endif
