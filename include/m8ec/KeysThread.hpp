@@ -1,5 +1,5 @@
 /*
- * m8ec - Embedded Client for the Dirtywave M8 Headless device
+ * m8ec - Embedded Client for the Dirtywave M8 Headless device.
  * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
  *
  * This program is free software; you can redistribute it and/or modify
@@ -10,12 +10,18 @@
 
 #pragma once
 
-#include <cstdint>
+#include "fonas/fonas.hpp"
+
 namespace m8ec {
 
-    static constexpr bool debug_keys = false;
+class KeysThread : public fonas::Thread {
+public:
+    using Thread::Thread;
+    static KeysThread &get_instance();
+    bool init();
 
-    static constexpr std::uint32_t keys_refresh_period = 20;
-    static constexpr std::uint32_t usb_cdc_rx_stream_buffer_size = 128;
+private:
+    void Run() final override;
+};
 
 } // namespace m8ec

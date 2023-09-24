@@ -90,6 +90,7 @@ set(PLATFORM_STM32F4xx_SRC
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
+    ../platform/STM32F4xx/src/Keys.cpp
 )
 
 # TODO option to select platform
@@ -107,10 +108,12 @@ add_executable(${PROJECT_NAME}
     ../extern/fonas/src/EventDrivenWriter.cpp
     ../extern/fonas/src/StreamBuffer.cpp
     ../source/m8ec.cpp
+    ../source/m8_protocol.cpp
     ../source/slip.c
     ../source/periph/Uart.cpp
     ../source/periph/Uart1.cpp
     ../source/periph/UsbCdc.cpp
+    ../source/KeysThread.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
