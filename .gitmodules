@@ -4,3 +4,6 @@
 [submodule "extern/freertos-addons"]
 	path = extern/freertos-addons
 	url = https://github.com/lukasnee/freertos-addons.git
+[submodule "extern/fonas"]
+	path = extern/fonas
+	url = https://github.com/lukasnee/fonas
