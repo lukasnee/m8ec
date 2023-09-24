@@ -10,7 +10,7 @@
 
 #pragma once
 
-#define FIBSYS_PANIC() // TODO
+#define FONAS_PANIC() // TODO
 
 #include "thread.hpp"
 #include "ticks.hpp"
@@ -18,7 +18,7 @@
 #include "queue.hpp"
 #include "mutex.hpp"
 
-namespace fibsys {
+namespace fonas {
 
 using cpp_freertos::Thread;
 using cpp_freertos::BinarySemaphore;
@@ -31,4 +31,4 @@ void delay_ms(std::size_t ms);
 std::size_t get_uptime_ticks();
 std::size_t get_uptime_ms();
 
-} // namespace fibsys
+} // namespace fonas

@@ -8,9 +8,9 @@
  * (at your option) any later version.
  */
 
-#include "fibsys/fibsys.hpp"
+#include "fonas/fonas.hpp"
 
-namespace fibsys {
+namespace fonas {
 
 void delay_ms(std::size_t ms) {
     // cannot use cpp_freertos::Thread::Delay(ms); because it's not static method of Thread for some reason
@@ -21,4 +21,4 @@ std::size_t get_uptime_ticks() { return static_cast<std::size_t>(cpp_freertos::T
 std::size_t get_uptime_ms() {
     return static_cast<std::size_t>(cpp_freertos::Ticks::TicksToMs(cpp_freertos::Ticks::GetTicks()));
 }
-} // namespace fibsys
+} // namespace fonas

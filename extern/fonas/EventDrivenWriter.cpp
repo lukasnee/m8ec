@@ -1,5 +1,5 @@
 /*
- * fibsys - FreeRTOS C++ addons.
+ * fonas - FreeRTOS C++ addons.
  * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
  *
  * This program is free software; you can redistribute it and/or modify
@@ -8,9 +8,9 @@
  * (at your option) any later version.
  */
 
-#include "fibsys/EventDrivenReaderWriter.hpp"
+#include "fonas/EventDrivenReaderWriter.hpp"
 
-namespace fibsys {
+namespace fonas {
 
 bool EventDrivenReaderWriter::init() { return this->ll_init(); }
 
@@ -37,4 +37,4 @@ void EventDrivenReaderWriter::ll_async_write_completed_cb_from_isr() {
 
 void EventDrivenReaderWriter::ll_async_write_completed_cb() { this->write_semaphore.Give(); }
 
-} // namespace fibsys
+} // namespace fonas

@@ -1,5 +1,5 @@
 /*
- * fibsys - FreeRTOS C++ addons.
+ * fonas - FreeRTOS C++ addons.
  * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
  *
  * This program is free software; you can redistribute it and/or modify
@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include "fibsys/fibsys.hpp"
+#include "fonas/fonas.hpp"
 
 #include <cstdint>
 
-namespace fibsys {
+namespace fonas {
 
-class EventDrivenReader {
+class EventDrivenReaderWriter {
 public:
     /**
      * @brief Initialize.
@@ -25,6 +25,17 @@ public:
      * @return false failure.
      */
     bool init();
+
+    /**
+     * @brief Write synchronously.
+     *
+     * @param data
+     * @param size
+     * @param timeout_ticks
+     * @return true success.
+     * @return false failure.
+     */
+    bool write(const std::uint8_t *data, std::size_t size, TickType_t timeout_ticks = portMAX_DELAY);
 
     /**
      * @brief Read synchronously.
@@ -57,6 +68,18 @@ public:
      */
     void ll_async_read_completed_cb();
 
+    /**
+     * @brief Low-level interrupt callback signaling write completion. Alternatively use ll_async_write_completed_cb() in thread
+     * context.
+     */
+    void ll_async_write_completed_cb_from_isr();
+
+    /**
+     * @brief Low-level thread callback signaling write completion. Alternatively use ll_async_write_completed_cb_from_isr() in
+     * interrupt context.
+     */
+    void ll_async_write_completed_cb();
+
 protected:
     /**
      * @brief Low-level initialization.
@@ -65,6 +88,16 @@ protected:
      * @return false failure.
      */
     virtual bool ll_init() = 0;
+
+    /**
+     * @brief Low-level asynchronous write.
+     *
+     * @param data
+     * @param size
+     * @return true success.
+     * @return false failure.
+     */
+    virtual bool ll_async_write(const std::uint8_t *data, std::size_t size) = 0;
 
     /**
      * @brief Low-level asynchronous read.
@@ -85,8 +118,10 @@ protected:
     virtual bool ll_deinit() = 0;
 
 private:
-    MutexStandard mutex;
-    BinarySemaphore semaphore;
+    MutexStandard write_mutex;
+    BinarySemaphore write_semaphore;
+    MutexStandard read_mutex;
+    BinarySemaphore read_semaphore;
 };
 
-} // namespace fibsys
+} // namespace fonas

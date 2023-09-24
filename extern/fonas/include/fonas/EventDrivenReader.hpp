@@ -1,5 +1,5 @@
 /*
- * fibsys - FreeRTOS C++ addons.
+ * fonas - FreeRTOS C++ addons.
  * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
  *
  * This program is free software; you can redistribute it and/or modify
@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include "fibsys/fibsys.hpp"
+#include "fonas/fonas.hpp"
 
 #include <cstdint>
 
-namespace fibsys {
+namespace fonas {
 
-class EventDrivenWriter {
+class EventDrivenReader {
 public:
     /**
      * @brief Initialize.
@@ -27,7 +27,7 @@ public:
     bool init();
 
     /**
-     * @brief Write synchronously.
+     * @brief Read synchronously.
      *
      * @param data
      * @param size
@@ -35,27 +35,27 @@ public:
      * @return true success.
      * @return false failure.
      */
-    bool write(const std::uint8_t *data, std::size_t size, TickType_t timeout_ticks = portMAX_DELAY);
+    bool read(std::uint8_t *data, std::size_t size, TickType_t timeout_ticks = portMAX_DELAY);
 
     /**
      * @brief Deinitialize.
      *
-     * @return true success.d
+     * @return true success.
      * @return false failure.
      */
     bool deinit();
 
     /**
-     * @brief Low-level interrupt callback signaling write completion. Alternatively use ll_async_write_completed_cb() in thread
+     * @brief Low-level interrupt callback signaling read completion. Alternatively use ll_async_read_completed_cb() in thread
      * context.
      */
-    void ll_async_write_completed_cb_from_isr();
+    void ll_async_read_completed_cb_from_isr();
 
     /**
-     * @brief Low-level thread callback signaling write completion. Alternatively use ll_async_write_completed_cb_from_isr() in
+     * @brief Low-level thread callback signaling read completion. Alternatively use ll_async_read_completed_cb_from_isr() in
      * interrupt context.
      */
-    void ll_async_write_completed_cb();
+    void ll_async_read_completed_cb();
 
 protected:
     /**
@@ -67,14 +67,14 @@ protected:
     virtual bool ll_init() = 0;
 
     /**
-     * @brief Low-level asynchronous write.
+     * @brief Low-level asynchronous read.
      *
      * @param data
      * @param size
      * @return true success.
      * @return false failure.
      */
-    virtual bool ll_async_write(const std::uint8_t *data, std::size_t size) = 0;
+    virtual bool ll_async_read(std::uint8_t *data, std::size_t size) = 0;
 
     /**
      * @brief Low-level deinitialization.
@@ -89,4 +89,4 @@ private:
     BinarySemaphore semaphore;
 };
 
-} // namespace fibsys
+} // namespace fonas
