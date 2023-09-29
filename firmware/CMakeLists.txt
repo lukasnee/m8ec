@@ -107,8 +107,10 @@ add_executable(${PROJECT_NAME}
     ../extern/fonas/src/EventDrivenReaderWriter.cpp
     ../extern/fonas/src/EventDrivenWriter.cpp
     ../extern/fonas/src/StreamBuffer.cpp
+    ../source/stdio.cpp
     ../source/m8ec.cpp
     ../source/m8_protocol.cpp
+    ../source/display.cpp
     ../source/slip.c
     ../source/periph/Uart.cpp
     ../source/periph/Uart1.cpp

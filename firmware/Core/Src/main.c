@@ -343,11 +343,10 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-    /* init code for USB_HOST */
-    /* USER CODE BEGIN 5 */
-    MX_USB_HOST_Init();
-    m8ec_launch(ili9341_new(&hspi1, TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port,
-                            TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE));
+  /* init code for USB_HOST */
+  MX_USB_HOST_Init();
+  /* USER CODE BEGIN 5 */
+    m8ec_launch();
     osThreadTerminate(defaultTaskHandle);
     /* USER CODE END 5 */
 }

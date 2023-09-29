@@ -1,3 +1,4 @@
 firmware/build/
 .build/
 .mxproject
+firmware/Makefile

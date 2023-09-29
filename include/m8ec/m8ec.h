@@ -1,5 +1,5 @@
 /*
- * m8ec - Embedded Client for the Dirtywave M8 Headless device
+ * m8ec - Embedded Client for the Dirtywave M8 Headless device.
  * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,7 @@ extern "C"
 {
 #endif
 
-#include "ILI9341/ili9341.h"
-
-    void m8ec_launch(ili9341_t *screen);
+    void m8ec_launch();
 
 #ifdef __cplusplus
 }
