@@ -59,6 +59,12 @@ private:
         "Error: %s: Invalid packet length: expected [%u %u], got %u\n";
 };
 #pragma pack(push, 1)
+struct KeyState : public Cmd<KeyState, 0xFB, 2, 2> {
+    struct Payload {
+        std::uint8_t key_state;
+        std::uint8_t unknown; // TODO figure out what this is
+    } payload;
+};
 struct DrawWaveform
     : public Cmd<DrawWaveform, 0xFC, sizeof(Waveform::color), sizeof(Waveform::color) + sizeof(Waveform::buffer)> {
     Waveform waveform;
@@ -76,6 +82,8 @@ struct PrintSystemInfo : public Cmd<SystemInfo, 0xFF, sizeof(SystemInfo), sizeof
 
 const char *cmd_id_to_name(uint8_t cmd_id) {
     switch (cmd_id) {
+    case KeyState::cmd_id:
+        return "KeyState";
     case DrawWaveform::cmd_id:
         return "DrawWaveform";
     case DrawCharacter::cmd_id:
@@ -167,7 +175,13 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
     const uint8_t cmd_id = data[0];
     const uint8_t *payload_data = &data[1];
     const uint32_t payload_size = size - 1;
-    if (cmd_id == cmd::DrawWaveform::cmd_id && cmd::DrawWaveform::validate_size(payload_size)) {
+    if (cmd_id == cmd::KeyState::cmd_id && cmd::KeyState::validate_size(payload_size)) {
+        const auto &payload = reinterpret_cast<const cmd::KeyState *>(payload_data)->payload;
+        if (m8ec::Config::debug_m8_protocol) {
+            printf("KeyState: s:%02x,?:%02x\n", payload.key_state, payload.unknown);
+        }
+    }
+    else if (cmd_id == cmd::DrawWaveform::cmd_id && cmd::DrawWaveform::validate_size(payload_size)) {
         const auto &waveform = reinterpret_cast<const cmd::DrawWaveform *>(payload_data)->waveform;
         const auto waveform_width = payload_size - sizeof(Color);
         if (m8ec::Config::debug_m8_protocol) {
