@@ -59,37 +59,29 @@ private:
         "Error: %s: Invalid packet length: expected [%u %u], got %u\n";
 };
 #pragma pack(push, 1)
-struct DrawRectangle : public Cmd<DrawRectangle, 0xFE, sizeof(Rectangle), sizeof(Rectangle)> {
-    union {
-        Rectangle rectangle;
-    };
-};
-struct DrawCharacter : public Cmd<DrawCharacter, 0xFD, sizeof(Character), sizeof(Character)> {
-    union {
-        Character character;
-    };
-};
 struct DrawWaveform
     : public Cmd<DrawWaveform, 0xFC, sizeof(Waveform::color), sizeof(Waveform::color) + sizeof(Waveform::buffer)> {
-    union {
-        Waveform waveform;
-    };
+    Waveform waveform;
+};
+struct DrawCharacter : public Cmd<DrawCharacter, 0xFD, sizeof(Character), sizeof(Character)> {
+    Character character;
+};
+struct DrawRectangle : public Cmd<DrawRectangle, 0xFE, sizeof(Rectangle), sizeof(Rectangle)> {
+    Rectangle rectangle;
 };
 struct PrintSystemInfo : public Cmd<SystemInfo, 0xFF, sizeof(SystemInfo), sizeof(SystemInfo)> {
-    union {
-        SystemInfo system_info;
-    };
+    SystemInfo system_info;
 };
 #pragma pack(pop)
 
 const char *cmd_id_to_name(uint8_t cmd_id) {
     switch (cmd_id) {
-    case DrawRectangle::cmd_id:
-        return "DrawRectangle";
-    case DrawCharacter::cmd_id:
-        return "DrawCharacter";
     case DrawWaveform::cmd_id:
         return "DrawWaveform";
+    case DrawCharacter::cmd_id:
+        return "DrawCharacter";
+    case DrawRectangle::cmd_id:
+        return "DrawRectangle";
     case PrintSystemInfo::cmd_id:
         return "SystemInfo";
     default:
@@ -175,35 +167,30 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
     const uint8_t cmd_id = data[0];
     const uint8_t *payload_data = &data[1];
     const uint32_t payload_size = size - 1;
-    if (cmd_id == cmd::DrawRectangle::cmd_id) {
-        if (!cmd::DrawRectangle::validate_size(payload_size)) {
-            return false;
-        }
-        const auto &rectangle = reinterpret_cast<const cmd::DrawRectangle *>(payload_data)->rectangle;
-        display::draw_rectangle(rectangle);
-        return true;
-    }
-    else if (cmd_id == cmd::DrawCharacter::cmd_id) {
-        if (!cmd::DrawCharacter::validate_size(payload_size)) {
-            return false;
-        }
-        const auto &character = reinterpret_cast<const cmd::DrawCharacter *>(payload_data)->character;
-        display::draw_character(character);
-        return true;
-    }
-    else if (cmd_id == cmd::DrawWaveform::cmd_id) {
-        if (!cmd::DrawWaveform::validate_size(payload_size)) {
-            return false;
-        }
+    if (cmd_id == cmd::DrawWaveform::cmd_id && cmd::DrawWaveform::validate_size(payload_size)) {
         const auto &waveform = reinterpret_cast<const cmd::DrawWaveform *>(payload_data)->waveform;
-        const auto waveform_size = payload_size - sizeof(Color);
-        display::draw_waveform(waveform, waveform_size);
-        return true;
-    }
-    else if (cmd_id == cmd::PrintSystemInfo::cmd_id) {
-        if (!cmd::PrintSystemInfo::validate_size(payload_size)) {
-            return false;
+        const auto waveform_width = payload_size - sizeof(Color);
+        if (m8ec::Config::debug_m8_protocol) {
+            printf("DrawWaveform: w:%u", waveform_width);
         }
+        display::draw_waveform(waveform, waveform_width);
+    }
+    else if (cmd_id == cmd::DrawCharacter::cmd_id && cmd::DrawCharacter::validate_size(payload_size)) {
+        const auto &character = reinterpret_cast<const cmd::DrawCharacter *>(payload_data)->character;
+        if (m8ec::Config::debug_m8_protocol) {
+            printf("DrawCharacter: c:'%c'(0x%02X)@x:%u,y:%u\n", character.c, character.c, character.pos.x, character.pos.y);
+        }
+        display::draw_character(character);
+    }
+    else if (cmd_id == cmd::DrawRectangle::cmd_id && cmd::DrawRectangle::validate_size(payload_size)) {
+        const auto &rectangle = reinterpret_cast<const cmd::DrawRectangle *>(payload_data)->rectangle;
+        if (m8ec::Config::debug_m8_protocol) {
+            printf("DrawRectangle: x:%u,y:%u,w:%u,h:%u\n", rectangle.pos.x, rectangle.pos.y, rectangle.size.w,
+                   rectangle.size.h);
+        }
+        display::draw_rectangle(rectangle);
+    }
+    else if (cmd_id == cmd::PrintSystemInfo::cmd_id && cmd::PrintSystemInfo::validate_size(payload_size)) {
         const auto &system_info = reinterpret_cast<const cmd::PrintSystemInfo *>(payload_data)->system_info;
         char *device_type[] = {"Headless", "M8 Beta", "M8 Production"};
         static bool system_info_already_printed = false;
@@ -213,12 +200,14 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
             system_info_already_printed = true;
         }
         display::set_large_mode(system_info.font_mode == SystemInfo::FontMode::large);
-        return true;
     }
-    if (m8ec::Config::debug_m8_protocol) {
-        printf("Error: Unknown command: %02x of size %lu\n", data[0], payload_size);
+    else {
+        if (m8ec::Config::debug_m8_protocol) {
+            printf("Error: Unknown command: %02x of size %lu\n", data[0], payload_size);
+        }
+        return false;
     }
-    return false;
+    return true;
 }
 
 } // namespace m8ec::m8_protocol
