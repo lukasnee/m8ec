@@ -24,6 +24,10 @@
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
+extern DMA_HandleTypeDef hdma_spi2_rx;
+
+extern DMA_HandleTypeDef hdma_i2s2_ext_tx;
+
 extern DMA_HandleTypeDef hdma_spi1_tx;
 
 extern DMA_HandleTypeDef hdma_usart1_tx;
@@ -82,6 +86,140 @@ void HAL_MspInit(void)
   /* USER CODE BEGIN MspInit 1 */
 
   /* USER CODE END MspInit 1 */
+}
+
+/**
+* @brief I2S MSP Initialization
+* This function configures the hardware resources used in this example
+* @param hi2s: I2S handle pointer
+* @retval None
+*/
+void HAL_I2S_MspInit(I2S_HandleTypeDef* hi2s)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+  if(hi2s->Instance==SPI2)
+  {
+  /* USER CODE BEGIN SPI2_MspInit 0 */
+
+  /* USER CODE END SPI2_MspInit 0 */
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2S;
+    PeriphClkInitStruct.PLLI2S.PLLI2SN = 63;
+    PeriphClkInitStruct.PLLI2S.PLLI2SM = 12;
+    PeriphClkInitStruct.PLLI2S.PLLI2SR = 3;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    /* Peripheral clock enable */
+    __HAL_RCC_SPI2_CLK_ENABLE();
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**I2S2 GPIO Configuration
+    PB10     ------> I2S2_CK
+    PB12     ------> I2S2_WS
+    PB14     ------> I2S2_ext_SD
+    PB15     ------> I2S2_SD
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_14;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF6_I2S2ext;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* I2S2 DMA Init */
+    /* SPI2_RX Init */
+    hdma_spi2_rx.Instance = DMA1_Stream3;
+    hdma_spi2_rx.Init.Channel = DMA_CHANNEL_0;
+    hdma_spi2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_spi2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_spi2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_spi2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_spi2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_spi2_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_spi2_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_spi2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_spi2_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(hi2s,hdmarx,hdma_spi2_rx);
+
+    /* I2S2_EXT_TX Init */
+    hdma_i2s2_ext_tx.Instance = DMA1_Stream4;
+    hdma_i2s2_ext_tx.Init.Channel = DMA_CHANNEL_2;
+    hdma_i2s2_ext_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_i2s2_ext_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_i2s2_ext_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_i2s2_ext_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_i2s2_ext_tx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_i2s2_ext_tx.Init.Mode = DMA_CIRCULAR;
+    hdma_i2s2_ext_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_i2s2_ext_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_i2s2_ext_tx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(hi2s,hdmatx,hdma_i2s2_ext_tx);
+
+    /* I2S2 interrupt Init */
+    HAL_NVIC_SetPriority(SPI2_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SPI2_IRQn);
+  /* USER CODE BEGIN SPI2_MspInit 1 */
+
+  /* USER CODE END SPI2_MspInit 1 */
+  }
+
+}
+
+/**
+* @brief I2S MSP De-Initialization
+* This function freeze the hardware resources used in this example
+* @param hi2s: I2S handle pointer
+* @retval None
+*/
+void HAL_I2S_MspDeInit(I2S_HandleTypeDef* hi2s)
+{
+  if(hi2s->Instance==SPI2)
+  {
+  /* USER CODE BEGIN SPI2_MspDeInit 0 */
+
+  /* USER CODE END SPI2_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_SPI2_CLK_DISABLE();
+
+    /**I2S2 GPIO Configuration
+    PB10     ------> I2S2_CK
+    PB12     ------> I2S2_WS
+    PB14     ------> I2S2_ext_SD
+    PB15     ------> I2S2_SD
+    */
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_15);
+
+    /* I2S2 DMA DeInit */
+    HAL_DMA_DeInit(hi2s->hdmarx);
+    HAL_DMA_DeInit(hi2s->hdmatx);
+
+    /* I2S2 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(SPI2_IRQn);
+  /* USER CODE BEGIN SPI2_MspDeInit 1 */
+
+  /* USER CODE END SPI2_MspDeInit 1 */
+  }
+
 }
 
 /**
