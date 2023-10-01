@@ -13,6 +13,7 @@
 
 #include "m8ec/display.hpp"
 #include "m8ec/m8_protocol.hpp"
+#include "m8ec/periph/Spi1.hpp"
 
 #include "ILI9341/ili9341_gfx.h"
 #include "main.h"
@@ -27,8 +28,14 @@ static ili9341_t *ili9341_lcd = nullptr;
 namespace m8ec::display {
 
 bool initialize() {
-    ili9341_lcd = ili9341_new(&hspi1, TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port,
-                              TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE);
+    ili9341_lcd = ili9341_new(
+        &hspi1,
+        [](uint8_t *data, uint16_t size) -> uint16_t { return m8ec::periph::Spi1::get_instance().write(data, size) ? 1 : 0; },
+        [](uint8_t *rd_data, const uint8_t *wr_data, uint16_t size) -> uint16_t {
+            return m8ec::periph::Spi1::get_instance().read_write(rd_data, wr_data, size) ? 1 : 0;
+        },
+        TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port, TFT_DC_Pin, isoLandscape, NULL, 0,
+        NULL, 0, itsNONE, itnNONE);
     if (!ili9341_lcd) {
         printf("error: ili9341_new failed\n");
         return false;
