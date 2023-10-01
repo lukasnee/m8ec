@@ -45,8 +45,6 @@ bool initialize() {
     return true;
 }
 
-static void change_font(struct inline_font *font) {}
-
 void set_large_mode(int enabled) { printf("error: set_large_mode: %d: not implemented\n", enabled); }
 
 int draw_character(const m8_protocol::Character &character) {
