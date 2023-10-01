@@ -106,6 +106,7 @@ add_executable(${PROJECT_NAME}
     ../extern/fonas/src/fonas.cpp
     ../extern/fonas/src/EventDrivenReaderWriter.cpp
     ../extern/fonas/src/EventDrivenWriter.cpp
+    ../extern/fonas/src/EventDrivenSpi.cpp
     ../extern/fonas/src/StreamBuffer.cpp
     ../source/stdio.cpp
     ../source/m8ec.cpp
@@ -114,6 +115,8 @@ add_executable(${PROJECT_NAME}
     ../source/slip.c
     ../source/periph/UartCallbacks.cpp
     ../source/periph/Uart1.cpp
+    ../source/periph/SpiCallbacks.cpp
+    ../source/periph/Spi1.cpp
     ../source/periph/UsbCdc.cpp
     ../source/KeysThread.cpp
 )
