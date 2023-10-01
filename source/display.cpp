@@ -26,6 +26,8 @@ extern SPI_HandleTypeDef hspi1; // main.c
 
 static ili9341_t *ili9341_lcd = nullptr;
 
+ili9341_color_t bg_color = ILI9341_BLACK;
+
 namespace m8ec::display {
 
 bool initialize() {
@@ -41,7 +43,7 @@ bool initialize() {
         printf("error: ili9341_new failed\n");
         return false;
     }
-    ili9341_fill_screen(ili9341_lcd, ILI9341_BLACK);
+    ili9341_fill_screen(ili9341_lcd, bg_color);
     return true;
 }
 
@@ -69,6 +71,9 @@ void draw_rectangle(const m8_protocol::Rectangle &rectangle) {
     }
     ili9341_color_t color = __ILI9341_COLOR565(rectangle.color.r, rectangle.color.g, rectangle.color.b);
     ili9341_fill_rect(ili9341_lcd, color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
+    if (rectangle.size.h >= ili9341_lcd->screen_size.height || rectangle.size.w >= ili9341_lcd->screen_size.width) {
+        bg_color = color; // remember the screen clear color
+}
 }
 
 void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_size) {
@@ -78,7 +83,6 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_size) 
     if (waveform_size == 0) {
         return;
     }
-    const ili9341_color_t bg_color = ILI9341_BLACK;
     struct Canvas {
         uint16_t x;
         uint16_t y;
@@ -103,7 +107,7 @@ void draw_string(const char *str) {
         return;
     }
     ili9341_text_attr_t textAttr;
-    textAttr.bg_color = ILI9341_BLACK;
+    textAttr.bg_color = bg_color;
     textAttr.fg_color = ILI9341_WHITE;
     textAttr.font = &ili9341_font_7x10;
     textAttr.origin_x = 0;
