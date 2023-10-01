@@ -21,8 +21,8 @@ public:
 
 protected:
     bool ll_init() final override;
-    bool ll_async_write(const std::uint8_t *data, std::size_t size) final override;
     bool ll_async_read(std::uint8_t *data, std::size_t size) final override;
+    bool ll_async_write(const std::uint8_t *data, std::size_t size) final override;
     bool ll_deinit() final override;
 };
 
