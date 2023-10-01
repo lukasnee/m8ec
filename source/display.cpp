@@ -12,6 +12,7 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 #include "m8ec/display.hpp"
+#include "m8ec/font.hpp"
 #include "m8ec/m8_protocol.hpp"
 #include "m8ec/periph/Spi1.hpp"
 
@@ -55,9 +56,10 @@ int draw_character(const m8_protocol::Character &character) {
     ili9341_text_attr_t textAttr;
     textAttr.bg_color = __ILI9341_COLOR565(character.background.r, character.background.g, character.background.b);
     textAttr.fg_color = __ILI9341_COLOR565(character.foreground.r, character.foreground.g, character.foreground.b);
-    textAttr.font = &ili9341_font_7x10;
+    textAttr.font = &font::trash80_stealth57;
     textAttr.origin_x = character.pos.x;
-    textAttr.origin_y = character.pos.y;
+    constexpr decltype(textAttr.origin_y) char_to_rect_y_adjustment = 3U;
+    textAttr.origin_y = character.pos.y + char_to_rect_y_adjustment;
     const auto c = static_cast<char>(character.c);
     ili9341_draw_char(ili9341_lcd, textAttr, c);
     return character.c;
