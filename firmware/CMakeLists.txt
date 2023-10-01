@@ -112,7 +112,7 @@ add_executable(${PROJECT_NAME}
     ../source/m8_protocol.cpp
     ../source/display.cpp
     ../source/slip.c
-    ../source/periph/Uart.cpp
+    ../source/periph/UartCallbacks.cpp
     ../source/periph/Uart1.cpp
     ../source/periph/UsbCdc.cpp
     ../source/KeysThread.cpp
