@@ -28,8 +28,8 @@ struct Position {
 
 #pragma pack(push, 1)
 struct Size {
-    uint16_t width;
-    uint16_t height;
+    uint16_t w;
+    uint16_t h;
 };
 #pragma pack(pop)
 

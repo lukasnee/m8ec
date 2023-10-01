@@ -70,7 +70,7 @@ void draw_rectangle(const m8_protocol::Rectangle &rectangle) {
         return;
     }
     ili9341_color_t color = __ILI9341_COLOR565(rectangle.color.r, rectangle.color.g, rectangle.color.b);
-    ili9341_fill_rect(ili9341_lcd, color, rectangle.pos.x, rectangle.pos.y, rectangle.size.width, rectangle.size.height);
+    ili9341_fill_rect(ili9341_lcd, color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
 }
 
 void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_size) {
