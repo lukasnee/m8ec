@@ -20,6 +20,7 @@
 #include "main.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdio>
 
 extern SPI_HandleTypeDef hspi1; // main.c
@@ -73,33 +74,43 @@ void draw_rectangle(const m8_protocol::Rectangle &rectangle) {
     ili9341_fill_rect(ili9341_lcd, color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
     if (rectangle.size.h >= ili9341_lcd->screen_size.height || rectangle.size.w >= ili9341_lcd->screen_size.width) {
         bg_color = color; // remember the screen clear color
-}
+    }
 }
 
-void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_size) {
+struct Canvas {
+    uint16_t x;
+    uint16_t y;
+    uint16_t w;
+    uint16_t h;
+};
+
+constexpr auto canvas_max = Canvas{0, 0, 320, 21};
+std::array<uint8_t, (canvas_max.w * canvas_max.h / 8)> bmp_buff = {0};
+
+void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width) {
     if (!ili9341_lcd) {
         return;
     }
-    if (waveform_size == 0) {
+    if (0 == waveform_width) {
         return;
     }
-    struct Canvas {
-        uint16_t x;
-        uint16_t y;
-        uint16_t w;
-        uint16_t h;
-    };
-    static m8_protocol::Waveform waveform_prev = waveform;
-    const Canvas canvas = Canvas{0, 0, 320 - waveform_size, 21};
-    ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    for (int i = 0; i < waveform_size; i++) {
-        // Limit value because the oscilloscope commands seem to glitch occasionally
-        const auto waveform_prev_value = std::min(waveform_prev.buffer[i], static_cast<uint8_t>(20));
-        const auto waveform_value = std::min(waveform.buffer[i], static_cast<uint8_t>(20));
-        ili9341_draw_pixel(ili9341_lcd, bg_color, canvas.x + i, waveform_prev_value);
-        ili9341_draw_pixel(ili9341_lcd, fg_color, canvas.x + i, waveform_value);
+    if (waveform_width > canvas_max.w) {
+        printf("warning: draw_waveform: waveform_width: %zu: too large\n", waveform_width);
+        waveform_width = canvas_max.w; // limit the width
     }
-    waveform_prev = waveform;
+    bmp_buff.fill(0);
+    for (std::size_t i = 0; i < waveform_width; i++) {
+        // limit the waveform value (y) to canvas max height - allegedly it can glitch // TODO investigate
+        const auto y = std::min(waveform.buffer[i], static_cast<uint8_t>(canvas_max.h - 1));
+        const auto x = i;
+        const auto bmp_index = (y * waveform_width) + x;
+        const auto byte_index = bmp_index / 8;
+        const auto byte_bit = bmp_index % 8;
+        bmp_buff[byte_index] |= 1 << byte_bit;
+    }
+    const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
+    ili9341_draw_bitmap_1b(ili9341_lcd, fg_color, bg_color, canvas_max.x, canvas_max.y, waveform_width, canvas_max.h,
+                           bmp_buff.data());
 }
 
 void draw_string(const char *str) {
