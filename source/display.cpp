@@ -91,17 +91,26 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width)
     if (!ili9341_lcd) {
         return;
     }
-    if (0 == waveform_width) {
-        return;
-    }
     if (waveform_width > canvas_max.w) {
         printf("warning: draw_waveform: waveform_width: %zu: too large\n", waveform_width);
         waveform_width = canvas_max.w; // limit the width
     }
+
+    static size_t last_waveform_width = 0;
+    static bool was_blank = false;
+
+    const bool is_blank = 0 == waveform_width;
+    if (is_blank && was_blank) {
+        return; // skip
+    }
+    const auto canvas_w = is_blank ? last_waveform_width : waveform_width;
+    const auto canvas_x = canvas_max.w - canvas_w;
+    const auto canvas = Canvas{canvas_x, canvas_max.y, canvas_w, canvas_max.h};
+    last_waveform_width = waveform_width;
     bmp_buff.fill(0);
     for (std::size_t i = 0; i < waveform_width; i++) {
         // limit the waveform value (y) to canvas max height - allegedly it can glitch // TODO investigate
-        const auto y = std::min(waveform.buffer[i], static_cast<uint8_t>(canvas_max.h - 1));
+        const auto y = std::min(waveform.buffer[i], static_cast<uint8_t>(canvas.h - 1));
         const auto x = i;
         const auto bmp_index = (y * waveform_width) + x;
         const auto byte_index = bmp_index / 8;
@@ -109,8 +118,8 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width)
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    ili9341_draw_bitmap_1b(ili9341_lcd, fg_color, bg_color, canvas_max.x, canvas_max.y, waveform_width, canvas_max.h,
-                           bmp_buff.data());
+    ili9341_draw_bitmap_1b(ili9341_lcd, fg_color, bg_color, canvas.x, canvas.y, canvas.w, canvas.h, bmp_buff.data());
+    was_blank = is_blank;
 }
 
 void draw_string(const char *str) {
