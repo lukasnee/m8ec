@@ -106,7 +106,7 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width)
         const auto bmp_index = (y * waveform_width) + x;
         const auto byte_index = bmp_index / 8;
         const auto byte_bit = bmp_index % 8;
-        bmp_buff[byte_index] |= 1 << byte_bit;
+        bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
     ili9341_draw_bitmap_1b(ili9341_lcd, fg_color, bg_color, canvas_max.x, canvas_max.y, waveform_width, canvas_max.h,
