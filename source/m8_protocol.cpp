@@ -127,7 +127,7 @@ private:
             const auto byte = m8ec::periph::UsbCdc::get_instance().read();
             const slip_error_t n = slip_read_byte(&slip, byte);
             if (n != SLIP_NO_ERROR) {
-                if (m8ec::Config::deubug_slip) {
+                if (m8ec::Config::debug_slip) {
                     printf("Error: SLIP: %d\n", n);
                 }
                 if (n == SLIP_ERROR_INVALID_PACKET) {

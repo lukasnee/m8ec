@@ -15,7 +15,7 @@ namespace m8ec {
 
 struct Config {
     static constexpr bool debug_m8_protocol = false;
-    static constexpr bool deubug_slip = false;
+    static constexpr bool debug_slip = false;
     static constexpr bool debug_keys = false;
 
     static constexpr std::uint32_t keys_refresh_period = 20;
