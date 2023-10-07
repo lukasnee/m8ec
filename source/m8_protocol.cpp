@@ -185,7 +185,7 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
         const auto &waveform = reinterpret_cast<const cmd::DrawWaveform *>(payload_data)->waveform;
         const auto waveform_width = payload_size - sizeof(Color);
         if (m8ec::Config::debug_m8_protocol) {
-            printf("DrawWaveform: w:%u", waveform_width);
+            printf("DrawWaveform: w:%u\n", waveform_width);
         }
         display::draw_waveform(waveform, waveform_width);
     }
@@ -209,7 +209,7 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
         char *device_type[] = {"Headless", "M8 Beta", "M8 Production"};
         static bool system_info_already_printed = false;
         if (!system_info_already_printed) {
-            printf("System Info: device type: %s, firmware version %d.%d.%d", device_type[system_info.hw_type],
+            printf("System Info: device type: %s, firmware version %d.%d.%d\n", device_type[system_info.hw_type],
                    system_info.version.major, system_info.version.minor, system_info.version.patch);
             system_info_already_printed = true;
         }
