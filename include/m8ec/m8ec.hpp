@@ -19,8 +19,9 @@ struct Config {
     static constexpr bool debug_keys = false;
 
     static constexpr std::uint32_t keys_refresh_period = 20;
-    static constexpr std::uint32_t usb_cdc_rx_stream_buffer_size = 128;
-    static constexpr std::uint32_t slip_buffer_size = 512;
+    static constexpr std::uint32_t usb_cdc_rx_stream_buffer_size = 1024; // may be overkill // TODO fine tune tune
+    static constexpr std::uint32_t usbcdc_to_slip_buffer_size = 1024; // may be overkill // TODO fine tune
+    static constexpr std::uint32_t slip_buffer_size = 1024; // may be overkill // TODO fine tune
 };
 
 } // namespace m8ec

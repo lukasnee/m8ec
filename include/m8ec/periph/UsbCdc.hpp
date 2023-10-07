@@ -14,6 +14,7 @@ public:
     bool ready() const;
 
     std::uint8_t read();
+    std::size_t read(std::uint8_t *buffer, std::size_t bufferSize);
 
     bool ll_rx_input(const uint8_t *data, size_t size);
 

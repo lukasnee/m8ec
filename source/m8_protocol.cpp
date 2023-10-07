@@ -124,14 +124,17 @@ private:
                 reset_display();
                 first_run = false;
             }
-            const auto byte = m8ec::periph::UsbCdc::get_instance().read();
-            const slip_error_t n = slip_read_byte(&slip, byte);
-            if (n != SLIP_NO_ERROR) {
-                if (m8ec::Config::debug_slip) {
-                    printf("Error: SLIP: %d\n", n);
-                }
-                if (n == SLIP_ERROR_INVALID_PACKET) {
-                    // m8_protocol::reset_display();
+            std::uint8_t buffer[Config::usbcdc_to_slip_buffer_size];
+            const auto bytes_read = m8ec::periph::UsbCdc::get_instance().read(buffer, sizeof(buffer));
+            for (std::size_t i = 0; i < bytes_read; i++) {
+                const slip_error_t n = slip_read_byte(&slip, buffer[i]);
+                if (n != SLIP_NO_ERROR) {
+                    if (m8ec::Config::debug_slip) {
+                        printf("Error: SLIP: %d\n", n);
+                    }
+                    if (n == SLIP_ERROR_INVALID_PACKET) {
+                        m8_protocol::reset_display();
+                    }
                 }
             }
         }

@@ -27,6 +27,10 @@ std::uint8_t UsbCdc::read() {
     return byte;
 }
 
+std::size_t UsbCdc::read(std::uint8_t *buffer, std::size_t bufferSize) {
+    return this->rx_stream_buffer.receive(buffer, bufferSize, 0); // TODO maybe 1ms
+}
+
 bool UsbCdc::ll_init() {
     this->initialized = true;
     return true; /* hUsbHostFS is expected to be initialized in main.c */
