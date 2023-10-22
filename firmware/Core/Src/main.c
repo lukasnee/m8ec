@@ -21,7 +21,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "usb_host.h"
-#include "usb_host.h"
+#include "stm32f4xx_hal_i2s_ex.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -380,6 +380,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 uint16_t audio_out_buffer[256];
+uint16_t audio_in_buffer[256];
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -395,7 +396,7 @@ void StartDefaultTask(void *argument)
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
     m8ec_launch();
-    HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
+    HAL_I2SEx_TransmitReceive_DMA(&hi2s2, audio_out_buffer, audio_in_buffer, 256);
     osThreadTerminate(defaultTaskHandle);
   /* USER CODE END 5 */
 }
