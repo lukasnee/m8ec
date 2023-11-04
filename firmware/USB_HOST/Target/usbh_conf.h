@@ -77,6 +77,8 @@
 /*----------   -----------*/
 #define USBH_MAX_NUM_SUPPORTED_CLASS      5U
 
+#define USBH_MAX_NUM_ACTIVE_CLASSES      USBH_MAX_NUM_INTERFACES
+
 /*----------   -----------*/
 #define USBH_MAX_SIZE_CONFIGURATION      256U
 
@@ -84,7 +86,7 @@
 #define USBH_MAX_DATA_BUFFER      512U
 
 /*----------   -----------*/
-#define USBH_DEBUG_LEVEL      4U
+#define USBH_DEBUG_LEVEL      3U
 
 /*----------   -----------*/
 #define USBH_USE_OS      1U
