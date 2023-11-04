@@ -469,6 +469,7 @@ typedef struct _USBH_HandleTypeDef
 
   USBH_ActiveInterfaceTypeDef ActiveInterfaces[USBH_MAX_NUM_ACTIVE_CLASSES];
   uint32_t              ActiveInterfacesNumber;
+  uint32_t              ActiveInterfacesCurrIdx;
 
   USBH_ClassTypeDef    *pActiveClass;
 

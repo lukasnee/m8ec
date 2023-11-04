@@ -91,6 +91,7 @@ void USBH_ResetActiveClasses(USBH_HandleTypeDef *phost) {
     phost->ActiveInterfaces[i].pClass = NULL;
   }
   phost->ActiveInterfacesNumber = 0U;
+  phost->ActiveInterfacesCurrIdx = 0U;
 }
 
 USBH_ClassTypeDef *USBH_ResolveSupportedClassForInterface(USBH_HandleTypeDef *phost, uint8_t itfDescIdx) {
@@ -368,7 +369,7 @@ USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t inter
   */
 uint8_t USBH_GetActiveClassCode(USBH_HandleTypeDef *phost)
 {
-  return (phost->device.CfgDesc.Itf_Desc[0].bInterfaceClass);
+  return (phost->device.CfgDesc.Itf_Desc[phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].descIdx].bInterfaceClass);
 }
 
 
@@ -749,7 +750,8 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
         USBH_ResetActiveClasses(phost);
         USBH_RegisterInterfaceClasses(phost);
         if(phost->ActiveInterfacesNumber > 0) {
-            phost->pActiveClass = phost->ActiveInterfaces[0].pClass; // TODO actively switch between
+            phost->ActiveInterfacesCurrIdx = 0U; // TODO actively switch between
+            phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
         }
 
         if (phost->pActiveClass != NULL)
