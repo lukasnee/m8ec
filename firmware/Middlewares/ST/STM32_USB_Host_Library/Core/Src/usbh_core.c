@@ -447,6 +447,21 @@ USBH_StatusTypeDef USBH_ReEnumerate(USBH_HandleTypeDef *phost)
   return USBH_OK;
 }
 
+const const *USBH_STATE_STRINGS[] = {"IDLE",
+                                     "DEV_WAIT_FOR_ATTACHMENT",
+                                     "DEV_ATTACHED",
+                                     "DEV_DISCONNECTED",
+                                     "DETECT_DEVICE_SPEED",
+                                     "ENUMERATION",
+                                     "CLASS_REQUEST",
+                                     "INPUT",
+                                     "SET_CONFIGURATION",
+                                     "SET_WAKEUP_FEATURE",
+                                     "CHECK_CLASS",
+                                     "CLASS",
+                                     "SUSPENDED",
+                                     "ABORT_STATE"};
+const const *USBH_EVENT_STRINGS[] = {"", "PORT", "URB", "CONTROL", "CLASS", "STATE_CHANGED"};
 
 /**
   * @brief  USBH_Process
@@ -458,7 +473,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 {
   __IO USBH_StatusTypeDef status = USBH_FAIL;
   uint8_t idx = 0U;
-
+  USBH_TrcLog("proc: %s %s", USBH_STATE_STRINGS[phost->gState], USBH_EVENT_STRINGS[phost->os_msg]);
   /* check for Host pending port disconnect event */
   if (phost->device.is_disconnected == 1U)
   {
