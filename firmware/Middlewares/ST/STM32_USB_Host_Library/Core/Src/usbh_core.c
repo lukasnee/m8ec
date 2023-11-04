@@ -755,7 +755,6 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
         for (idx = 0U; idx < phost->ActiveInterfacesNumber; idx++) {
           phost->ActiveInterfacesCurrIdx = idx;
           phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
-          USBH_DbgLog("Init: %s", phost->pActiveClass->Name);
           if (phost->pActiveClass->Init(phost) != USBH_OK) {
             phost->gState = HOST_ABORT_STATE;
             USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
