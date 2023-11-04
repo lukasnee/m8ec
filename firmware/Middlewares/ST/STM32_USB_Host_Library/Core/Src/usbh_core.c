@@ -745,35 +745,32 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       {
         USBH_UsrLog("No Class has been registered.");
       }
-      else
-      {
+      else {
         USBH_ResetActiveClasses(phost);
         USBH_RegisterInterfaceClasses(phost);
-        if(phost->ActiveInterfacesNumber > 0) {
-            phost->ActiveInterfacesCurrIdx = 0U; // TODO actively switch between
-            phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
-        }
-
-        if (phost->pActiveClass != NULL)
-        {
-          if (phost->pActiveClass->Init(phost) == USBH_OK)
-          {
-            phost->gState = HOST_CLASS_REQUEST;
-            USBH_UsrLog("%s class started.", phost->pActiveClass->Name);
-
-            /* Inform user that a class has been activated */
-            phost->pUser(phost, HOST_USER_CLASS_SELECTED);
-          }
-          else
-          {
-            phost->gState = HOST_ABORT_STATE;
-            USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
-          }
-        }
-        else
-        {
+        if (phost->ActiveInterfacesNumber == 0) {
           phost->gState = HOST_ABORT_STATE;
           USBH_UsrLog("No registered class for this device.");
+        }
+        for (idx = 0U; idx < phost->ActiveInterfacesNumber; idx++) {
+          phost->ActiveInterfacesCurrIdx = idx;
+          phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
+          USBH_DbgLog("Init: %s", phost->pActiveClass->Name);
+          if (phost->pActiveClass->Init(phost) != USBH_OK) {
+            phost->gState = HOST_ABORT_STATE;
+            USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
+            break;
+          }
+          USBH_UsrLog("%s class started.", phost->pActiveClass->Name);
+          /* Inform user that a class has been activated */
+          phost->pUser(phost, HOST_USER_CLASS_SELECTED);
+        }
+        if (phost->gState != HOST_ABORT_STATE) {
+          phost->gState = HOST_CLASS_REQUEST;
+          // multi class support is only partially implemented. The following is only to keep the old behavior
+          phost->ActiveInterfacesCurrIdx = 0U;
+          phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
+          // TODO extend multi class logic on later gState(s)
         }
       }
 
