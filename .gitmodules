@@ -7,3 +7,6 @@
 [submodule "extern/fonas"]
 	path = extern/fonas
 	url = https://github.com/lukasnee/fonas
+[submodule "extern/CherryUSB"]
+	path = extern/CherryUSB
+	url = https://github.com/cherry-embedded/CherryUSB.git

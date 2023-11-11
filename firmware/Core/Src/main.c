@@ -21,12 +21,12 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "usb_host.h"
-#include "usb_host.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341/ili9341.h"
 #include "m8ec/m8ec.h"
+#include "usbh_core.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -83,6 +83,28 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN 0 */
 static volatile int uxTopUsedPriority;
 
+void usb_hc_low_level_init(void) {
+
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    /**USB_OTG_FS GPIO Configuration
+    PA11     ------> USB_OTG_FS_DM
+    PA12     ------> USB_OTG_FS_DP
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* Peripheral clock enable */
+    __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+
+    /* Peripheral interrupt init */
+    HAL_NVIC_SetPriority(OTG_FS_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
+}
 /* USER CODE END 0 */
 
 /**
@@ -119,7 +141,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_I2S2_Init();
   /* USER CODE BEGIN 2 */
-
+  usbh_initialize();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -392,7 +414,7 @@ uint16_t audio_out_buffer[256];
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_HOST */
-  MX_USB_HOST_Init();
+//   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
     m8ec_launch();
     HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);

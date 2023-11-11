@@ -3,12 +3,25 @@
 #include "m8ec/m8ec.hpp"
 
 #include "stm32f4xx_hal.h"
-#include "usb_host.h"
-#include "usbh_cdc.h"
+#include "usbh_cdc_acm.h"
+#include "usbh_core.h"
 
 #include <algorithm>
 
-extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
+USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t cdc_buffer[512];
+
+struct usbh_urb cdc_bulkin_urb;
+struct usbh_urb cdc_bulkout_urb;
+
+void usbh_cdc_acm_callback(void *arg, int nbytes) {
+    struct usbh_cdc_acm *cdc_acm_class = (struct usbh_cdc_acm *)arg;
+    if (nbytes > 0) {
+        for (size_t i = 0; i < nbytes; i++) {
+            USB_LOG_RAW("0x%02x ", cdc_buffer[i]);
+        }
+        USB_LOG_RAW("nbytes:%d\r\n", nbytes);
+    }
+}
 
 namespace m8ec::periph {
 
@@ -33,6 +46,51 @@ std::size_t UsbCdc::read(std::uint8_t *buffer, std::size_t bufferSize) {
 
 bool UsbCdc::ll_init() {
     this->initialized = true;
+
+    int ret;
+    struct usbh_cdc_acm *cdc_acm_class;
+
+    cdc_acm_class = (struct usbh_cdc_acm *)usbh_find_class_instance("/dev/ttyACM0");
+    if (cdc_acm_class == NULL) {
+        USB_LOG_RAW("do not find /dev/ttyACM0\r\n");
+        usb_osal_msleep(1000);
+        continue;
+    }
+    memset(cdc_buffer, 0, 512);
+
+    usbh_bulk_urb_fill(&cdc_bulkin_urb, cdc_acm_class->bulkin, cdc_buffer, 64, 3000, NULL, NULL);
+    ret = usbh_submit_urb(&cdc_bulkin_urb);
+    if (ret < 0) {
+        USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
+    }
+    else {
+        USB_LOG_RAW("recv over:%d\r\n", cdc_bulkin_urb.actual_length);
+        for (size_t i = 0; i < cdc_bulkin_urb.actual_length; i++) {
+            USB_LOG_RAW("0x%02x ", cdc_buffer[i]);
+        }
+    }
+
+    USB_LOG_RAW("\r\n");
+    const uint8_t data1[10] = {0x02, 0x00, 0x00, 0x00, 0x02, 0x02, 0x08, 0x14};
+
+    memcpy(cdc_buffer, data1, 8);
+    usbh_bulk_urb_fill(&cdc_bulkout_urb, cdc_acm_class->bulkout, cdc_buffer, 8, 3000, NULL, NULL);
+    ret = usbh_submit_urb(&cdc_bulkout_urb);
+    if (ret < 0) {
+        USB_LOG_RAW("bulk out error,ret:%d\r\n", ret);
+    }
+    else {
+        USB_LOG_RAW("send over:%d\r\n", cdc_bulkout_urb.actual_length);
+    }
+
+    usbh_bulk_urb_fill(&cdc_bulkin_urb, cdc_acm_class->bulkin, cdc_buffer, 64, 3000, usbh_cdc_acm_callback, cdc_acm_class);
+    ret = usbh_submit_urb(&cdc_bulkin_urb);
+    if (ret < 0) {
+        USB_LOG_RAW("bulk in error,ret:%d\r\n", ret);
+    }
+    else {
+    }
+
     return true; /* hUsbHostFS is expected to be initialized in main.c */
 }
 

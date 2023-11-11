@@ -20,12 +20,12 @@ set(PLATFORM_STM32F4xx_INCLUDE
     Middlewares/Third_Party/FreeRTOS/Source/include
     Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
     Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
-    Middlewares/ST/STM32_USB_Host_Library/Core/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc
-    Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Core/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Inc
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
     Drivers/CMSIS/Device/ST/STM32F4xx/Include
     Drivers/CMSIS/Include
     ../extern/ILI9341-STM32-HAL
@@ -39,9 +39,9 @@ set(PLATFORM_STM32F4xx_SRC
     Core/Src/stm32f4xx_it.c
     Core/Src/stm32f4xx_hal_msp.c
     Core/Src/stm32f4xx_hal_timebase_tim.c
-    USB_HOST/App/usb_host.c
-    USB_HOST/Target/usbh_conf.c
-    USB_HOST/Target/usbh_platform.c
+    # USB_HOST/App/usb_host.c
+    # USB_HOST/Target/usbh_conf.c
+    # USB_HOST/Target/usbh_platform.c
     Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c
     Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
     Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
@@ -73,21 +73,21 @@ set(PLATFORM_STM32F4xx_SRC
     Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
     Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
     Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-    Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
-    Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
-    Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
-    Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_bot.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_scsi.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp.c
-    Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c
+    # Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
+    # Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
+    # Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
+    # Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_bot.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MSC/Src/usbh_msc_scsi.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp.c
+    # Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c
     Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
@@ -101,6 +101,17 @@ set(PLATFORM_SRC ${PLATFORM_STM32F4xx_SRC})
 
 add_executable(${PROJECT_NAME} 
     ${PLATFORM_SRC}
+    # ../extern/CherryUSB/demo/usb_host.c
+    ../extern/CherryUSB/core/usbh_core.c
+    ../extern/CherryUSB/class/hub/usbh_hub.c
+    ../extern/CherryUSB/class/cdc/usbh_cdc_acm.c
+    ../extern/CherryUSB/class/msc/usbh_msc.c
+    ../extern/CherryUSB/class/hid/usbh_hid.c
+    ../extern/CherryUSB/class/wireless/usbh_rndis.c
+    ../extern/CherryUSB/class/audio/usbh_audio.c
+    ../extern/CherryUSB/class/video/usbh_video.c
+    ../extern/CherryUSB/osal/usb_osal_freertos.c
+    ../extern/CherryUSB/port/dwc2/usb_hc_dwc2.c
     ../extern/freertos-addons/c++/Source/cmutex.cpp
     ../extern/freertos-addons/c++/Source/cqueue.cpp
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
@@ -135,6 +146,19 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${PLATFORM_INCLUDE}
+    ../extern/CherryUSB/common
+    ../extern/CherryUSB/core
+    ../extern/CherryUSB/class/cdc
+    ../extern/CherryUSB/class/hub
+    ../extern/CherryUSB/class/hid
+    ../extern/CherryUSB/class/msc
+    ../extern/CherryUSB/class/wireless
+    ../extern/CherryUSB/class/video
+    ../extern/CherryUSB/class/audio
+    ../extern/CherryUSB/osal
+    # ../extern/CherryUSB/third_party/FreeRTOS-10.4/include
+    # ../extern/CherryUSB/third_party/FreeRTOS-10.4/portable/GCC/ARM_CM4F
+    # ../extern/CherryUSB/third_party/fatfs-0.14/source
     ../extern/freertos-addons/c++/Source/include
     ../extern/fonas/include
     ../include
