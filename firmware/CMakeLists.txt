@@ -1,4 +1,3 @@
-
 project(firmware)
 
 enable_language(CXX C ASM)
@@ -11,7 +10,11 @@ set(ROOT ${CMAKE_SOURCE_DIR})
 
 set(CMAKE_AR /usr/bin/arm-none-eabi-ar)
 
-set(PLATFORM_STM32F4xx_INCLUDE
+# ##############################################################################
+# Platform-specific Includes and Sources
+# ##############################################################################
+
+set(PLATFORM_SPECIFIC_INCLUDES_STM32F4xx
     Core/Inc
     USB_HOST/App
     USB_HOST/Target
@@ -29,10 +32,9 @@ set(PLATFORM_STM32F4xx_INCLUDE
     Drivers/CMSIS/Device/ST/STM32F4xx/Include
     Drivers/CMSIS/Include
     ../extern/ILI9341-STM32-HAL
-    ../platform/STM32F4xx/include
-)
+    ../platform/STM32F4xx/include)
 
-set(PLATFORM_STM32F4xx_SRC
+set(PLATFORM_SPECIFIC_SOURCES_STM32F4xx
     startup_stm32f411xe.s
     Core/Src/main.c
     Core/Src/freertos.c
@@ -92,15 +94,35 @@ set(PLATFORM_STM32F4xx_SRC
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
     ../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
-    ../platform/STM32F4xx/src/Keys.cpp
-)
+    ../platform/STM32F4xx/src/Keys.cpp)
 
-# TODO option to select platform
-set(PLATFORM_INCLUDE ${PLATFORM_STM32F4xx_INCLUDE} )
-set(PLATFORM_SRC ${PLATFORM_STM32F4xx_SRC})
+set(PLATFORM_SPECIFIC_DEFINES_STM32F4xx -DUSE_HAL_DRIVER -DSTM32F411xE
+                                        -DSTM32F4)
 
-add_executable(${PROJECT_NAME} 
-    ${PLATFORM_SRC}
+set(PLATFORM_SPECIFIC_OPTIONS_STM32F4xx -mcpu=cortex-m4 -mthumb
+                                        -mfpu=fpv4-sp-d16 -mfloat-abi=hard)
+
+set(PLATFORM_SPECIFIC_LINKER_OPTIONS_STM32F4xx
+    -T${CMAKE_CURRENT_LIST_DIR}/STM32F411CEUx_FLASH.ld -mcpu=cortex-m4 -mthumb
+    -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,-Map=${PROJECT_NAME}.map)
+
+# ##############################################################################
+# Platform Selection
+# ##############################################################################
+
+# TODO option to select platform, currently hard-coded to STM32F4xx
+set(PLATFORM_SPECIFIC_INCLUDES ${PLATFORM_SPECIFIC_INCLUDES_STM32F4xx})
+set(PLATFORM_SPECIFIC_SOURCES ${PLATFORM_SPECIFIC_SOURCES_STM32F4xx})
+set(PLATFORM_SPECIFIC_DEFINES ${PLATFORM_SPECIFIC_DEFINES_STM32F4xx})
+set(PLATFORM_SPECIFIC_OPTIONS ${PLATFORM_SPECIFIC_OPTIONS_STM32F4xx})
+set(PLATFORM_SPECIFIC_LINKER_OPTIONS
+    ${PLATFORM_SPECIFIC_LINKER_OPTIONS_STM32F4xx})
+
+# ##############################################################################
+# Platform-Independent Includes and Sources
+# ##############################################################################
+
+set(PLATFORM_INDEPENDENT_SOURCES
     ../extern/freertos-addons/c++/Source/cmutex.cpp
     ../extern/freertos-addons/c++/Source/cqueue.cpp
     ../extern/freertos-addons/c++/Source/csemaphore.cpp
@@ -121,92 +143,85 @@ add_executable(${PROJECT_NAME}
     ../source/periph/SpiCallbacks.cpp
     ../source/periph/Spi1.cpp
     ../source/periph/UsbCdc.cpp
-    ../source/KeysThread.cpp
-)
+    ../source/KeysThread.cpp)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    -DUSE_HAL_DRIVER
-    -DSTM32F411xE
-    -DSTM32F4
-    -DCPP_FREERTOS_NO_EXCEPTIONS
-    -DCPP_FREERTOS_NO_CPP_STRINGS
-    -DFONAS
-)
+set(PLATFORM_INDEPENDENT_INCLUDES ../extern/freertos-addons/c++/Source/include
+                                  ../extern/fonas/include ../include)
 
-target_include_directories(${PROJECT_NAME} PRIVATE 
-    ${PLATFORM_INCLUDE}
-    ../extern/freertos-addons/c++/Source/include
-    ../extern/fonas/include
-    ../include
-)
+set(PLATFORM_INDEPENDENT_DEFINES -DCPP_FREERTOS_NO_EXCEPTIONS
+                                 -DCPP_FREERTOS_NO_CPP_STRINGS -DFONAS)
 
-set(MCU_FLAGS
-    -mcpu=cortex-m4
-    -mthumb
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
-)
-
-target_compile_options(${PROJECT_NAME} PRIVATE
-    ${MCU_FLAGS}
+set(PLATFORM_INDEPENDENT_OPTIONS
     -fstack-usage
     -Wall
     -Wextra
     -fdata-sections
     -ffunction-sections
-
-    # -fno-use-cxa-atexit
-    # -fno-threadsafe-statics
-    # -fno-rtti
-    
+    # -fno-use-cxa-atexit -fno-threadsafe-statics -fno-rtti
     -fno-exceptions # big change in code size and performace
+    # -c -x assembler-with-cpp For good debug experience, Arm recommends -O1
+    # rather than -O0. When using -O1, the compiler performs certain
+    # optimizations, but the structure of the generated code is still close to
+    # the source code. -g0     no debug information -g1 minimal debug
+    # information -g default debug information -g3 maximal debug information
+    $<$<CONFIG:Debug>:-ggdb
+    -Og
+    -DDEBUG>
+    # -O3 compiler tries to reduce code size and execution time, O3 is highest
+    # standard optimization. -Os Optimize for size. -Os enables all -O2
+    # optimizations except those that often increase code size
+    $<$<CONFIG:Release>:-Ofast>)
 
-    # -c -x assembler-with-cpp 
-
-    # For good debug experience, Arm recommends -O1 rather than -O0. When using 
-    # -O1, the compiler performs certain optimizations, but the structure of the 
-    # generated code is still close to the source code.
-    # -g0	no debug information
-    # -g1	minimal debug information
-    # -g	default debug information
-    # -g3	maximal debug information
-
-    $<$<CONFIG:Debug>:-ggdb -Og -DDEBUG>
-
-    # -O3 compiler tries to reduce code size and execution time, O3 is highest standard optimization.
-    # -Os Optimize for size. -Os enables all -O2 optimizations except those that often increase code size
-    $<$<CONFIG:Release>:-Ofast>
-)
-
-target_link_options(${PROJECT_NAME} PRIVATE
-    -T${CMAKE_CURRENT_LIST_DIR}/STM32F411CEUx_FLASH.ld
-    -mcpu=cortex-m4
-    -mthumb
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
+set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -fsingle-precision-constant
-
-    -u _printf_float # enables floating point in printf
-    
-    -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-    --specs=nosys.specs 
+    -u
+    _printf_float # enables floating point in printf
+    -Wl,--start-group
+    -lc
+    -lm
+    -lstdc++
+    -lsupc++
+    -Wl,--end-group
+    --specs=nosys.specs
     -static
     -Wl,--gc-sections
-
-    -Wl,-Map=${PROJECT_NAME}.map
     -Wl,--cref
-    -Wl,--print-memory-usage
-)
+    -Wl,--print-memory-usage)
 
-target_link_libraries(${PROJECT_NAME}
-)
+# ##############################################################################
+# Firmware Target
+# ##############################################################################
+
+add_executable(${PROJECT_NAME} ${PLATFORM_INDEPENDENT_SOURCES}
+                               ${PLATFORM_SPECIFIC_SOURCES})
+
+target_compile_definitions(
+  ${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_DEFINES}
+                          ${PLATFORM_SPECIFIC_DEFINES})
+
+target_include_directories(
+  ${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_INCLUDES}
+                          ${PLATFORM_SPECIFIC_INCLUDES})
+
+target_compile_options(${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_OPTIONS}
+                                               ${PLATFORM_SPECIFIC_OPTIONS})
+
+target_link_options(
+  ${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_LINKER_OPTIONS}
+  ${PLATFORM_SPECIFIC_LINKER_OPTIONS})
+
+target_link_libraries(${PROJECT_NAME})
 
 # Create hex file and print executable size
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND arm-none-eabi-objcopy -O ihex ${PROJECT_NAME} ${PROJECT_NAME}.hex
-    COMMAND arm-none-eabi-objcopy -O binary ${PROJECT_NAME} ${PROJECT_NAME}.bin
-    COMMAND arm-none-eabi-objdump -S ${PROJECT_NAME} > ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dump
-    COMMAND arm-none-eabi-nm ${PROJECT_NAME} -C -n -S -s > ${PROJECT_NAME}.address-sort.nm
-    COMMAND arm-none-eabi-nm ${PROJECT_NAME} -C -S -s --size-sort > ${PROJECT_NAME}.size-sort.nm
-    COMMAND arm-none-eabi-size ${PROJECT_NAME}
-)
+add_custom_command(
+  TARGET ${PROJECT_NAME}
+  POST_BUILD
+  COMMAND arm-none-eabi-objcopy -O ihex ${PROJECT_NAME} ${PROJECT_NAME}.hex
+  COMMAND arm-none-eabi-objcopy -O binary ${PROJECT_NAME} ${PROJECT_NAME}.bin
+  COMMAND arm-none-eabi-objdump -S ${PROJECT_NAME} >
+          ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dump
+  COMMAND arm-none-eabi-nm ${PROJECT_NAME} -C -n -S -s >
+          ${PROJECT_NAME}.address-sort.nm
+  COMMAND arm-none-eabi-nm ${PROJECT_NAME} -C -S -s --size-sort >
+          ${PROJECT_NAME}.size-sort.nm
+  COMMAND arm-none-eabi-size ${PROJECT_NAME})
