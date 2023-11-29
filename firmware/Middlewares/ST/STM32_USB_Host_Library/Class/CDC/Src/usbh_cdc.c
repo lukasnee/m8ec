@@ -163,7 +163,7 @@ static USBH_StatusTypeDef USBH_CDC_InterfaceInit(USBH_HandleTypeDef *phost)
 
   if ((interface == 0xFFU) || (interface >= USBH_MAX_NUM_INTERFACES)) /* No Valid Interface */
   {
-    USBH_DbgLog("Cannot Find the interface for Communication Interface Class.", phost->pActiveClass->Name);
+    USBH_DbgLog("Cannot Find the interface for Communication Interface Class %s", phost->pActiveClass->Name);
     return USBH_FAIL;
   }
 
@@ -208,7 +208,7 @@ static USBH_StatusTypeDef USBH_CDC_InterfaceInit(USBH_HandleTypeDef *phost)
 
   if ((interface == 0xFFU) || (interface >= USBH_MAX_NUM_INTERFACES)) /* No Valid Interface */
   {
-    USBH_DbgLog("Cannot Find the interface for Data Interface Class.", phost->pActiveClass->Name);
+    USBH_DbgLog("Cannot Find the interface for Data Interface Class %s", phost->pActiveClass->Name);
     return USBH_FAIL;
   }
 
@@ -525,7 +525,7 @@ USBH_StatusTypeDef USBH_CDC_SetLineCoding(USBH_HandleTypeDef *phost,
 #if (osCMSIS < 0x20000U)
     (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
   }
@@ -599,7 +599,7 @@ USBH_StatusTypeDef  USBH_CDC_Transmit(USBH_HandleTypeDef *phost, uint8_t *pbuff,
 #if (osCMSIS < 0x20000U)
     (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
   }
@@ -630,7 +630,7 @@ USBH_StatusTypeDef  USBH_CDC_Receive(USBH_HandleTypeDef *phost, uint8_t *pbuff, 
 #if (osCMSIS < 0x20000U)
     (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
   }
@@ -702,7 +702,7 @@ static void CDC_ProcessTransmission(USBH_HandleTypeDef *phost)
 #if (osCMSIS < 0x20000U)
         (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
       }
@@ -717,7 +717,7 @@ static void CDC_ProcessTransmission(USBH_HandleTypeDef *phost)
 #if (osCMSIS < 0x20000U)
           (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-          (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+          (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
         }
@@ -784,7 +784,7 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
 #if (osCMSIS < 0x20000U)
         (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
 #else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, NULL);
+        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
 #endif
 #endif
       }
