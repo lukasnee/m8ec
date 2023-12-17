@@ -155,22 +155,36 @@ The project was originally kickstarted in WSL Ubuntu.
     python3 tools/m8ec.py -f
     ```
 
-# Debugging (VS Code)
+# Debugging
 
 ## WSL or Linux Ubuntu
 
-1. [WSL ONLY] Install ST-LINK/V2 Windows drivers. One way of doing this is by installing [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html).
+# Serial
 
-2. Install openOCD.
+1. Install `minicom`.
+
+    ```bash
+    sudo apt-get install -y minicom
+    ```
+
+2. Open a terminal using the project tool.
+
+    ```bash
+    sudo python3 tools/m8ec.py --serial
+    ```
+
+# OpenOCD + VS Code + Cortex-Debug
+
+1. Install openOCD.
 
     ```bash
     sudo apt-get install -y openocd
     ```
 
-3. Open the project in VS Code.
+2. Open the project in VS Code.
 
-4. Install the `marus25.cortex-debug` extension in VS Code.
-5. Build debug version of the firmware and flash it to the target MCU.
+3. Install the `marus25.cortex-debug` extension in VS Code.
+4. Build debug version of the firmware and flash it to the target MCU.
 
     WSL:
 
@@ -186,7 +200,7 @@ The project was originally kickstarted in WSL Ubuntu.
 
     > When flashing the debug version, the m8ec.py tool will finish by starting openOCD. You can stop it with `Ctrl+C`.
 
-6. In VS Code, press `F5` or open the Debug tab and click the green arrow to start debugging.
+5. In VS Code, press `F5` or open the Debug tab and click the green arrow to start debugging.
 
 # Looking Into Future
 

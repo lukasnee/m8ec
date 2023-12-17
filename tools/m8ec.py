@@ -3,11 +3,15 @@ import argparse
 import subprocess
 import re
 import time
+import glob
 
 
 def sys_cmd(cmd):
     print(' '.join(cmd))
-    return subprocess.call(cmd)
+    try:
+        return subprocess.call(cmd)
+    except KeyboardInterrupt:
+        pass
 
 
 def sys_cmd_wait_pattern(cmd, success_pattern, failure_pattern, timeout):
@@ -82,8 +86,8 @@ parser.add_argument("--usbipd", help="path to usbipd.exe",
 parser.add_argument(
     "--stlink", help="name of the STLink USB device", default="STM32 STLink")
 parser.add_argument("--serial", help="enable serial", action="store_true")
-parser.add_argument("--serial-name", help="name of the serial USB device",
-                    default="CP2102 USB to UART Bridge Controller")
+parser.add_argument(
+    "--serial-name", help="name of the serial USB device",   default="CP2102")
 args = parser.parse_args()
 
 BUILD_DIR = ".build"
@@ -92,6 +96,17 @@ USBIPD_LIST_CONNECTED_REGEX = r"(?P<bus>\d+)-(?P<device>\d+).*(?P<VID>[0-9a-fA-F
 
 if args.serial:
     usbipd_attach_device(args.serial_name)
+    try:
+        sys_cmd(["minicom", "--version"])
+    except FileNotFoundError:
+        print("Error: minicom not found")
+        sys.exit(1)
+    serial_dev = glob.glob(f"/dev/serial/by-id/usb-*{args.serial_name}*")[0]
+    if not serial_dev:
+        print(f"Error: serial device {args.serial_name} not found")
+        sys.exit(1)
+    sys_cmd(["minicom", "--baudrate", "115200", "-D", serial_dev])
+    sys.exit(0)
 
 if args.clean:
     print("Cleaning project")
