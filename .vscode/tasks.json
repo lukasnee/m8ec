@@ -18,7 +18,7 @@
             "group": "none",
             "type": "shell",
             "linux": {
-                "command": "python tools/m8ec.py -r"
+                "command": "python3 tools/m8ec.py -r"
             },
             "presentation": {
                 "focus": false,
@@ -33,7 +33,7 @@
             },
             "type": "shell",
             "linux": {
-                "command": "python tools/m8ec.py -b",
+                "command": "python3 tools/m8ec.py -b",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
@@ -41,14 +41,14 @@
             }
         },
         {
-            "label": "Build, flash and reset m8ec",
+            "label": "Build m8ec debug",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "type": "shell",
             "linux": {
-                "command": "python tools/m8ec.py -bfr",
+                "command": "python3 tools/m8ec.py -bd",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
@@ -56,51 +56,34 @@
             }
         },
         {
-            "label": "Build m8ec [debug]",
+            "label": "Build m8ec and flash",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "type": "shell",
             "linux": {
-                "command": "python tools/m8ec.py -bd",
+                "command": "python3 tools/m8ec.py -bf",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
                 "focus": true
-            },
-            "hide": true
+            }
         },
         {
-            "label": "Launch OpenOCD",
-            "command": "openocd",
+            "label": "Build m8ec debug and flash",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "type": "shell",
-            "problemMatcher": {
-                "pattern": {
-                    "regexp": "^(Info |Warn |Error):(.*)$",
-                    "severity": 1,
-                    "message": 2
-                },
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": "^Open On-Chip Debugger.*",
-                    "endsPattern": ".*watchpoints.*"
-                }
+            "linux": {
+                "command": "python3 tools/m8ec.py -bdf",
+                "problemMatcher": "$gcc"
             },
             "presentation": {
-                "reveal": "always"
-            },
-            "isBackground": true
-        },
-        {
-            "label": "preLaunchTask_m8ec",
-            "group": "none",
-            "dependsOn": [
-                "Build m8ec [debug]",
-                "Launch OpenOCD"
-            ],
-            "dependsOrder": "sequence",
-            "hide": true,
-        },
+                "focus": true
+            }
+        }
     ]
 }

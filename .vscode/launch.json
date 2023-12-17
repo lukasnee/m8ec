@@ -10,7 +10,7 @@
             "request": "launch",
             "servertype": "external",
             "gdbTarget": "localhost:3333",
-            "preLaunchTask": "preLaunchTask_m8ec",
+            // "preLaunchTask": "Build m8ec debug and flash",
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/firmware",
             "executable": "${workspaceRoot}/.build/firmware/firmware",

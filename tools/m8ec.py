@@ -1,6 +1,74 @@
 import sys
 import argparse
 import subprocess
+import re
+import time
+
+
+def sys_cmd(cmd):
+    print(' '.join(cmd))
+    return subprocess.call(cmd)
+
+
+def sys_cmd_wait_pattern(cmd, success_pattern, failure_pattern, timeout):
+    print(' '.join(cmd))
+    start_time = time.time()
+    process = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while True:
+        output = process.stdout.readline().decode()
+        print(output, end='')
+        if re.search(failure_pattern, output):
+            process.terminate()
+            raise Exception("Failure pattern reached")
+        if time.time() - start_time > timeout:
+            process.terminate()
+            raise Exception("Timeout reached")
+        if re.search(success_pattern, output):
+            process.terminate()
+            break
+    return process.wait()
+
+
+def usbipd_get_device_details(device_name):
+    usbipd_list_stdout = subprocess.check_output([args.usbipd, "list"])
+    usb_dev = re.search(USBIPD_LIST_CONNECTED_REGEX +
+                        device_name, usbipd_list_stdout.decode("utf-8"))
+    print(
+        f'"{device_name}" USB device detected:'
+        f'bus {usb_dev["bus"]}, '
+        f'device {usb_dev["device"]}, '
+        f'VID {usb_dev["VID"]}, '
+        f'PID {usb_dev["PID"]}')
+    return usb_dev
+
+
+def usbipd_attach_device(device_name):
+    USB_DEVICE = usbipd_get_device_details(device_name)
+    try:
+        sys_cmd_wait_pattern(
+            [
+                args.usbipd,
+                "attach",
+                "-w",
+                "-i",
+                f"{USB_DEVICE['VID']}:{USB_DEVICE['PID']}"
+            ],
+            "WSL Attached|already attached to a client",
+            "Device is not shared",
+            5)
+    except Exception:
+        print(
+            f"Open powershell as admin and run: 'usbipd bind -b {USB_DEVICE['bus']}-{USB_DEVICE['device']}'")
+        sys.exit(1)
+    # sys_cmd(
+    #     [
+    #         "chmod",
+    #         "666",
+    #         f"/dev/bus/usb/{int(USB_DEVICE['bus']):03d}/{int(USB_DEVICE['device']):03d}"
+    #     ]
+    # )
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--clean", help="clean build", action="store_true")
@@ -8,9 +76,22 @@ parser.add_argument("-b", "--build", help="build project", action="store_true")
 parser.add_argument("-d", "--debug", help="enable debug", action="store_true")
 parser.add_argument("-f", "--flash", help="flash project", action="store_true")
 parser.add_argument("-r", "--reset", help="reset board", action="store_true")
+parser.add_argument("--wsl", help="enable WSL USB access", action="store_true")
+parser.add_argument("--usbipd", help="path to usbipd.exe",
+                    default=r"/mnt/c/Program Files/usbipd-win/usbipd.exe")
+parser.add_argument(
+    "--stlink", help="name of the STLink USB device", default="STM32 STLink")
+parser.add_argument("--serial", help="enable serial", action="store_true")
+parser.add_argument("--serial-name", help="name of the serial USB device",
+                    default="CP2102 USB to UART Bridge Controller")
 args = parser.parse_args()
 
 BUILD_DIR = ".build"
+
+USBIPD_LIST_CONNECTED_REGEX = r"(?P<bus>\d+)-(?P<device>\d+).*(?P<VID>[0-9a-fA-F]{4}):(?P<PID>[0-9a-fA-F]{4})\s+"
+
+if args.serial:
+    usbipd_attach_device(args.serial_name)
 
 if args.clean:
     print("Cleaning project")
@@ -31,27 +112,47 @@ if args.build:
             "-G",
             "Unix Makefiles",
             "-DCMAKE_TOOLCHAIN_FILE=arm-none-eabi-gcc.cmake",
-            "-DCMAKE_BUILD_TYPE={}".format("Debug" if args.debug else "Release"),
+            "-DCMAKE_BUILD_TYPE={}".format(
+                "Debug" if args.debug else "Release"),
         ]
     )
     if error != 0:
         print("Error: cmake failed")
         sys.exit(1)
-    error = subprocess.call(["cmake", "--build", BUILD_DIR, "--", "-j4"])
+    error = sys_cmd(["cmake", "--build", BUILD_DIR, "--", "-j4"])
     if error != 0:
         print("Error: build failed")
         sys.exit(1)
 
 if args.flash:
+    if args.wsl:
+        try:
+            sys_cmd([args.usbipd, "--version"])
+        except FileNotFoundError:
+            print("Error: usbipd.exe not found")
+            sys.exit(1)
+        usbipd_attach_device(args.stlink)
     if args.build and error != 0:
         print("Error: build failed skipping flash")
         sys.exit(1)
-    print("Flashing project")
-    subprocess.call(
-        ["st-flash", "--format", "ihex", "write", ".build/firmware/firmware.hex"]
+    sys_cmd(
+        [
+            "st-flash",
+            "--format",
+            "ihex",
+            "write",
+            ".build/firmware/firmware.hex"
+        ]
     )
 
-if args.reset:
+if args.reset or args.flash:
     print("Resetting board")
-    subprocess.call(["st-flash", "reset"])
+    sys_cmd(["st-flash", "reset"])
     # alternative: `openocd -f "interface/stlink-v2.cfg" -f "target/stm32f4x.cfg" -c "init;reset;exit"`
+
+if args.debug and args.flash:
+    print("Starting debug session")
+    try:
+        sys_cmd(["openocd"])
+    except KeyboardInterrupt:
+        pass
