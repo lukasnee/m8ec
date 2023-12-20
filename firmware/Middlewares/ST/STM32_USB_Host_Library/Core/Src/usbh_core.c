@@ -88,64 +88,93 @@ static void USBH_Process_OS(void *argument);
 void USBH_ResetActiveClasses(USBH_HandleTypeDef *phost) {
   phost->pActiveClass = NULL;
   for (uint8_t i = 0U; i < USBH_MAX_NUM_ACTIVE_CLASSES; i++) {
-    phost->ActiveInterfaces[i].pClass = NULL;
+    phost->ActiveIfaceCtrl.ifaces[i].descIdx = 0U;
+    phost->ActiveIfaceCtrl.ifaces[i].pClass = NULL;
   }
-  phost->ActiveInterfacesNumber = 0U;
-  phost->ActiveInterfacesCurrIdx = 0U;
+  phost->ActiveIfaceCtrl.number = 0U;
+  phost->ActiveIfaceCtrl.nextMinIdx = 0U;
+  phost->ActiveIfaceCtrl.nextMaxIdx = 0U;
+  phost->ActiveIfaceCtrl.currIdx = 0U;
 }
 
-USBH_ClassTypeDef *USBH_ResolveSupportedClassForInterface(USBH_HandleTypeDef *phost, uint8_t itfDescIdx) {
-  const uint8_t itfClassCode = phost->device.CfgDesc.Itf_Desc[itfDescIdx].bInterfaceClass;
+USBH_ClassTypeDef *USBH_ResolveSupportedClassForIface(USBH_HandleTypeDef *phost, uint8_t itfDescIdx) {
+  const uint8_t bInterfaceClass = phost->device.CfgDesc.Itf_Desc[itfDescIdx].bInterfaceClass;
   for (uint8_t i = 0U; i < phost->ClassNumber; i++) {
-    if (phost->pClass[i]->ClassCode == itfClassCode) {
+    if (phost->pClass[i]->ClassCode == bInterfaceClass) {
       return phost->pClass[i];
     }
   }
-  USBH_ErrLog("Class %02Xh not supported", itfClassCode);
+  USBH_ErrLog("Class %02Xh not supported", bInterfaceClass);
   return NULL;
 }
 
-uint8_t USBH_RegisterActiveClassInterfacePair(USBH_HandleTypeDef *phost, uint8_t itfDescrIdx, USBH_ClassTypeDef *pClass) {
-  if (phost->ActiveInterfacesNumber < USBH_MAX_NUM_ACTIVE_CLASSES) {
-    phost->ActiveInterfaces[phost->ActiveInterfacesNumber].descIdx = itfDescrIdx;
-    phost->ActiveInterfaces[phost->ActiveInterfacesNumber].pClass = pClass;
-    USBH_UsrLog("Registered class: %02Xh", pClass->ClassCode);
-    USBH_DbgLog(
-        "\n"
-        "\tbInterfaceNumber: %d\n"
-        "\tbAlternateSetting: %d\n"
-        "\tbNumEndpoints: %d\n"
-        "\tbInterfaceClass: %02Xh\n"
-        "\tbInterfaceSubClass: %02Xh\n"
-        "\tbInterfaceProtocol: %02Xh\n"
-        "\tiInterface: %d\n",
-        phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bInterfaceNumber,
-        phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bAlternateSetting,
-        phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bNumEndpoints, phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bInterfaceClass,
-        phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bInterfaceSubClass,
-        phost->device.CfgDesc.Itf_Desc[itfDescrIdx].bInterfaceProtocol, phost->device.CfgDesc.Itf_Desc[itfDescrIdx].iInterface);
-    phost->ActiveInterfacesNumber++;
-    return 1;
+uint8_t USBH_RegisterActiveClassIfacePair(USBH_HandleTypeDef *phost, uint8_t ifaceDescrIdx, USBH_ClassTypeDef *pClass) {
+  if (phost->ActiveIfaceCtrl.number >= USBH_MAX_NUM_ACTIVE_CLASSES) {
+    USBH_ErrLog("Max number of active classes reached");
+    return 0;
   }
-  USBH_ErrLog("Max Active Class Number reached");
-  return 0;
+  phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.number].descIdx = ifaceDescrIdx;
+  phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.number].pClass = pClass;
+  USBH_UsrLog("Registered class: %02Xh", pClass->ClassCode);
+  USBH_DbgLog("\n"
+              "\tbInterfaceNumber: %d\n"
+              "\tbAlternateSetting: %d\n"
+              "\tbNumEndpoints: %d\n"
+              "\tbInterfaceClass: %02Xh\n"
+              "\tbInterfaceSubClass: %02Xh\n"
+              "\tbInterfaceProtocol: %02Xh\n"
+              "\tiInterface: %d\n",
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bInterfaceNumber,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bAlternateSetting,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bNumEndpoints,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bInterfaceClass,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bInterfaceSubClass,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].bInterfaceProtocol,
+              phost->device.CfgDesc.Itf_Desc[ifaceDescrIdx].iInterface);
+  phost->ActiveIfaceCtrl.number++;
+  phost->ActiveIfaceCtrl.nextMaxIdx = phost->ActiveIfaceCtrl.number;
+  return 1;
 }
 
-uint8_t USBH_RegisterInterfaceClasses(USBH_HandleTypeDef *phost) {
-  uint8_t numRegistered = 0U;
-  USBH_DbgLog("Number of Interfaces: %d", phost->device.CfgDesc.bNumInterfaces);
-  for (uint8_t itfDescrIdx = 0U; itfDescrIdx < phost->device.CfgDesc.bNumInterfaces; itfDescrIdx++) {
-    USBH_ClassTypeDef *pClass = USBH_ResolveSupportedClassForInterface(phost, itfDescrIdx);
+uint8_t USBH_SwitchActiveIfaceClass(USBH_HandleTypeDef *phost, const uint8_t ifaceIdx) {
+  if (ifaceIdx >= phost->ActiveIfaceCtrl.number) {
+    return 0;
+  }
+  phost->ActiveIfaceCtrl.currIdx = ifaceIdx;
+  phost->pActiveClass = phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].pClass;
+  phost->device.current_interface = phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].descIdx;
+  USBH_TrcLog("Switched to interface #%d", phost->ActiveIfaceCtrl.currIdx);
+  return 1;
+}
+
+uint8_t USBH_RegisterIfaceClasses(USBH_HandleTypeDef *phost) {
+  if (phost->ActiveIfaceCtrl.number != 0) {
+    return phost->ActiveIfaceCtrl.number;
+  }
+  USBH_ResetActiveClasses(phost);
+  USBH_DbgLog("bNumInterfaces: %d", phost->device.CfgDesc.bNumInterfaces);
+  for (uint8_t ifaceDescrIdx = 0U; ifaceDescrIdx < phost->device.CfgDesc.bNumInterfaces; ifaceDescrIdx++) {
+    USBH_ClassTypeDef *pClass = USBH_ResolveSupportedClassForIface(phost, ifaceDescrIdx);
     if (!pClass) {
       continue;
     }
-    if (!USBH_RegisterActiveClassInterfacePair(phost, itfDescrIdx, pClass)) {
+    if (!USBH_RegisterActiveClassIfacePair(phost, ifaceDescrIdx, pClass)) {
       break;
     }
-    numRegistered++;
   }
-  return numRegistered;
+  USBH_SwitchActiveIfaceClass(phost, phost->ActiveIfaceCtrl.nextMinIdx);
+  return phost->ActiveIfaceCtrl.number;
 }
+
+uint8_t USBH_SwitchActiveIfaceClassNext(USBH_HandleTypeDef *phost) {
+  if (phost->ActiveIfaceCtrl.currIdx + 1 > phost->ActiveIfaceCtrl.nextMaxIdx) {
+    USBH_SwitchActiveIfaceClass(phost, phost->ActiveIfaceCtrl.nextMinIdx);
+    return 0;
+  }
+  return USBH_SwitchActiveIfaceClass(phost, phost->ActiveIfaceCtrl.currIdx + 1);
+}
+
+uint8_t USBH_GetActiveIfaceClassIdx(USBH_HandleTypeDef *phost) { return phost->ActiveIfaceCtrl.currIdx; }
 
 /**
  * @brief  HCD_Init
@@ -369,7 +398,7 @@ USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t inter
   */
 uint8_t USBH_GetActiveClassCode(USBH_HandleTypeDef *phost)
 {
-  return (phost->device.CfgDesc.Itf_Desc[phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].descIdx].bInterfaceClass);
+  return (phost->device.CfgDesc.Itf_Desc[phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].descIdx].bInterfaceClass);
 }
 
 
@@ -533,7 +562,6 @@ const char *USBH_STATUS_STRINGS[] = {"OK", "BUSY", "FAIL", "NOT_SUPPORTED", "UNR
 USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 {
   __IO USBH_StatusTypeDef status = USBH_FAIL;
-  uint8_t idx = 0U;
   USBH_TrcLog("proc: %s %s", USBH_STATE_STRINGS[phost->gState], USBH_EVENT_STRINGS[phost->os_msg]);
   /* check for Host pending port disconnect event */
   if (phost->device.is_disconnected == 1U)
@@ -741,35 +769,30 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 
     case HOST_CHECK_CLASS:
 
-      if (phost->ClassNumber == 0U)
-      {
+      if (phost->ClassNumber == 0U) {
         USBH_UsrLog("No Class has been registered.");
       }
       else {
-        USBH_ResetActiveClasses(phost);
-        USBH_RegisterInterfaceClasses(phost);
-        if (phost->ActiveInterfacesNumber == 0) {
+        if (0 == USBH_RegisterIfaceClasses(phost)) {
           phost->gState = HOST_ABORT_STATE;
           USBH_UsrLog("No registered class for this device.");
         }
-        for (idx = 0U; idx < phost->ActiveInterfacesNumber; idx++) {
-          phost->ActiveInterfacesCurrIdx = idx;
-          phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
+        else {
+          phost->ActiveIfaceCtrl.nextMinIdx = 0U; // TODO remove limitation, select it fro user space (APP?)
+          phost->ActiveIfaceCtrl.nextMaxIdx = 1U; // TODO remove limitation, select it fro user space (APP?)
           if (phost->pActiveClass->Init(phost) != USBH_OK) {
             phost->gState = HOST_ABORT_STATE;
             USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
-            break;
           }
-          USBH_UsrLog("%s class started.", phost->pActiveClass->Name);
-          /* Inform user that a class has been activated */
-          phost->pUser(phost, HOST_USER_CLASS_SELECTED);
-        }
-        if (phost->gState != HOST_ABORT_STATE) {
-          phost->gState = HOST_CLASS_REQUEST;
-          // multi class support is only partially implemented. The following is only to keep the old behavior
-          phost->ActiveInterfacesCurrIdx = 0U;
-          phost->pActiveClass = phost->ActiveInterfaces[phost->ActiveInterfacesCurrIdx].pClass;
-          // TODO extend multi class logic on later gState(s)
+          else {
+            USBH_UsrLog("%s class started.", phost->pActiveClass->Name);
+            /* Inform user that a class has been activated */
+            phost->pUser(phost, HOST_USER_CLASS_SELECTED);
+            if (0 == USBH_SwitchActiveIfaceClassNext(phost)) {
+              phost->gState = HOST_CLASS_REQUEST;
+              phost->Timeout = 0U;
+            }
+          }
         }
       }
 
@@ -783,30 +806,35 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 #endif
       break;
 
-    case HOST_CLASS_REQUEST:
+    case HOST_CLASS_REQUEST: {
       /* process class standard control requests state machine */
-      if (phost->pActiveClass != NULL)
-      {
+      if (!phost->pActiveClass) {
+        phost->gState = HOST_ABORT_STATE;
+        USBH_ErrLog("Invalid Class Driver. activeIfaceClassIdx=%u", USBH_GetActiveIfaceClassIdx(phost));
+      }
+      else {
         status = phost->pActiveClass->Requests(phost);
-
-        if (status == USBH_OK)
-        {
-          phost->gState = HOST_CLASS;
+        if (status != USBH_OK) {
+          USBH_TrcLog("Device not responding, try replugging. activeIfaceClassIdx=%u, status: %s",
+                      USBH_GetActiveIfaceClassIdx(phost), USBH_STATUS_STRINGS[status]);
+          phost->Timeout++;
+          if (phost->Timeout >= 500U) {
+            USBH_DbgLog("phost->Timeout reached for interface %u", USBH_GetActiveIfaceClassIdx(phost));
+            phost->Timeout = 0U;
+            if (0 == USBH_SwitchActiveIfaceClassNext(phost)) {
+              phost->gState = HOST_CLASS;
+            }
+          }
         }
-        else if (status == USBH_FAIL)
-        {
+        else if (status == USBH_FAIL) {
           phost->gState = HOST_ABORT_STATE;
           USBH_ErrLog("Device not responding Please Unplug.");
         }
-        else
-        {
-          /* .. */
+        else {
+          if (0 == USBH_SwitchActiveIfaceClassNext(phost)) {
+            phost->gState = HOST_CLASS;
+          }
         }
-      }
-      else
-      {
-        phost->gState = HOST_ABORT_STATE;
-        USBH_ErrLog("Invalid Class Driver.");
       }
 #if (USBH_USE_OS == 1U)
       phost->os_msg = (uint32_t)USBH_STATE_CHANGED_EVENT;
@@ -817,15 +845,21 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
 #endif
 #endif
       break;
+    }
 
-    case HOST_CLASS:
+    case HOST_CLASS: {
       /* process class state machine */
-      if (phost->pActiveClass != NULL)
-      {
+      if (phost->pActiveClass != NULL) {
+        // TODO figure out when it's good time time switch interface and to which one. According to os_msg? more specific case
+        // probably.
+        if (phost->os_msg == USBH_URB_EVENT) {
+          // THIS IS A WORKING HACK not sure how well it works actually
+          USBH_SwitchActiveIfaceClassNext(phost);
+        }
         phost->pActiveClass->BgndProcess(phost);
       }
       break;
-
+    }
     case HOST_DEV_DISCONNECTED :
       phost->device.is_disconnected = 0U;
 
@@ -835,6 +869,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       if (phost->pActiveClass != NULL)
       {
         phost->pActiveClass->DeInit(phost);
+        USBH_ResetActiveClasses(phost);
         phost->pActiveClass = NULL;
       }
 

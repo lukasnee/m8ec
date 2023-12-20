@@ -107,12 +107,17 @@ uint8_t m8ec_virtual_com_ready() {
     return Appli_state == APPLICATION_READY;
 }
 
+const char *USER_STRINGS[] = {
+    "undefined", "SELECT_CONFIGURATION", "CLASS_ACTIVE", "CLASS_SELECTED", "CONNECTION", "DISCONNECTION", "UNRECOVERED_ERROR",
+};
+
 /*
  * user callback definition
  */
 static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 {
   /* USER CODE BEGIN CALL_BACK_1 */
+  USBH_UsrLog("USBH_UserProcess: %s", USER_STRINGS[id]);
   switch(id)
   {
   case HOST_USER_SELECT_CONFIGURATION:
