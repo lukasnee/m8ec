@@ -88,6 +88,8 @@ parser.add_argument(
 parser.add_argument("--serial", help="enable serial", action="store_true")
 parser.add_argument(
     "--serial-name", help="name of the serial USB device",   default="CP2102")
+parser.add_argument(
+    "--systemview", help="enable systemview", action="store_true")
 args = parser.parse_args()
 
 BUILD_DIR = ".build"
@@ -129,6 +131,8 @@ if args.build:
             "-DCMAKE_TOOLCHAIN_FILE=arm-none-eabi-gcc.cmake",
             "-DCMAKE_BUILD_TYPE={}".format(
                 "Debug" if args.debug else "Release"),
+            "-DSEGGER_SYSVIEW={}".format(
+                "ON" if args.systemview else "OFF"),
         ]
     )
     if error != 0:

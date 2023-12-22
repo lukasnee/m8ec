@@ -79,6 +79,7 @@ Additional information:
 **********************************************************************
 */
 
+#define SEGGER_SYSVIEW_RTT_BUFFER_SIZE 32*1024
 
 #endif  // SEGGER_SYSVIEW_CONF_H
 

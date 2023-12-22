@@ -27,6 +27,9 @@
 /* USER CODE BEGIN Includes */
 #include "ILI9341/ili9341.h"
 #include "m8ec/m8ec.h"
+#ifdef SEGGER_SYSVIEW
+#include "SEGGER_SYSVIEW.h"
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,8 +95,10 @@ static volatile int uxTopUsedPriority;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-    uxTopUsedPriority = configMAX_PRIORITIES - 1;
-
+  uxTopUsedPriority = configMAX_PRIORITIES - 1;
+#ifdef SEGGER_SYSVIEW
+  SEGGER_SYSVIEW_Conf();
+#endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -391,12 +396,15 @@ uint16_t audio_out_buffer[256];
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
+#ifdef SEGGER_SYSVIEW
+  SEGGER_SYSVIEW_Start();
+#endif
   /* init code for USB_HOST */
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
-    m8ec_launch();
-    HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
-    osThreadTerminate(defaultTaskHandle);
+  m8ec_launch();
+  HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
+  osThreadTerminate(defaultTaskHandle);
   /* USER CODE END 5 */
 }
 

@@ -1,5 +1,8 @@
 project(firmware)
 
+option(SEGGER_SYSVIEW "Enable SEGGER SystemView" OFF)
+message(STATUS "SEGGER SystemView: ${SEGGER_SYSVIEW}")
+
 enable_language(CXX C ASM)
 
 set(CMAKE_C_STANDARD 11)
@@ -118,6 +121,21 @@ set(PLATFORM_SPECIFIC_OPTIONS ${PLATFORM_SPECIFIC_OPTIONS_STM32F4xx})
 set(PLATFORM_SPECIFIC_LINKER_OPTIONS
     ${PLATFORM_SPECIFIC_LINKER_OPTIONS_STM32F4xx})
 
+if(SEGGER_SYSVIEW)
+  set(PLATFORM_SPECIFIC_INCLUDES
+      ${PLATFORM_SPECIFIC_INCLUDES}
+      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10)
+  set(PLATFORM_SPECIFIC_SOURCES
+      ${PLATFORM_SPECIFIC_SOURCES}
+      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_ASM_ARMv7M.S
+      # ../extern/SystemView_Src_V352a/SEGGER/Syscalls/SEGGER_RTT_Syscalls_GCC.c implemention customized in source/stdio.cpp
+      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/SEGGER_SYSVIEW_FreeRTOS.c
+      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/Config/Cortex-M/SEGGER_SYSVIEW_Config_FreeRTOS.c)
+  set(PLATFORM_SPECIFIC_DEFINES
+      ${PLATFORM_SPECIFIC_DEFINES}
+      -DSEGGER_SYSVIEW)
+endif()
+
 # ##############################################################################
 # Platform-Independent Includes and Sources
 # ##############################################################################
@@ -147,6 +165,18 @@ set(PLATFORM_INDEPENDENT_SOURCES
 
 set(PLATFORM_INDEPENDENT_INCLUDES ../extern/freertos-addons/c++/Source/include
                                   ../extern/fonas/include ../include)
+
+if(SEGGER_SYSVIEW)
+  set(PLATFORM_INDEPENDENT_INCLUDES
+      ${PLATFORM_INDEPENDENT_INCLUDES}
+      ../extern/SystemView_Src_V352a/Config
+      ../extern/SystemView_Src_V352a/SEGGER)
+  set(PLATFORM_INDEPENDENT_SOURCES
+      ${PLATFORM_INDEPENDENT_SOURCES}
+      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT.c
+      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_printf.c
+      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_SYSVIEW.c)
+endif()
 
 set(PLATFORM_INDEPENDENT_DEFINES -DCPP_FREERTOS_NO_EXCEPTIONS
                                  -DCPP_FREERTOS_NO_CPP_STRINGS -DFONAS)

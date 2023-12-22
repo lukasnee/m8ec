@@ -202,6 +202,31 @@ The project was originally kickstarted in WSL Ubuntu.
 
 5. In VS Code, press `F5` or open the Debug tab and click the green arrow to start debugging.
 
+# SEGGER SystemView + ST-Link as J-Link
+
+## Windows [draft]
+
+1. Build firmware with SEGGER SystemView enabled.
+
+    ```bash
+    python3 tools/m8ec.py --systemview -bf
+    ```
+
+2. Flash the firmware to the target MCU.
+
+    ```bash
+    python3 tools/m8ec.py -f
+    ```
+
+3. Install latest [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) and J-Link drivers.
+4. [STLinkReflash](https://www.segger.com/products/debug-probes/j-link/models/other-j-links/st-link-on-board/) tool can be used to reflash the ST-Link firmware to J-Link and back (ST-Link V2-1 only).
+
+> In case [J-Link shown as generic BULK device in Windows](https://wiki.segger.com/J-Link_shown_as_generic_BULK_device_in_Windows).
+
+5. Start SystemView and connect to the target MCU.
+
+5. TBD...
+
 # Looking Into Future
 
 - [ ] MIDI in/out? If supported by the M8 headless.
