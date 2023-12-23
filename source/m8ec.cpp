@@ -24,7 +24,7 @@
 
 namespace m8ec {
 
-static bool init_periphs() {
+static bool init_hw_periphs() {
     if (!periph::Uart1::get_instance().init()) {
         printf("error: periph::Uart1::get_instance().init failed\n");
         FONAS_PANIC();
@@ -38,29 +38,33 @@ static bool init_periphs() {
     return true;
 }
 
-void launch() {
-    if (!init_periphs()) {
-        printf("error: init_periphs failed\n");
-        FONAS_PANIC();
-        return;
-    }
+static bool init_apps() {
     if (!display::initialize()) {
         printf("error: display::initialize failed\n");
         FONAS_PANIC();
-        return;
-    }
-    while (!periph::UsbCdc::get_instance().ready()) {
-        display::draw_string("waiting for USB virtual COM\n");
-        printf("waiting for USB virtual COM\n");
-        fonas::delay_ms(100);
+        return false;
     }
     if (!KeysThread::get_instance().init()) {
         printf("error: KeysThread::get_instance().init failed\n");
         FONAS_PANIC();
-        return;
+        return false;
     }
     if (!m8_protocol::init()) {
         printf("error: m8_protocol::init\n");
+        FONAS_PANIC();
+        return false;
+    }
+    return true;
+}
+
+void launch() {
+    if (!init_hw_periphs()) {
+        printf("error: init_hw_periphs failed\n");
+        FONAS_PANIC();
+        return;
+    }
+    if (!init_apps()) {
+        printf("error: init_apps failed\n");
         FONAS_PANIC();
         return;
     }
