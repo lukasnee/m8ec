@@ -157,6 +157,7 @@ if args.flash:
     sys_cmd(
         [
             "st-flash",
+            "--freq=4000",
             "--format",
             "ihex",
             "write",
