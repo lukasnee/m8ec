@@ -112,14 +112,14 @@ if args.serial:
 
 if args.clean:
     print("Cleaning project")
-    error = subprocess.call(["rm", "-rf", BUILD_DIR])
+    error = sys_cmd(["rm", "-rf", BUILD_DIR])
     if error != 0:
         print("Error: clean failed")
         sys.exit(1)
 
 if args.build:
     print("Building project")
-    error = subprocess.call(
+    error = sys_cmd(
         [
             "cmake",
             "-S",
