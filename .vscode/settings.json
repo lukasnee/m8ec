@@ -1,9 +1,15 @@
 {
     "C_Cpp.autoAddFileAssociations": false,
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.autopep8"
     },
     "python.formatting.provider": "none",
     "python.analysis.typeCheckingMode": "basic",
     "cortex-debug.variableUseNaturalFormat": true,
+    "cmake.buildDirectory": "${workspaceFolder}/.build",
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "arm-none-eabi-gcc.cmake",
+        "CMAKE_BUILD_TYPE": "Release",
+        "SEGGER_SYSVIEW": "ON"
+    },
 }
