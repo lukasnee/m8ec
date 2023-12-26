@@ -134,6 +134,10 @@ if(SEGGER_SYSVIEW)
   set(PLATFORM_SPECIFIC_DEFINES
       ${PLATFORM_SPECIFIC_DEFINES}
       -DSEGGER_SYSVIEW)
+else()
+  set(PLATFORM_SPECIFIC_INCLUDES
+      ${PLATFORM_SPECIFIC_INCLUDES}
+      ../include/debug)
 endif()
 
 # ##############################################################################
