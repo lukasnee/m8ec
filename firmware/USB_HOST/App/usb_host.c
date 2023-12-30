@@ -98,7 +98,7 @@ void MX_USB_HOST_Init(void)
     linecoding.b.bCharFormat = 0;
     linecoding.b.bDataBits = 8;
     linecoding.b.bParityType = 0;
-    linecoding.b.dwDTERate = 115200;
+    linecoding.b.dwDTERate = 115200; // changing seems to have no effect
     USBH_CDC_SetLineCoding(&hUsbHostFS, &linecoding);
   /* USER CODE END USB_HOST_Init_PostTreatment */
 }
@@ -117,7 +117,7 @@ const char *USER_STRINGS[] = {
 static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 {
   /* USER CODE BEGIN CALL_BACK_1 */
-  USBH_UsrLog("USBH_UserProcess: %s", USER_STRINGS[id]);
+  USBH_UsrLog("%s (%u:%u)", USER_STRINGS[id], USBH_GetActiveClassCode(phost), USBH_GetActiveSubclassCode(phost));
   switch(id)
   {
   case HOST_USER_SELECT_CONFIGURATION:

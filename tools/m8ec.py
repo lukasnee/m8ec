@@ -107,7 +107,8 @@ if args.serial:
     if not serial_dev:
         print(f"Error: serial device {args.serial_name} not found")
         sys.exit(1)
-    sys_cmd(["minicom", "--baudrate", "115200", "-D", serial_dev])
+    sys_cmd(["minicom", "--baudrate", "921600",
+            "-D", serial_dev, "-C", "serial.log"])
     sys.exit(0)
 
 if args.clean:
@@ -173,6 +174,7 @@ if args.reset or args.flash:
 if args.debug and args.flash:
     print("Starting debug session")
     try:
+        sys_cmd(["killall", "openocd"])
         sys_cmd(["openocd"])
     except KeyboardInterrupt:
         pass

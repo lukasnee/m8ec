@@ -77,7 +77,7 @@
 /*----------   -----------*/
 #define USBH_MAX_NUM_SUPPORTED_CLASS      5U
 
-#define USBH_MAX_NUM_ACTIVE_CLASSES      4 // TODO figure why fifth M8 Headless class breaks everything
+#define USBH_MAX_NUM_ACTIVE_CLASSES       8// TODO figure why fifth M8 Headless class breaks everything
 
 /*----------   -----------*/
 #define USBH_MAX_SIZE_CONFIGURATION      1024U

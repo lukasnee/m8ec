@@ -7,6 +7,7 @@
 #include "usbh_cdc.h"
 
 #include <algorithm>
+#include "SEGGER_SYSVIEW.h"
 
 extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 
@@ -23,12 +24,14 @@ bool UsbCdc::ready() const { return this->initialized && m8ec_virtual_com_ready(
 
 std::uint8_t UsbCdc::read() {
     std::uint8_t byte = 0;
+    // SEGGER_SYSVIEW_MarkStart(1);
     this->rx_stream_buffer.receive(&byte, sizeof(byte), portMAX_DELAY);
+    // SEGGER_SYSVIEW_MarkStop(1);
     return byte;
 }
 
 std::size_t UsbCdc::read(std::uint8_t *buffer, std::size_t bufferSize) {
-    return this->rx_stream_buffer.receive(buffer, bufferSize, 0); // TODO maybe 1ms
+    return this->rx_stream_buffer.receive(buffer, bufferSize, portMAX_DELAY);
 }
 
 bool UsbCdc::ll_init() {
@@ -83,9 +86,27 @@ extern "C" void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost) {
         m8ec::periph::UsbCdc::get_instance().ll_async_write_completed_cb();
     }
 }
+#include "m8ec/slip.h"
+#include "m8ec/m8_protocol.hpp"
+namespace m8ec::m8_protocol {
+extern slip_handler_s slip;
+} // namespace m8ec::m8_protocol
+
 
 extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size) {
     if (phost == &hUsbHostFS) {
+        // for (std::size_t i = 0; i < size; i++) {
+        //         const slip_error_t n = slip_read_byte(&m8ec::m8_protocol::slip, data[i]);
+        //         if (n != SLIP_NO_ERROR) {
+        //             if (m8ec::Config::debug_slip) {
+        //                 printf("Error: SLIP: %d\n", n);
+        //             }
+        //             if (n == SLIP_ERROR_INVALID_PACKET) {
+        //                 m8ec::m8_protocol::reset_display();
+        //             }
+        //         }
+        //     }
+        //     return;
         m8ec::periph::UsbCdc::get_instance().ll_rx_input(data, size);
     }
 }

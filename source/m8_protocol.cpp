@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include "SEGGER_SYSVIEW.h"
 
 namespace m8ec::m8_protocol {
 
@@ -33,7 +34,7 @@ static const slip_descriptor_s slip_descriptor = {
     .buf_size = sizeof(slip_buffer),
     .recv_message = [](uint8_t *data, uint32_t size) -> int { return handle_cmd(data, size) ? 1 : 0; },
 };
-static slip_handler_s slip;
+slip_handler_s slip;
 
 namespace cmd {
 
@@ -125,7 +126,13 @@ private:
                 first_run = false;
             }
             std::uint8_t buffer[Config::usbcdc_to_slip_buffer_size];
+            // SEGGER_SYSVIEW_MarkStart(0);
             const auto bytes_read = m8ec::periph::UsbCdc::get_instance().read(buffer, sizeof(buffer));
+            // SEGGER_SYSVIEW_Mark(0);
+            // if(bytes_read == 0) {
+            //     Thread::Delay(1);
+            //     continue;
+            // }
             for (std::size_t i = 0; i < bytes_read; i++) {
                 const slip_error_t n = slip_read_byte(&slip, buffer[i]);
                 if (n != SLIP_NO_ERROR) {
@@ -137,6 +144,7 @@ private:
                     }
                 }
             }
+            // SEGGER_SYSVIEW_MarkStop(0);
         }
     }
 };

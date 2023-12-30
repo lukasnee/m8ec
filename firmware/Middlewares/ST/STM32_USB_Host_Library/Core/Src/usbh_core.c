@@ -85,6 +85,18 @@ static void USBH_Process_OS(void *argument);
 #endif
 #endif
 
+// struct Subclass {
+//     uint8_t classId;
+//     uint8_t subclassId;
+// };
+
+// const Subclass subclassesOfInterest[] = {
+//     {0x02, 0x02}, // Communication Device Class Abstract Control Model 
+//     {0x01, 0x01}, // Audio Control
+//     {0x01, 0x02}, // Audio Streaming
+// };
+// #define ARRAY_SZ(x) (sizeof(x) / sizeof(x[0]))
+
 void USBH_ResetActiveClasses(USBH_HandleTypeDef *phost) {
   phost->pActiveClass = NULL;
   for (uint8_t i = 0U; i < USBH_MAX_NUM_ACTIVE_CLASSES; i++) {
@@ -93,7 +105,7 @@ void USBH_ResetActiveClasses(USBH_HandleTypeDef *phost) {
   }
   phost->ActiveIfaceCtrl.number = 0U;
   phost->ActiveIfaceCtrl.nextMinIdx = 0U;
-  phost->ActiveIfaceCtrl.nextMaxIdx = 0U;
+  phost->ActiveIfaceCtrl.nextMaxIdx = 6U;
   phost->ActiveIfaceCtrl.currIdx = 0U;
 }
 
@@ -166,12 +178,18 @@ uint8_t USBH_RegisterIfaceClasses(USBH_HandleTypeDef *phost) {
   return phost->ActiveIfaceCtrl.number;
 }
 
+const uint32_t used_iface_class_mask[8] = {1,0,0,1,0,0,0,0};
+
 uint8_t USBH_SwitchActiveIfaceClassNext(USBH_HandleTypeDef *phost) {
-  if (phost->ActiveIfaceCtrl.currIdx + 1 > phost->ActiveIfaceCtrl.nextMaxIdx) {
+  uint32_t newCandidateIdx = phost->ActiveIfaceCtrl.currIdx + 1;
+  while (newCandidateIdx <= phost->ActiveIfaceCtrl.nextMaxIdx && !used_iface_class_mask[newCandidateIdx]) {
+    newCandidateIdx++;
+  }
+  if (newCandidateIdx > phost->ActiveIfaceCtrl.nextMaxIdx) {
     USBH_SwitchActiveIfaceClass(phost, phost->ActiveIfaceCtrl.nextMinIdx);
     return 0;
   }
-  return USBH_SwitchActiveIfaceClass(phost, phost->ActiveIfaceCtrl.currIdx + 1);
+  return USBH_SwitchActiveIfaceClass(phost, newCandidateIdx);
 }
 
 uint8_t USBH_GetActiveIfaceClassIdx(USBH_HandleTypeDef *phost) { return phost->ActiveIfaceCtrl.currIdx; }
@@ -369,6 +387,7 @@ USBH_StatusTypeDef USBH_RegisterClass(USBH_HandleTypeDef *phost, USBH_ClassTypeD
   */
 USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t interface)
 {
+  return USBH_OK;
   USBH_StatusTypeDef status = USBH_OK;
 
   if (interface < phost->device.CfgDesc.bNumInterfaces)
@@ -399,6 +418,10 @@ USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t inter
 uint8_t USBH_GetActiveClassCode(USBH_HandleTypeDef *phost)
 {
   return (phost->device.CfgDesc.Itf_Desc[phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].descIdx].bInterfaceClass);
+}
+uint8_t USBH_GetActiveSubclassCode(USBH_HandleTypeDef *phost)
+{
+  return (phost->device.CfgDesc.Itf_Desc[phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].descIdx].bInterfaceSubClass);
 }
 
 
@@ -778,8 +801,8 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
           USBH_UsrLog("No registered class for this device.");
         }
         else {
-          phost->ActiveIfaceCtrl.nextMinIdx = 0U; // TODO remove limitation, select it fro user space (APP?)
-          phost->ActiveIfaceCtrl.nextMaxIdx = 1U; // TODO remove limitation, select it fro user space (APP?)
+        //   phost->ActiveIfaceCtrl.nextMinIdx = 0U; // TODO remove limitation, select it fro user space (APP?)
+        //   phost->ActiveIfaceCtrl.nextMaxIdx = 2U; // TODO remove limitation, select it fro user space (APP?)
           if (phost->pActiveClass->Init(phost) != USBH_OK) {
             phost->gState = HOST_ABORT_STATE;
             USBH_UsrLog("Device not supporting %s class.", phost->pActiveClass->Name);
@@ -1286,6 +1309,14 @@ static void  USBH_HandleSof(USBH_HandleTypeDef *phost)
   {
     phost->pActiveClass->SOFProcess(phost);
   }
+//   phost->os_msg = (uint32_t)USBH_PORT_EVENT;
+
+// #if (osCMSIS < 0x20000U)
+//   (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
+// #else
+//   (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0);
+// #endif
+
 }
 
 
@@ -1443,6 +1474,12 @@ static void USBH_Process_OS(void *argument)
 */
 USBH_StatusTypeDef  USBH_LL_NotifyURBChange(USBH_HandleTypeDef *phost)
 {
+//   static uint8_t prescale_it = 0;
+//   const uint8_t prescale = 2;
+//   prescale_it++;
+//   if (prescale_it % prescale != 0) {
+//     return USBH_OK;
+//   }
   phost->os_msg = (uint32_t)USBH_PORT_EVENT;
 
 #if (osCMSIS < 0x20000U)

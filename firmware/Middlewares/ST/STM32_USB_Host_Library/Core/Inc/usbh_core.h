@@ -96,6 +96,7 @@ uint8_t             USBH_FindInterface(USBH_HandleTypeDef *phost,
                                        uint8_t SubClass,
                                        uint8_t Protocol);
 uint8_t             USBH_GetActiveClassCode(USBH_HandleTypeDef *phost);
+uint8_t             USBH_GetActiveSubClassCode(USBH_HandleTypeDef *phost);
 
 uint8_t             USBH_FindInterfaceIndex(USBH_HandleTypeDef *phost,
                                             uint8_t interface_number,

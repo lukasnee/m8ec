@@ -49,6 +49,7 @@ EndBSPDependencies */
 #include "usbh_cdc.h"
 
 #include "m8ec/m8ec.h"
+#include "SEGGER_SYSVIEW.h"
 
 /** @addtogroup USBH_LIB
 * @{
@@ -79,7 +80,7 @@ EndBSPDependencies */
 * @{
 */
 #define USBH_CDC_BUFFER_SIZE                 1024
-#define USBH_CDC_RX_BUFFER_SIZE              64
+#define USBH_CDC_RX_BUFFER_SIZE              1024
 /**
 * @}
 */
