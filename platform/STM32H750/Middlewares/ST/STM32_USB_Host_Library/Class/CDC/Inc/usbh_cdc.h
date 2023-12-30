@@ -416,7 +416,7 @@ void USBH_CDC_LineCodingChanged(USBH_HandleTypeDef *phost);
 
 void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost);
 
-void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost);
+void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size);
 
 /**
   * @}

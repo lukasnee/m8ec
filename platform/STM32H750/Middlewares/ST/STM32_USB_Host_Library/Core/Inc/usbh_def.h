@@ -460,6 +460,22 @@ typedef struct
   void                *pData;
 } USBH_ClassTypeDef;
 
+typedef struct _USBH_ActiveIface
+{
+    USBH_ClassTypeDef  *pClass;
+    uint8_t             descIdx;
+} USBH_ActiveIface;
+
+typedef struct _USBH_ActiveIfaceCtrl
+{
+    USBH_ActiveIface    ifaces[USBH_MAX_NUM_ACTIVE_CLASSES];
+    uint32_t            number;
+    uint32_t            currIdx;
+    uint32_t            nextMinIdx;
+    uint32_t            nextMaxIdx;
+
+} USBH_ActiveIfaceCtrl;
+
 /* USB Host handle structure */
 typedef struct _USBH_HandleTypeDef
 {
@@ -469,6 +485,7 @@ typedef struct _USBH_HandleTypeDef
   USBH_CtrlTypeDef      Control;
   USBH_DeviceTypeDef    device;
   USBH_ClassTypeDef    *pClass[USBH_MAX_NUM_SUPPORTED_CLASS];
+  USBH_ActiveIfaceCtrl  ActiveIfaceCtrl;
   USBH_ClassTypeDef    *pActiveClass;
   uint32_t              ClassNumber;
   uint32_t              Pipes[16];

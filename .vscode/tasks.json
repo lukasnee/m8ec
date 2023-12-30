@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Open m8ec STM32CubeMX project [STM32F4xx]",
+            "label": "Open m8ec STM32CubeMX project [STM32F411]",
             "group": "none",
             "type": "shell",
             "linux": {

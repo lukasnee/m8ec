@@ -24,9 +24,6 @@
 #include "usbh_core.h"
 #include "usbh_audio.h"
 #include "usbh_cdc.h"
-#include "usbh_msc.h"
-#include "usbh_hid.h"
-#include "usbh_mtp.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -88,26 +85,27 @@ void MX_USB_HOST_Init(void)
   {
     Error_Handler();
   }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_MSC_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_HID_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
-  if (USBH_RegisterClass(&hUsbHostFS, USBH_MTP_CLASS) != USBH_OK)
-  {
-    Error_Handler();
-  }
   if (USBH_Start(&hUsbHostFS) != USBH_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN USB_HOST_Init_PostTreatment */
-
+    CDC_LineCodingTypeDef linecoding;
+    linecoding.b.bCharFormat = 0;
+    linecoding.b.bDataBits = 8;
+    linecoding.b.bParityType = 0;
+    linecoding.b.dwDTERate = 115200; // changing seems to have no effect
+    USBH_CDC_SetLineCoding(&hUsbHostFS, &linecoding);
   /* USER CODE END USB_HOST_Init_PostTreatment */
 }
+
+uint8_t m8ec_virtual_com_ready() {
+    return Appli_state == APPLICATION_READY;
+}
+
+const char *USER_STRINGS[] = {
+    "undefined", "SELECT_CONFIGURATION", "CLASS_ACTIVE", "CLASS_SELECTED", "CONNECTION", "DISCONNECTION", "UNRECOVERED_ERROR",
+};
 
 /*
  * user callback definition
@@ -115,6 +113,7 @@ void MX_USB_HOST_Init(void)
 static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 {
   /* USER CODE BEGIN CALL_BACK_1 */
+  USBH_UsrLog("%s (%u:%u)", USER_STRINGS[id], USBH_GetActiveClassCode(phost), USBH_GetActiveSubclassCode(phost));
   switch(id)
   {
   case HOST_USER_SELECT_CONFIGURATION:

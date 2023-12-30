@@ -10,7 +10,7 @@
 
 #include "m8ec/periph/Uart1.hpp"
 
-#include "stm32f4xx_hal.h"
+#include "stm32xxxx_hal.h"
 
 extern UART_HandleTypeDef huart1;
 

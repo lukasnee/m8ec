@@ -2,7 +2,7 @@
 
 #include "m8ec/m8ec.hpp"
 
-#include "stm32f4xx_hal.h"
+#include "stm32xxxx_hal.h"
 #include "usb_host.h"
 #include "usbh_cdc.h"
 

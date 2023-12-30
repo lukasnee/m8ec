@@ -10,7 +10,7 @@
 
 #include "m8ec/periph/Spi1.hpp"
 
-#include "stm32f4xx_hal.h"
+#include "stm32xxxx_hal.h"
 
 extern SPI_HandleTypeDef hspi1;
 

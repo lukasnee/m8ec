@@ -1,6 +1,6 @@
 [submodule "extern/ILI9341-STM32-HAL"]
 	path = extern/ILI9341-STM32-HAL
-	url = https://github.com/ardnew/ILI9341-STM32-HAL.git
+	url = https://github.com/lukasnee/ILI9341-STM32-HAL.git
 [submodule "extern/freertos-addons"]
 	path = extern/freertos-addons
 	url = https://github.com/lukasnee/freertos-addons.git

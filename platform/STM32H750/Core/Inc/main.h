@@ -63,6 +63,8 @@ void Error_Handler(void);
 #define TFT_RESET_GPIO_Port GPIOA
 #define TFT_DC_Pin GPIO_PIN_4
 #define TFT_DC_GPIO_Port GPIOA
+#define USB_OTG_VBUS_OUT_Pin GPIO_PIN_15
+#define USB_OTG_VBUS_OUT_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
 

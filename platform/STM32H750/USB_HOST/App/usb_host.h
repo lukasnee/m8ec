@@ -31,7 +31,7 @@
 #include "stm32h7xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+uint8_t m8ec_virtual_com_ready();
 /* USER CODE END INCLUDE */
 
 /** @addtogroup USBH_OTG_DRIVER

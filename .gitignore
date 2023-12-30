@@ -1,4 +1,4 @@
-firmware/build/
+platform/*/build/
 .build/
 .mxproject
-firmware/Makefile
+platform/Makefile
