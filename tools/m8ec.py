@@ -162,7 +162,7 @@ if args.flash:
             "--format",
             "ihex",
             "write",
-            ".build/firmware/firmware.hex"
+            ".build/platform/STM32F411/STM32F411.hex"
         ]
     )
 

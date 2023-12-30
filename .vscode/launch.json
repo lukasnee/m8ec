@@ -12,8 +12,8 @@
             "gdbTarget": "localhost:3333",
             // "preLaunchTask": "Build m8ec debug and flash",
             "rtos": "FreeRTOS",
-            "cwd": "${workspaceRoot}/firmware",
-            "executable": "${workspaceRoot}/.build/firmware/firmware",
+            "cwd": "${workspaceRoot}/platform/",
+            "executable": "${workspaceRoot}/.build/platform/STM32F411/STM32F411",
             "svdFile": "${workspaceRoot}/tools/STM32F411.svd",
             "cpu": "cortex-m4",
             "numberOfProcessors": 1

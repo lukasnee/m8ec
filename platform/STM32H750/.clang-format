@@ -1,0 +1,18 @@
+BasedOnStyle: Microsoft
+AllowShortFunctionsOnASingleLine: true
+IndentWidth: 2
+BraceWrapping:
+    AfterClass: false
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: false
+    AfterNamespace: false
+    AfterObjCDeclaration: false
+    AfterStruct: false
+    AfterUnion: false
+    BeforeCatch: false
+    BeforeElse: true
+    IndentBraces: false
+BreakBeforeBraces: Custom
+AccessModifierOffset: -4
+ColumnLimit: 128

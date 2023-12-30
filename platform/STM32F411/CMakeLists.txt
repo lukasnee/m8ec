@@ -1,4 +1,4 @@
-project(firmware)
+project(STM32F411)
 
 option(SEGGER_SYSVIEW "Enable SEGGER SystemView" OFF)
 message(STATUS "SEGGER SystemView: ${SEGGER_SYSVIEW}")
@@ -34,8 +34,8 @@ set(PLATFORM_SPECIFIC_INCLUDES_STM32F4xx
     Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Inc
     Drivers/CMSIS/Device/ST/STM32F4xx/Include
     Drivers/CMSIS/Include
-    ../extern/ILI9341-STM32-HAL
-    ../platform/STM32F4xx/include)
+    ../../extern/ILI9341-STM32-HAL
+    include)
 
 set(PLATFORM_SPECIFIC_SOURCES_STM32F4xx
     startup_stm32f411xe.s
@@ -94,10 +94,10 @@ set(PLATFORM_SPECIFIC_SOURCES_STM32F4xx
     Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp.c
     Middlewares/ST/STM32_USB_Host_Library/Class/MTP/Src/usbh_mtp_ptp.c
     Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
-    ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
-    ../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
-    ../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
-    ../platform/STM32F4xx/src/Keys.cpp)
+    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
+    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
+    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
+    src/Keys.cpp)
 
 set(PLATFORM_SPECIFIC_DEFINES_STM32F4xx -DUSE_HAL_DRIVER -DSTM32F411xE
                                         -DSTM32F4)
@@ -124,20 +124,20 @@ set(PLATFORM_SPECIFIC_LINKER_OPTIONS
 if(SEGGER_SYSVIEW)
   set(PLATFORM_SPECIFIC_INCLUDES
       ${PLATFORM_SPECIFIC_INCLUDES}
-      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10)
+      ../../extern/SystemView_Src_V352a/Sample/FreeRTOSV10)
   set(PLATFORM_SPECIFIC_SOURCES
       ${PLATFORM_SPECIFIC_SOURCES}
-      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_ASM_ARMv7M.S
-      # ../extern/SystemView_Src_V352a/SEGGER/Syscalls/SEGGER_RTT_Syscalls_GCC.c implemention customized in source/stdio.cpp
-      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/SEGGER_SYSVIEW_FreeRTOS.c
-      ../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/Config/Cortex-M/SEGGER_SYSVIEW_Config_FreeRTOS.c)
+      ../../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_ASM_ARMv7M.S
+      # ../../extern/SystemView_Src_V352a/SEGGER/Syscalls/SEGGER_RTT_Syscalls_GCC.c implemention customized in source/stdio.cpp
+      ../../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/SEGGER_SYSVIEW_FreeRTOS.c
+      ../../extern/SystemView_Src_V352a/Sample/FreeRTOSV10/Config/Cortex-M/SEGGER_SYSVIEW_Config_FreeRTOS.c)
   set(PLATFORM_SPECIFIC_DEFINES
       ${PLATFORM_SPECIFIC_DEFINES}
       -DSEGGER_SYSVIEW)
 else()
   set(PLATFORM_SPECIFIC_INCLUDES
       ${PLATFORM_SPECIFIC_INCLUDES}
-      ../include/debug)
+      ../../include/debug)
 endif()
 
 # ##############################################################################
@@ -145,41 +145,41 @@ endif()
 # ##############################################################################
 
 set(PLATFORM_INDEPENDENT_SOURCES
-    ../extern/freertos-addons/c++/Source/cmutex.cpp
-    ../extern/freertos-addons/c++/Source/cqueue.cpp
-    ../extern/freertos-addons/c++/Source/csemaphore.cpp
-    ../extern/freertos-addons/c++/Source/cthread.cpp
-    ../extern/fonas/src/fonas.cpp
-    ../extern/fonas/src/EventDrivenReaderWriter.cpp
-    ../extern/fonas/src/EventDrivenWriter.cpp
-    ../extern/fonas/src/EventDrivenSpi.cpp
-    ../extern/fonas/src/StreamBuffer.cpp
-    ../source/stdio.cpp
-    ../source/m8ec.cpp
-    ../source/m8_protocol.cpp
-    ../source/display.cpp
-    ../source/font.cpp
-    ../source/slip.c
-    ../source/periph/UartCallbacks.cpp
-    ../source/periph/Uart1.cpp
-    ../source/periph/SpiCallbacks.cpp
-    ../source/periph/Spi1.cpp
-    ../source/periph/UsbCdc.cpp
-    ../source/KeysThread.cpp)
+    ../../extern/freertos-addons/c++/Source/cmutex.cpp
+    ../../extern/freertos-addons/c++/Source/cqueue.cpp
+    ../../extern/freertos-addons/c++/Source/csemaphore.cpp
+    ../../extern/freertos-addons/c++/Source/cthread.cpp
+    ../../extern/fonas/src/fonas.cpp
+    ../../extern/fonas/src/EventDrivenReaderWriter.cpp
+    ../../extern/fonas/src/EventDrivenWriter.cpp
+    ../../extern/fonas/src/EventDrivenSpi.cpp
+    ../../extern/fonas/src/StreamBuffer.cpp
+    ../../source/stdio.cpp
+    ../../source/m8ec.cpp
+    ../../source/m8_protocol.cpp
+    ../../source/display.cpp
+    ../../source/font.cpp
+    ../../source/slip.c
+    ../../source/periph/UartCallbacks.cpp
+    ../../source/periph/Uart1.cpp
+    ../../source/periph/SpiCallbacks.cpp
+    ../../source/periph/Spi1.cpp
+    ../../source/periph/UsbCdc.cpp
+    ../../source/KeysThread.cpp)
 
-set(PLATFORM_INDEPENDENT_INCLUDES ../extern/freertos-addons/c++/Source/include
-                                  ../extern/fonas/include ../include)
+set(PLATFORM_INDEPENDENT_INCLUDES ../../extern/freertos-addons/c++/Source/include
+                                  ../../extern/fonas/include ../../include)
 
 if(SEGGER_SYSVIEW)
   set(PLATFORM_INDEPENDENT_INCLUDES
       ${PLATFORM_INDEPENDENT_INCLUDES}
-      ../extern/SystemView_Src_V352a/Config
-      ../extern/SystemView_Src_V352a/SEGGER)
+      ../../extern/SystemView_Src_V352a/Config
+      ../../extern/SystemView_Src_V352a/SEGGER)
   set(PLATFORM_INDEPENDENT_SOURCES
       ${PLATFORM_INDEPENDENT_SOURCES}
-      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT.c
-      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_printf.c
-      ../extern/SystemView_Src_V352a/SEGGER/SEGGER_SYSVIEW.c)
+      ../../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT.c
+      ../../extern/SystemView_Src_V352a/SEGGER/SEGGER_RTT_printf.c
+      ../../extern/SystemView_Src_V352a/SEGGER/SEGGER_SYSVIEW.c)
 endif()
 
 set(PLATFORM_INDEPENDENT_DEFINES -DCPP_FREERTOS_NO_EXCEPTIONS

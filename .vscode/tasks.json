@@ -6,7 +6,7 @@
             "group": "none",
             "type": "shell",
             "linux": {
-                "command": "/mnt/c/Program\\ Files/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX.exe firmware/firmware.ioc"
+                "command": "/mnt/c/Program\\ Files/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX.exe platform/STM32F411/STM32F411.ioc"
             },
             "presentation": {
                 "focus": false,
@@ -18,7 +18,7 @@
             "group": "none",
             "type": "shell",
             "linux": {
-                "command": "/mnt/c/Program\\ Files/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX.exe firmware/STM32H750/STM32H750.ioc"
+                "command": "/mnt/c/Program\\ Files/STMicroelectronics/STM32Cube/STM32CubeMX/STM32CubeMX.exe platform/STM32H750/STM32H750.ioc"
             },
             "presentation": {
                 "focus": false,
