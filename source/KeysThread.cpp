@@ -29,7 +29,7 @@ void print_keys_change(const IKeys::State &prev_keys_state, const IKeys::State &
 
     for (const auto &key : IKeys::keys) {
         if (prev_keys_state.get(key) != keys_state.get(key)) {
-            printf("%s%c\n", IKeys::key_to_string(key), (keys_state.get(key) ? '+' : '-'));
+            LOG("%s%c\n", IKeys::key_to_string(key), (keys_state.get(key) ? '+' : '-'));
         }
     }
 }

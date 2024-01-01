@@ -11,6 +11,7 @@
 // Copyright 2021 Jonne Kokkonen
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
+#include "m8ec/m8ec.h"
 #include "m8ec/m8_protocol.hpp"
 #include "m8ec/KeysThread.hpp"
 #include "m8ec/display.hpp"
@@ -48,7 +49,7 @@ public:
     static bool validate_size(uint32_t actual_size) {
         if (actual_size < cmd_size_min || actual_size > cmd_size_max) {
             if (m8ec::Config::debug_m8_protocol) {
-                printf(err_fmt_invalid_packet_length_range, cmd_id_to_name(cmd_id), cmd_size_min, cmd_size_max, actual_size);
+                LOG(err_fmt_invalid_packet_length_range, cmd_id_to_name(cmd_id), cmd_size_min, cmd_size_max, actual_size);
             }
             return false;
         }
@@ -118,7 +119,7 @@ private:
             if (first_run || !periph::UsbCdc::get_instance().ready()) {
                 while (!periph::UsbCdc::get_instance().ready()) {
                     display::draw_string("waiting for USB virtual COM\n");
-                    printf("waiting for USB virtual COM\n");
+                    LOG("waiting for USB virtual COM\n");
                     fonas::delay_ms(100);
                 }
                 enable_display();
@@ -137,7 +138,7 @@ private:
                 const slip_error_t n = slip_read_byte(&slip, buffer[i]);
                 if (n != SLIP_NO_ERROR) {
                     if (m8ec::Config::debug_slip) {
-                        printf("Error: SLIP: %d\n", n);
+                        LOG("Error: SLIP: %d\n", n);
                     }
                     if (n == SLIP_ERROR_INVALID_PACKET) {
                         m8_protocol::reset_display();
@@ -159,23 +160,23 @@ bool init() {
 void enable_display() {
     uint8_t buf[] = {'E'};
     if (!m8ec::periph::UsbCdc::get_instance().write(buf, 1)) {
-        printf("m8_protocol::enable_display failed\n");
+        LOG("m8_protocol::enable_display failed\n");
     }
-    printf("m8_protocol::enable_display\n");
+    LOG("m8_protocol::enable_display\n");
 }
 
 void reset_display() {
     uint8_t buf[] = {'R'};
     if (!m8ec::periph::UsbCdc::get_instance().write(buf, 1)) {
-        printf("m8_protocol::reset_display failed\n");
+        LOG("m8_protocol::reset_display failed\n");
     }
-    printf("m8_protocol::reset_display\n");
+    LOG("m8_protocol::reset_display\n");
 }
 
 void send_keys_state(IKeys::State keys_state) {
     uint8_t buf[2] = {'C', keys_state.underlying};
     if (!m8ec::periph::UsbCdc::get_instance().write(buf, 2)) {
-        printf("m8_protocol::send_keys_state failed\n");
+        LOG("m8_protocol::send_keys_state failed\n");
     }
 }
 
@@ -189,28 +190,28 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
     if (cmd_id == cmd::KeyState::cmd_id && cmd::KeyState::validate_size(payload_size)) {
         const auto &payload = reinterpret_cast<const cmd::KeyState *>(payload_data)->payload;
         if (m8ec::Config::debug_m8_protocol) {
-            printf("KeyState: s:%02x,?:%02x\n", payload.key_state, payload.unknown);
+            LOG("KeyState: s:%02x,?:%02x\n", payload.key_state, payload.unknown);
         }
     }
     else if (cmd_id == cmd::DrawWaveform::cmd_id && cmd::DrawWaveform::validate_size(payload_size)) {
         const auto &waveform = reinterpret_cast<const cmd::DrawWaveform *>(payload_data)->waveform;
         const auto waveform_width = payload_size - sizeof(Color);
         if (m8ec::Config::debug_m8_protocol) {
-            printf("DrawWaveform: w:%u\n", waveform_width);
+            LOG("DrawWaveform: w:%u\n", waveform_width);
         }
         display::draw_waveform(waveform, waveform_width);
     }
     else if (cmd_id == cmd::DrawCharacter::cmd_id && cmd::DrawCharacter::validate_size(payload_size)) {
         const auto &character = reinterpret_cast<const cmd::DrawCharacter *>(payload_data)->character;
         if (m8ec::Config::debug_m8_protocol) {
-            printf("DrawCharacter: c:'%c'(0x%02X)@x:%u,y:%u\n", character.c, character.c, character.pos.x, character.pos.y);
+            LOG("DrawCharacter: c:'%c'(0x%02X)@x:%u,y:%u\n", character.c, character.c, character.pos.x, character.pos.y);
         }
         display::draw_character(character);
     }
     else if (cmd_id == cmd::DrawRectangle::cmd_id && cmd::DrawRectangle::validate_size(payload_size)) {
         const auto &rectangle = reinterpret_cast<const cmd::DrawRectangle *>(payload_data)->rectangle;
         if (m8ec::Config::debug_m8_protocol) {
-            printf("DrawRectangle: x:%u,y:%u,w:%u,h:%u\n", rectangle.pos.x, rectangle.pos.y, rectangle.size.w,
+            LOG("DrawRectangle: x:%u,y:%u,w:%u,h:%u\n", rectangle.pos.x, rectangle.pos.y, rectangle.size.w,
                    rectangle.size.h);
         }
         display::draw_rectangle(rectangle);
@@ -220,7 +221,7 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
         char *device_type[] = {"Headless", "M8 Beta", "M8 Production"};
         static bool system_info_already_printed = false;
         if (!system_info_already_printed) {
-            printf("System Info: device type: %s, firmware version %d.%d.%d\n", device_type[system_info.hw_type],
+            LOG("System Info: device type: %s, firmware version %d.%d.%d\n", device_type[system_info.hw_type],
                    system_info.version.major, system_info.version.minor, system_info.version.patch);
             system_info_already_printed = true;
         }
@@ -228,7 +229,7 @@ bool handle_cmd(uint8_t *data, uint32_t size) {
     }
     else {
         if (m8ec::Config::debug_m8_protocol) {
-            printf("Error: Unknown command: %02x of size %lu\n", data[0], payload_size);
+            LOG("Error: Unknown command: %02x of size %lu\n", data[0], payload_size);
         }
         return false;
     }

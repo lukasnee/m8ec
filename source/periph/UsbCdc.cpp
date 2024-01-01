@@ -51,7 +51,7 @@ bool UsbCdc::ll_async_write(const std::uint8_t *data, std::size_t size) {
     }
     const auto status = USBH_CDC_Transmit(&hUsbHostFS, const_cast<std::uint8_t *>(data), size);
     if (USBH_OK != status) {
-        printf("error: USBH_CDC_Transmit: %d\n", status);
+        LOG("error: USBH_CDC_Transmit: %d\n", status);
         return false;
     }
     return true;
@@ -73,7 +73,7 @@ bool UsbCdc::ll_rx_input(const uint8_t *data, size_t size) {
         return false;
     }
     if (size != this->rx_stream_buffer.send(data, size, portMAX_DELAY)) {
-        printf("rx_stream_buffer.send failed\n");
+        LOG("rx_stream_buffer.send failed\n");
         return false;
     }
     return true;
@@ -99,7 +99,7 @@ extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_
         //         const slip_error_t n = slip_read_byte(&m8ec::m8_protocol::slip, data[i]);
         //         if (n != SLIP_NO_ERROR) {
         //             if (m8ec::Config::debug_slip) {
-        //                 printf("Error: SLIP: %d\n", n);
+        //                 LOG("Error: SLIP: %d\n", n);
         //             }
         //             if (n == SLIP_ERROR_INVALID_PACKET) {
         //                 m8ec::m8_protocol::reset_display();

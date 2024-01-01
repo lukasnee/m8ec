@@ -12,11 +12,12 @@
             "gdbTarget": "localhost:3333",
             // "preLaunchTask": "Build m8ec debug and flash",
             "rtos": "FreeRTOS",
-            "cwd": "${workspaceRoot}/platform/",
-            "executable": "${workspaceRoot}/.build/platform/STM32F411/STM32F411",
-            "svdFile": "${workspaceRoot}/tools/STM32F411.svd",
-            "cpu": "cortex-m4",
-            "numberOfProcessors": 1
+            "cwd": "${workspaceRoot}/platform/STM32H750",
+            "executable": "${workspaceRoot}/.build/platform/STM32H750/STM32H750",
+            "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
+            "interface": "swd",
+            "numberOfProcessors": 1,
+            "breakAfterReset": false,
         },
     ]
 }

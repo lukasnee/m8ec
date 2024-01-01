@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "m8ec/m8ec.h"
+
 #include <cstdint>
 namespace m8ec {
 

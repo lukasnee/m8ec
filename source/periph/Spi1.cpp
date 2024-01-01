@@ -24,21 +24,21 @@ Spi1 &Spi1::get_instance() {
 bool Spi1::ll_init() { return true; /* handled in main.c */ }
 
 bool Spi1::ll_async_read(std::uint8_t *data, std::size_t size) {
-    if (HAL_OK != HAL_SPI_Receive_DMA(&hspi1, data, size)) {
+    if (HAL_OK != HAL_SPI_Receive_IT(&hspi1, data, size)) {
         return false;
     }
     return true;
 }
 
 bool Spi1::ll_async_write(const std::uint8_t *data, std::size_t size) {
-    if (HAL_OK != HAL_SPI_Transmit_DMA(&hspi1, const_cast<std::uint8_t *>(data), size)) {
+    if (HAL_OK != HAL_SPI_Transmit_IT(&hspi1, const_cast<std::uint8_t *>(data), size)) {
         return false;
     }
     return true;
 }
 
 bool Spi1::ll_async_read_write(std::uint8_t *rd_data, const std::uint8_t *wr_data, std::size_t size) {
-    if (HAL_OK != HAL_SPI_TransmitReceive_DMA(&hspi1, const_cast<std::uint8_t *>(wr_data), rd_data, size)) {
+    if (HAL_OK != HAL_SPI_TransmitReceive_IT(&hspi1, const_cast<std::uint8_t *>(wr_data), rd_data, size)) {
         return false;
     }
     return true;

@@ -1,2 +1,2 @@
 add_subdirectory(STM32F411)
-# add_subdirectory(STM32H750)
+add_subdirectory(STM32H750)

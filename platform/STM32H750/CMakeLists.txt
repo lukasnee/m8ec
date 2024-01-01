@@ -51,18 +51,23 @@ set(PLATFORM_SPECIFIC_SOURCES_STM32H7xx
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
-    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
-    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi.c
-    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c
-    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2s.c
     Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2s_ex.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_spi_ex.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
+    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
     Core/Src/system_stm32h7xx.c
     Middlewares/Third_Party/FreeRTOS/Source/croutine.c
     Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
@@ -80,7 +85,6 @@ set(PLATFORM_SPECIFIC_SOURCES_STM32H7xx
     Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
     Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c
     Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
-    Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
     ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
     ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
     ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
@@ -177,7 +181,9 @@ set(PLATFORM_INDEPENDENT_OPTIONS
     -Wall
     -Wextra
     -fdata-sections
+    -fdata-sections
     -ffunction-sections
+    # -flto
     # -fno-use-cxa-atexit -fno-threadsafe-statics -fno-rtti
     -fno-exceptions # big change in code size and performace
     # -c -x assembler-with-cpp For good debug experience, Arm recommends -O1
@@ -188,10 +194,11 @@ set(PLATFORM_INDEPENDENT_OPTIONS
     $<$<CONFIG:Debug>:-ggdb
     -Og
     -DDEBUG>
+    -ggdb
     # -O3 compiler tries to reduce code size and execution time, O3 is highest
     # standard optimization. -Os Optimize for size. -Os enables all -O2
     # optimizations except those that often increase code size
-    $<$<CONFIG:Release>:-Ofast>)
+    $<$<CONFIG:Release>:-Os>)
 
 set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -fsingle-precision-constant
@@ -202,10 +209,13 @@ set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -lm
     -lstdc++
     -lsupc++
+    -fdata-sections
+    -fdata-sections
+    # -flto
     -Wl,--end-group
     --specs=nosys.specs
     -static
-    -Wl,--gc-sections
+    -Wl,--gc-sections 
     -Wl,--cref
     -Wl,--print-memory-usage)
 

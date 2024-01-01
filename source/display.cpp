@@ -11,6 +11,7 @@
 // Copyright 2021 Jonne Kokkonen
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
+#include "m8ec/m8ec.h"
 #include "m8ec/display.hpp"
 #include "m8ec/font.hpp"
 #include "m8ec/m8_protocol.hpp"
@@ -41,14 +42,14 @@ bool initialize() {
         TFT_RESET_GPIO_Port, TFT_RESET_Pin, TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port, TFT_DC_Pin, isoLandscape, NULL, 0,
         NULL, 0, itsNONE, itnNONE);
     if (!ili9341_lcd) {
-        printf("error: ili9341_new failed\n");
+        LOG("error: ili9341_new failed\n");
         return false;
     }
     ili9341_fill_screen(ili9341_lcd, bg_color);
     return true;
 }
 
-void set_large_mode(int enabled) { printf("error: set_large_mode: %d: not implemented\n", enabled); }
+void set_large_mode(int enabled) { LOG("error: set_large_mode: %d: not implemented\n", enabled); }
 
 int draw_character(const m8_protocol::Character &character) {
     if (!ili9341_lcd) {
@@ -92,7 +93,7 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width)
         return;
     }
     if (waveform_width > canvas_max.w) {
-        printf("warning: draw_waveform: waveform_width: %zu: too large\n", waveform_width);
+        LOG("warning: draw_waveform: waveform_width: %zu: too large\n", waveform_width);
         waveform_width = canvas_max.w; // limit the width
     }
 
@@ -129,7 +130,7 @@ void draw_string(const char *str) {
     ili9341_text_attr_t textAttr;
     textAttr.bg_color = bg_color;
     textAttr.fg_color = ILI9341_WHITE;
-    textAttr.font = &ili9341_font_7x10;
+    textAttr.font = &font::trash80_stealth57;
     textAttr.origin_x = 0;
     textAttr.origin_y = 0;
     ili9341_draw_string(ili9341_lcd, textAttr, const_cast<char *>(str));

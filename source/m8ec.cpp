@@ -26,12 +26,12 @@ namespace m8ec {
 
 static bool init_hw_periphs() {
     if (!periph::Uart1::get_instance().init()) {
-        printf("error: periph::Uart1::get_instance().init failed\n");
+        LOG("error: periph::Uart1::get_instance().init failed\n");
         FONAS_PANIC();
         return false;
     }
     if (!periph::UsbCdc::get_instance().init()) {
-        printf("error: periph::UsbCdc::get_instance().init failed\n");
+        LOG("error: periph::UsbCdc::get_instance().init failed\n");
         FONAS_PANIC();
         return false;
     }
@@ -40,17 +40,17 @@ static bool init_hw_periphs() {
 
 static bool init_apps() {
     if (!display::initialize()) {
-        printf("error: display::initialize failed\n");
+        LOG("error: display::initialize failed\n");
         FONAS_PANIC();
         return false;
     }
     if (!KeysThread::get_instance().init()) {
-        printf("error: KeysThread::get_instance().init failed\n");
+        LOG("error: KeysThread::get_instance().init failed\n");
         FONAS_PANIC();
         return false;
     }
     if (!m8_protocol::init()) {
-        printf("error: m8_protocol::init\n");
+        LOG("error: m8_protocol::init\n");
         FONAS_PANIC();
         return false;
     }
@@ -59,12 +59,12 @@ static bool init_apps() {
 
 void launch() {
     if (!init_hw_periphs()) {
-        printf("error: init_hw_periphs failed\n");
+        LOG("error: init_hw_periphs failed\n");
         FONAS_PANIC();
         return;
     }
     if (!init_apps()) {
-        printf("error: init_apps failed\n");
+        LOG("error: init_apps failed\n");
         FONAS_PANIC();
         return;
     }
