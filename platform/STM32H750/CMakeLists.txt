@@ -36,8 +36,13 @@ set(PLATFORM_SPECIFIC_INCLUDES_STM32H7xx
 
 set(PLATFORM_SPECIFIC_SOURCES_STM32H7xx
     startup_stm32h750xx.s
-    Core/Src/main.c
+    Core/Src/dma.c
     Core/Src/freertos.c
+    Core/Src/gpio.c
+    Core/Src/i2s.c
+    Core/Src/main.c
+    Core/Src/spi.c
+    Core/Src/usart.c
     Core/Src/stm32h7xx_it.c
     Core/Src/stm32h7xx_hal_msp.c
     Core/Src/stm32h7xx_hal_timebase_tim.c
