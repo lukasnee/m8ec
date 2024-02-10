@@ -186,9 +186,7 @@ set(PLATFORM_INDEPENDENT_OPTIONS
     -Wall
     -Wextra
     -fdata-sections
-    -fdata-sections
     -ffunction-sections
-    # -flto
     # -fno-use-cxa-atexit -fno-threadsafe-statics -fno-rtti
     -fno-exceptions # big change in code size and performace
     # -c -x assembler-with-cpp For good debug experience, Arm recommends -O1
@@ -199,11 +197,10 @@ set(PLATFORM_INDEPENDENT_OPTIONS
     $<$<CONFIG:Debug>:-ggdb
     -Og
     -DDEBUG>
-    -ggdb
     # -O3 compiler tries to reduce code size and execution time, O3 is highest
     # standard optimization. -Os Optimize for size. -Os enables all -O2
     # optimizations except those that often increase code size
-    $<$<CONFIG:Release>:-Os>)
+    $<$<CONFIG:Release>:-O1>)
 
 set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -fsingle-precision-constant
@@ -215,8 +212,7 @@ set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -lstdc++
     -lsupc++
     -fdata-sections
-    -fdata-sections
-    # -flto
+    -ffunction-sections
     -Wl,--end-group
     --specs=nosys.specs
     -static

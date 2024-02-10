@@ -85,7 +85,7 @@
 #define USBH_MAX_DATA_BUFFER      1024U
 
 /*----------   -----------*/
-#define USBH_DEBUG_LEVEL      0U
+#define USBH_DEBUG_LEVEL      3U
 
 /*----------   -----------*/
 #define USBH_USE_OS      1U

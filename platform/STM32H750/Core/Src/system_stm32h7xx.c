@@ -85,10 +85,14 @@
 /*!< Uncomment the following line if you need to relocate the vector table
      anywhere in FLASH BANK1 or AXI SRAM, else the vector table is kept at the automatic
      remap of boot address selected */
-/* #define USER_VECT_TAB_ADDRESS */
+#define USER_VECT_TAB_ADDRESS
+#define MEMORY_MAPPED_EXTERNAL_QSPI_FLASH_MODE 1
 
 #if defined(USER_VECT_TAB_ADDRESS)
-#if defined(DUAL_CORE) && defined(CORE_CM4)
+#if MEMORY_MAPPED_EXTERNAL_QSPI_FLASH_MODE
+#define VECT_TAB_BASE_ADDRESS   QSPI_BASE
+#define VECT_TAB_OFFSET         0x00000000U
+#elif defined(DUAL_CORE) && defined(CORE_CM4)
 /*!< Uncomment the following line if you need to relocate your vector Table
      in D2 AXI SRAM else user remap will be done in FLASH BANK2. */
 /* #define VECT_TAB_SRAM */
