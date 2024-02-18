@@ -181,12 +181,13 @@ endif()
 set(PLATFORM_INDEPENDENT_DEFINES -DCPP_FREERTOS_NO_EXCEPTIONS
                                  -DCPP_FREERTOS_NO_CPP_STRINGS -DFONAS)
 
-set(PLATFORM_INDEPENDENT_OPTIONS
+set(PLATFORM_INDEPENDENT_COMPILE_OPTIONS
     -fstack-usage
     -Wall
     -Wextra
     -fdata-sections
     -ffunction-sections
+    # -flto
     # -fno-use-cxa-atexit -fno-threadsafe-statics -fno-rtti
     -fno-exceptions # big change in code size and performace
     # -c -x assembler-with-cpp For good debug experience, Arm recommends -O1
@@ -213,10 +214,11 @@ set(PLATFORM_INDEPENDENT_LINKER_OPTIONS
     -lsupc++
     -fdata-sections
     -ffunction-sections
+    # -flto
     -Wl,--end-group
     --specs=nosys.specs
     -static
-    -Wl,--gc-sections 
+    -Wl,--gc-sections
     -Wl,--cref
     -Wl,--print-memory-usage)
 
@@ -235,7 +237,7 @@ target_include_directories(
   ${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_INCLUDES}
                           ${PLATFORM_SPECIFIC_INCLUDES})
 
-target_compile_options(${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_OPTIONS}
+target_compile_options(${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_COMPILE_OPTIONS}
                                                ${PLATFORM_SPECIFIC_OPTIONS})
 
 target_link_options(
