@@ -24,5 +24,5 @@ void draw_rectangle(const m8_protocol::Rectangle &rectangle);
 int draw_character(const m8_protocol::Character &character);
 void set_large_mode(int enabled);
 void view_changed(int view);
-void draw_string(const char *str);
+void draw_string(const char *str, uint16_t x = 0, uint16_t y = 0);
 } // namespace m8ec::display

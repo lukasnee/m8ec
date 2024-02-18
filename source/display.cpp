@@ -12,6 +12,7 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 #include "m8ec/m8ec.h"
+
 #include "m8ec/display.hpp"
 #include "m8ec/font.hpp"
 #include "m8ec/m8_protocol.hpp"
@@ -123,7 +124,7 @@ void draw_waveform(const m8_protocol::Waveform &waveform, size_t waveform_width)
     was_blank = is_blank;
 }
 
-void draw_string(const char *str) {
+void draw_string(const char *str, uint16_t x, uint16_t y) {
     if (!ili9341_lcd) {
         return;
     }
@@ -131,8 +132,8 @@ void draw_string(const char *str) {
     textAttr.bg_color = bg_color;
     textAttr.fg_color = ILI9341_WHITE;
     textAttr.font = &font::trash80_stealth57;
-    textAttr.origin_x = 0;
-    textAttr.origin_y = 0;
+    textAttr.origin_x = x;
+    textAttr.origin_y = y;
     ili9341_draw_string(ili9341_lcd, textAttr, const_cast<char *>(str));
 }
 } // namespace m8ec::display
