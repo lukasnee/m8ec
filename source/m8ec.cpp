@@ -50,11 +50,14 @@ static bool init_apps() {
     }
     LOGD("Display OK\n");
 
-    if (!KeysThread::get_instance().init()) {
-        LOG("error: KeysThread::get_instance().init failed\n");
-        FONAS_PANIC();
-        return false;
-    }
+    // TODO: figure out why KeysThread makes system hang
+    // if (!KeysThread::get_instance().init()) {
+    //     LOG("error: KeysThread::get_instance().init failed\n");
+    //     FONAS_PANIC();
+    //     return false;
+    // }
+    // LOGD("KeysThread OK\n");
+    
     if (!m8_protocol::init()) {
         LOG("error: m8_protocol::init\n");
         FONAS_PANIC();
