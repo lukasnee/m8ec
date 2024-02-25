@@ -12,7 +12,7 @@
 #include "m8ec/KeysThread.hpp"
 #include "m8ec/m8ec.hpp"
 
-#include "m8ec/periph/Uart1.hpp"
+#include "m8ec/periph/Uart4.hpp"
 #include "m8ec/periph/UsbCdc.hpp"
 
 #include "m8ec/display.hpp"
@@ -25,8 +25,8 @@
 namespace m8ec {
 
 static bool init_hw_periphs() {
-    if (!periph::Uart1::get_instance().init()) {
-        LOG("error: periph::Uart1::get_instance().init failed\n");
+    if (!periph::Uart4::get_instance().init()) {
+        LOG("error: periph::Uart4::get_instance().init failed\n");
         FONAS_PANIC();
         return false;
     }

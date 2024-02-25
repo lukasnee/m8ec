@@ -8,20 +8,20 @@
  * (at your option) any later version.
  */
 
-#include "m8ec/periph/Uart1.hpp"
+#include "m8ec/periph/Uart4.hpp"
 
 #include "stm32xxxx_hal.h"
 
-extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart4;
 
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart == &huart1) {
-        m8ec::periph::Uart1::get_instance().ll_async_write_completed_cb_from_isr();
+    if (huart == &huart4) {
+        m8ec::periph::Uart4::get_instance().ll_async_write_completed_cb_from_isr();
     }
 }
 
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart == &huart1) {
-        m8ec::periph::Uart1::get_instance().ll_async_read_completed_cb_from_isr();
+    if (huart == &huart4) {
+        m8ec::periph::Uart4::get_instance().ll_async_read_completed_cb_from_isr();
     }
 }

@@ -8,7 +8,7 @@
  * (at your option) any later version.
  */
 
-#include "m8ec/periph/Uart1.hpp"
+#include "m8ec/periph/Uart4.hpp"
 
 #ifdef SEGGER_SYSVIEW
 #include <reent.h>  // required for _write_r
@@ -33,7 +33,7 @@ extern "C" int _write(int fd, char *ptr, int len) {
         errno = EBADF;
         return -1;
     }
-    if (!m8ec::periph::Uart1::get_instance().write(reinterpret_cast<std::uint8_t *>(ptr), len)) {
+    if (!m8ec::periph::Uart4::get_instance().write(reinterpret_cast<std::uint8_t *>(ptr), len)) {
         FONAS_PANIC();
     }
     return len;
