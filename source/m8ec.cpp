@@ -30,11 +30,15 @@ static bool init_hw_periphs() {
         FONAS_PANIC();
         return false;
     }
+    LOGD("UART4 OK\n");
+
     if (!periph::UsbCdc::get_instance().init()) {
         LOG("error: periph::UsbCdc::get_instance().init failed\n");
         FONAS_PANIC();
         return false;
     }
+    LOGD("USB CDC OK\n");
+
     return true;
 }
 
@@ -44,6 +48,8 @@ static bool init_apps() {
         FONAS_PANIC();
         return false;
     }
+    LOGD("Display OK\n");
+
     if (!KeysThread::get_instance().init()) {
         LOG("error: KeysThread::get_instance().init failed\n");
         FONAS_PANIC();
@@ -54,6 +60,8 @@ static bool init_apps() {
         FONAS_PANIC();
         return false;
     }
+    LOGD("m8_protocol OK\n");
+
     return true;
 }
 
