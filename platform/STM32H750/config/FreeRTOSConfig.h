@@ -113,7 +113,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil              1
 #define INCLUDE_vTaskDelay                   1
 #define INCLUDE_xTaskGetSchedulerState       1
-#define INCLUDE_xTimerPendFunctionCall       1
+// #define INCLUDE_xTimerPendFunctionCall       1
 #define INCLUDE_xQueueGetMutexHolder         1
 #define INCLUDE_uxTaskGetStackHighWaterMark  1
 #define INCLUDE_xTaskGetCurrentTaskHandle    1
@@ -169,7 +169,7 @@ standard names. */
 
 /* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
-#ifdef SEGGER_SYSVIEW
+#ifdef SEGGER_SYSVIEW_ENABLED
 #include "SEGGER_SYSVIEW_FreeRTOS.h"
 #endif
 /* USER CODE END Defines */
