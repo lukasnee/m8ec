@@ -39,7 +39,7 @@ development environment.
 
     ```bash
     sudo apt update && sudo apt upgrade -y
-    sudo apt install -y git cmake python3
+    sudo apt install -y git cmake ninja-build python3
     ```
 
 2. Install Arm GNU Toolchain:
