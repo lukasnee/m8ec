@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "m8ec [jlink]",
+            "name": "m8ec [openocd]",
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "openocd",
@@ -14,10 +14,33 @@
             ],
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
-            "symbolFiles": [
-                "${workspaceRoot}/.build/source/m8ec",
-                "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
-            ],
+            "executable": "${workspaceRoot}/.build/source/m8ec",
+            // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
+            // https://github.com/Marus/cortex-debug/issues/1007
+            // "symbolFiles": [
+            //     "${workspaceRoot}/.build/source/m8ec",
+            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            // ],
+            "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
+            "interface": "swd",
+            "breakAfterReset": true,
+            // "runToEntryPoint": "main"
+            // "showDevDebugOutput": "raw",
+        },
+        {
+            "name": "m8ec [jlink]",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "jlink",
+            "device": "STM32H750VB",
+            "rtos": "FreeRTOS",
+            "cwd": "${workspaceRoot}/source",
+            "executable": "${workspaceRoot}/.build/source/m8ec",
+            // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
+            // "symbolFiles": [
+            //     "${workspaceRoot}/.build/source/m8ec",
+            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            // ],
             "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
@@ -34,10 +57,12 @@
             ],
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
-            "symbolFiles": [
-                "${workspaceRoot}/.build/source/m8ec",
-                "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
-            ],
+            "executable": "${workspaceRoot}/.build/source/m8ec",
+            // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
+            // "symbolFiles": [
+            //     "${workspaceRoot}/.build/source/m8ec",
+            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            // ],
             "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
