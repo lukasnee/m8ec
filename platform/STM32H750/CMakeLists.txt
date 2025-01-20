@@ -49,6 +49,9 @@ target_include_directories(
             Core/Inc
             ../../extern/ILI9341-STM32-HAL
             include
+            Middlewares/Third_Party/FreeRTOS/Source/include
+            Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+            Drivers/CMSIS/RTOS2/Include
 )
 
 target_include_directories(
@@ -87,34 +90,11 @@ add_subdirectory(Drivers/STM32H7xx_HAL_Driver)
 
 add_subdirectory(config/SEGGER_SYSVIEW)
 
-add_library(freertos_config INTERFACE)
-target_include_directories(
-  freertos_config
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config
-            Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
-)
-target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL_conf)
-
-target_sources(
-  freertos_config
-  PUBLIC Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
-         Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-)
-
-target_link_libraries(
-  freertos_config
-  INTERFACE STM32H7xx_HAL
-            SeggerSysView
-            ucprof_config
-            ucprof
-            CMSIS
-)
-add_subdirectory(Middlewares/Third_Party/FreeRTOS)
-
 target_link_libraries(
   platform
   INTERFACE STM32H7xx_HAL
-            FreeRTOS
+            freertos_kernel
+            cmsis_freertos
             SeggerSysView
             ucprof
             CMSIS

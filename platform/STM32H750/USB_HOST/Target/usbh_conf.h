@@ -38,6 +38,8 @@
 #include "m8ec/m8ec.h"
 /* USER CODE END INCLUDE */
 
+#define osCMSIS 0x20001U
+
 /** @addtogroup STM32_USB_HOST_LIBRARY
   * @{
   */
@@ -96,7 +98,7 @@
 #define HOST_FS 		1
 
 #if (USBH_USE_OS == 1)
-  #include "cmsis_os.h"
+  #include "cmsis_os2.h"
   #define USBH_PROCESS_PRIO          1
   #define USBH_PROCESS_STACK_SIZE    ((uint16_t)4 * 1024)
 #endif /* (USBH_USE_OS == 1) */
