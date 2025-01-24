@@ -1,5 +1,6 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
+set(CMAKE_CROSSCOMPILING TRUE)
 
 if(MINGW
    OR CYGWIN
@@ -71,4 +72,5 @@ set(CMAKE_ASM_FLAGS "-x assembler-with-cpp ${COMMON_FLAGS} ${COMPILER_FLAGS}")
 
 set(CMAKE_EXE_LINKER_FLAGS
     "${COMMON_FLAGS} --specs=nosys.specs -static -Wl,--gc-sections -Wl,--print-memory-usage -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group"
+    #  -Wl,--verbose -Wl,--trace
 )
