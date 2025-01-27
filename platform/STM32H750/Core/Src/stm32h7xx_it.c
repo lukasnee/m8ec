@@ -52,6 +52,36 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+#define HALT_IF_DEBUGGING()                                                                                                    \
+  do {                                                                                                                         \
+    if ((*(volatile uint32_t *)0xE000EDF0) & (1 << 0)) {                                                                       \
+      __asm("bkpt 1");                                                                                                         \
+    }                                                                                                                          \
+  } while (0)
+
+typedef struct __attribute__((packed)) ContextStateFrame {
+  uint32_t r0;
+  uint32_t r1;
+  uint32_t r2;
+  uint32_t r3;
+  uint32_t r12;
+  uint32_t lr;
+  uint32_t return_address;
+  uint32_t xpsr;
+} sContextStateFrame;
+
+__attribute__((optimize("O0"))) void hard_fault_handler_c(sContextStateFrame *frame) {
+  UNUSED(frame);
+   HALT_IF_DEBUGGING();
+}
+
+#define HARDFAULT_HANDLING_ASM(_x)                                                                                             \
+  __asm volatile("tst lr, #4 \n"                                                                                               \
+                 "ite eq \n"                                                                                                   \
+                 "mrseq r0, msp \n"                                                                                            \
+                 "mrsne r0, psp \n"                                                                                            \
+                 "b hard_fault_handler_c \n")
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -90,12 +120,11 @@ void NMI_Handler(void)
 }
 
 /**
-  * @brief This function handles Hard fault interrupt.
-  */
-void HardFault_Handler(void)
-{
+ * @brief This function handles Hard fault interrupt.
+ */
+void HardFault_Handler(void) {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  HARDFAULT_HANDLING_ASM();
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
