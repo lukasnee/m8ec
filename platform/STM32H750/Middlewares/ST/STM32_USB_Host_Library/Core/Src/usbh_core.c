@@ -154,7 +154,7 @@ uint8_t USBH_SwitchActiveIfaceClass(USBH_HandleTypeDef *phost, const uint8_t ifa
   phost->ActiveIfaceCtrl.currIdx = ifaceIdx;
   phost->pActiveClass = phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].pClass;
   phost->device.current_interface = phost->ActiveIfaceCtrl.ifaces[phost->ActiveIfaceCtrl.currIdx].descIdx;
-  USBH_TrcLog("Switched to interface #%d", phost->ActiveIfaceCtrl.currIdx);
+  USBH_TrcLog("Switched to interface #%ld", phost->ActiveIfaceCtrl.currIdx);
   return 1;
 }
 
