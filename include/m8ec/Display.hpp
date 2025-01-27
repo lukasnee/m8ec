@@ -13,16 +13,29 @@
 
 #pragma once
 
-#include "m8ec/m8_protocol.hpp"
+#include "ILI9341/ili9341.h"
+#include "ILI9341/ili9341_gfx.h"
 
-#include <cstddef>
+namespace m8ec {
 
-namespace m8ec::display {
-bool initialize();
-void draw_waveform(const m8_protocol::Waveform &waveform, uint16_t waveform_width);
-void draw_rectangle(const m8_protocol::Rectangle &rectangle);
-int draw_character(const m8_protocol::Character &character);
-void set_large_mode(int enabled);
-void view_changed(int view);
-void draw_string(const char *str, uint16_t x = 0, uint16_t y = 0);
-} // namespace m8ec::display
+// The hardware-bound display singleton.
+struct Display {
+
+    static Display &get_instance();
+
+    bool init();
+
+    ili9341_t *lcd();
+
+    ili9341_color_t get_bg_color() { return this->bg_color; }
+    void set_bg_color(ili9341_color_t color) { this->bg_color = color; }
+
+private:
+    ili9341_t *ili9341 = nullptr;
+
+    ili9341_color_t bg_color = ILI9341_BLACK;
+
+    Display() = default;
+};
+
+} // namespace m8ec

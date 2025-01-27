@@ -83,23 +83,23 @@ extern "C" void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost) {
         m8ec::periph::UsbCdc::get_instance().ll_async_write_completed_cb();
     }
 }
+#include "m8ec/m8/protocol.hpp"
 #include "m8ec/slip.h"
-#include "m8ec/m8_protocol.hpp"
-namespace m8ec::m8_protocol {
-extern slip_handler_s slip;
-} // namespace m8ec::m8_protocol
 
+namespace m8ec::m8::protocol {
+extern slip_handler_s slip;
+} // namespace m8ec::m8::protocol
 
 extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size) {
     if (phost == &hUsbHostFS) {
         // for (std::size_t i = 0; i < size; i++) {
-        //         const slip_error_t n = slip_read_byte(&m8ec::m8_protocol::slip, data[i]);
+        //         const slip_error_t n = slip_read_byte(&m8ec::m8::protocol::slip, data[i]);
         //         if (n != SLIP_NO_ERROR) {
         //             if (m8ec::Config::debug_slip) {
         //                 LOG("Error: SLIP: %d\n", n);
         //             }
         //             if (n == SLIP_ERROR_INVALID_PACKET) {
-        //                 m8ec::m8_protocol::reset_display();
+        //                 m8ec::m8::protocol::reset_display();
         //             }
         //         }
         //     }

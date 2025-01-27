@@ -1,4 +1,4 @@
-#include "m8ec/Keys.hpp"
+#include "m8ec/m8/protocol.hpp"
 
 #include "fonas/fonas.hpp"
 
@@ -6,7 +6,7 @@
 
 #define ARRAY_SZ(x) (sizeof(x) / sizeof((x)[0]))
 
-namespace m8ec {
+namespace m8ec::m8::protocol {
 
 struct Config {
     static constexpr std::size_t gpio_transient_delay_ms = 1;
@@ -15,19 +15,14 @@ struct Config {
 const uint16_t rows[] = {GPIO_PIN_13, GPIO_PIN_1, GPIO_PIN_0};
 const uint16_t columns[] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7};
 
-const IKeys::Key key_map[ARRAY_SZ(columns)][ARRAY_SZ(rows)] = {
-    {IKeys::Key::none, IKeys::Key::left, IKeys::Key::none},
-    {IKeys::Key::up, IKeys::Key::down, IKeys::Key::shift},
-    {IKeys::Key::option, IKeys::Key::right, IKeys::Key::play},
-    {IKeys::Key::edit, IKeys::Key::none, IKeys::Key::none},
+const Keys::Key key_map[ARRAY_SZ(columns)][ARRAY_SZ(rows)] = {
+    {Keys::Key::none, Keys::Key::left, Keys::Key::none},
+    {Keys::Key::up, Keys::Key::down, Keys::Key::shift},
+    {Keys::Key::option, Keys::Key::right, Keys::Key::play},
+    {Keys::Key::edit, Keys::Key::none, Keys::Key::none},
 };
 
-Keys &Keys::getInstance() {
-    static Keys instance;
-    return instance;
-}
-
-bool Keys::init() {
+bool Keys::ll_init() {
 
     GPIO_InitTypeDef GPIO_InitStruct = {};
 
@@ -49,7 +44,7 @@ bool Keys::init() {
     return true;
 }
 
-IKeys::State Keys::getState() {
+Keys::State Keys::ll_get_state() {
     State state = {};
     // keyboard matrix with diodes
     for (size_t cIdx = 0; cIdx < ARRAY_SZ(columns); ++cIdx) {
@@ -64,4 +59,4 @@ IKeys::State Keys::getState() {
     return state;
 }
 
-} // namespace m8ec
+} // namespace m8ec::m8::protocol

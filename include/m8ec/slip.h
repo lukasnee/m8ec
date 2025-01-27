@@ -48,7 +48,8 @@ typedef enum {
 typedef struct {
         uint8_t *buf;
         uint32_t buf_size;
-        int (*recv_message)(uint8_t *data, uint32_t size);
+        void *recv_ctx;
+        int (*recv_message)(uint8_t *data, uint32_t size, void *recv_ctx);
 } slip_descriptor_s;
 
 typedef struct {

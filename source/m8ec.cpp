@@ -10,7 +10,6 @@
 
 #include "platform.h"
 
-#include "m8ec/KeysThread.hpp"
 #include "m8ec/m8ec.hpp"
 
 #if defined(STM32H750xx)
@@ -20,8 +19,9 @@
 #endif
 #include "m8ec/periph/UsbCdc.hpp"
 
-#include "m8ec/display.hpp"
-#include "m8ec/m8_protocol.hpp"
+#include "m8ec/Display.hpp"
+#include "m8ec/M8Display.hpp"
+#include "m8ec/m8/protocol.hpp"
 
 #include "fonas/fonas.hpp"
 
@@ -56,28 +56,63 @@ static bool init_hw_periphs() {
     return true;
 }
 
+M8Display m8_display(Display::get_instance());
+namespace m8::protocol {
+static Service service(m8_display);
+
+::m8ec::m8::protocol::Keys & ::m8ec::m8::protocol::Keys::get_instance() {
+    static ::m8ec::m8::protocol::Keys instance("keysSvc", 2 * 1024, 1, service);
+    return instance;
+}
+} // namespace m8::protocol
+
+struct LivenessThread : fonas::Thread {
+
+    static LivenessThread &get_instance() {
+        static LivenessThread instance;
+        return instance;
+    }
+
+private:
+    LivenessThread() : fonas::Thread("liveness", 1024, 1) {}
+
+    void Run() final {
+        ili9341_text_attr_t attr{
+            .font = &ili9341_font_trash80_stealth57, .fg_color = ILI9341_WHITE, .bg_color = ILI9341_BLACK, .origin_x = 0, .origin_y = 0};
+        while (true) {
+            static const char loadingChars[] = {'|', '/', '-', '\\'};
+            static uint8_t loadingCharIndex = 0;
+            ili9341_draw_char(Display::get_instance().lcd(), attr, loadingChars[loadingCharIndex]);
+            loadingCharIndex = (loadingCharIndex + 1) % sizeof(loadingChars);
+            fonas::delay_ms(250);
+        }
+    }
+};
+
 static bool init_apps() {
-    if (!display::initialize()) {
+    if (!Display::get_instance().init()) {
         LOG("error: display::initialize failed\n");
         FONAS_PANIC();
         return false;
     }
     LOGD("Display OK\n");
 
-    // TODO: figure out why KeysThread makes system hang
-    // if (!KeysThread::get_instance().init()) {
-    //     LOG("error: KeysThread::get_instance().init failed\n");
+    LivenessThread::get_instance().Start();
+
+    // TODO: figure out why Keys::Service makes system hang
+    // if (!keysService.init()) {
+    //     LOG("error: keysService.init failed\n");
     //     FONAS_PANIC();
     //     return false;
     // }
-    // LOGD("KeysThread OK\n");
+    // LOGD("Keys::Service OK\n");
 
-    if (!m8_protocol::init()) {
-        LOG("error: m8_protocol::init\n");
+    if (!m8::protocol::service.init()) {
+        LOG("error: m8::protocol::init\n");
         FONAS_PANIC();
         return false;
     }
-    LOGD("m8_protocol OK\n");
+    LOGD("m8::protocol OK\n");
 
     return true;
 }

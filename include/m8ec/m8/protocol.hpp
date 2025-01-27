@@ -1,0 +1,194 @@
+/*
+ * m8ec - Embedded Client for the Dirtywave M8 Headless device.
+ * Copyright (C) 2023 Lukas Neverauskis https://github.com/lukasnee
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+// Copyright 2021 Jonne Kokkonen
+// Released under the MIT licence, https://opensource.org/licenses/MIT
+
+#pragma once
+
+#include <cstdint>
+
+#include "fonas/fonas.hpp"
+
+namespace m8ec::m8::protocol {
+
+#pragma pack(push, 1)
+struct Position {
+    uint16_t x;
+    uint16_t y;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Size {
+    uint16_t w;
+    uint16_t h;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Color {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Rectangle {
+    Position pos;
+    Size size;
+    Color color;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Character {
+    char c;
+    Position pos;
+    Color foreground;
+    Color background;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct Waveform {
+    Color color;
+    uint8_t buffer[320];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct SystemInfo {
+    enum HwType : uint8_t {
+        m8_headless = 0x00,
+        m8_beta = 0x01,
+        m8_production = 0x02,
+    };
+    struct Version {
+        uint8_t major;
+        uint8_t minor;
+        uint8_t patch;
+    };
+    enum FontMode : uint8_t {
+        small = 0x00,
+        large = 0x01,
+    };
+    HwType hw_type;
+    Version version;
+    FontMode font_mode;
+};
+#pragma pack(pop)
+
+enum Key : uint8_t {
+    edit,
+    option,
+    right,
+    play,
+    shift,
+    down,
+    up,
+    left,
+
+    none = 0xff,
+};
+struct KeysState {
+    void set(Key key, bool value) {
+        if (value) {
+            this->underlying |= 1 << key;
+        }
+        else {
+            this->underlying &= ~(1 << key);
+        }
+    }
+
+    bool get(Key key) const { return this->underlying & (1 << key); }
+
+    std::uint8_t underlying;
+};
+
+struct Service : public fonas::Thread {
+
+    struct Display {
+        virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
+        virtual void draw_rectangle(const Rectangle &rectangle) = 0;
+        virtual int draw_character(const Character &character) = 0;
+        virtual void set_large_mode(int enabled) = 0;
+        // virtual void view_changed(int view) = 0; // TODO
+    };
+
+    Service(Display &display);
+
+    bool init();
+
+    static void enable_display();
+    static void reset_display();
+    static void send_keys_state(KeysState keys_state);
+
+private:
+    void Run() final;
+
+    Display &display;
+};
+
+struct Keys : fonas::Thread {
+
+    using State = KeysState;
+    using Key = ::m8ec::m8::protocol::Key;
+
+    static constexpr Key keys[] = {Key::edit, Key::option, Key::right, Key::play, Key::shift, Key::down, Key::up, Key::left};
+
+    static const char *key_to_string(Key key) {
+        switch (key) {
+        case Key::edit:
+            return "edit";
+        case Key::option:
+            return "option";
+        case Key::right:
+            return "right";
+        case Key::play:
+            return "play";
+        case Key::shift:
+            return "shift";
+        case Key::down:
+            return "down";
+        case Key::up:
+            return "up";
+        case Key::left:
+            return "left";
+        default:
+            return "none";
+        }
+    }
+
+    static Keys &get_instance();
+
+    bool init();
+
+protected:
+    bool ll_init();
+    State ll_get_state();
+
+private:
+    ~Keys() = default;
+    Keys(const Keys &) = delete;
+    Keys &operator=(const Keys &) = delete;
+
+    Keys(const char *Name, uint16_t StackDepth, UBaseType_t Priority, protocol::Service &protocol_service)
+        : fonas::Thread(Name, StackDepth, Priority), protocol_service(protocol_service) {
+        this->fonas::Thread::Start();
+    }
+
+    void Run() final override;
+
+    protocol::Service &protocol_service;
+};
+
+} // namespace m8ec::m8::protocol

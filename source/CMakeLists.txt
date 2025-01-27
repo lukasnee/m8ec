@@ -4,16 +4,15 @@ target_sources(
   m8ec
   PRIVATE stdio.cpp
           m8ec.cpp
-          m8_protocol.cpp
-          display.cpp
-          font.cpp
+          m8/protocol.cpp
+          M8Display.cpp
+          Display.cpp
           slip.c
           periph/UartCallbacks.cpp
           periph/Uart4.cpp
           periph/SpiCallbacks.cpp
           periph/Spi1.cpp
           periph/UsbCdc.cpp
-          KeysThread.cpp
           platform/${PLATFORM}/Keys.cpp
 )
 
@@ -41,6 +40,6 @@ if(SEGGER_SYSVIEW_ENABLED)
     m8ec
     PRIVATE
       -finstrument-functions
-      -finstrument-functions-exclude-file-list=stdio,periph/UartCallbacks,periph/SpiCallbacks,KeysThread
+      -finstrument-functions-exclude-file-list=stdio,periph/UartCallbacks,periph/SpiCallbacks
   )
 endif()
