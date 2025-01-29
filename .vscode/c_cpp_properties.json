@@ -1,14 +1,8 @@
 {
     "configurations": [
         {
-            "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "compilerPath": "/opt/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
-            "cStandard": "c11",
-            "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64",
+            "name": "CMake",
+            "compileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
             "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
