@@ -27,33 +27,10 @@ target_sources(
             Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
 )
 
-target_compile_definitions(
-  platform
-  INTERFACE # platform independent
-            -DCPP_FREERTOS_NO_EXCEPTIONS
-            -DCPP_FREERTOS_NO_CPP_STRINGS
-            -DFONAS
-            # platform-specific
-            -DUSE_HAL_DRIVER
-            -DSTM32H750xx
-            -DSTM32H7
-)
-
 target_include_directories(
   platform
-  INTERFACE # platform-independent:
-            ../../extern/freertos-addons/c++/Source/include
-            ../../extern/fonas/include
-            ../../include
-            # platform-specific
-            Core/Inc
-            ../../extern/ILI9341-STM32-HAL
-            include
-)
-
-target_include_directories(
-  platform
-  INTERFACE USB_HOST/App
+  INTERFACE Core/Inc
+            USB_HOST/App
             USB_HOST/Target
             Middlewares/ST/STM32_USB_Host_Library/Core/Inc
             Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
@@ -70,9 +47,7 @@ if(SEGGER_SYSVIEW_ENABLED)
 endif()
 
 target_link_options(
-  platform
-  INTERFACE
-  -T${CMAKE_CURRENT_LIST_DIR}/STM32H750VBTx_RAM.ld
+  platform INTERFACE -T${CMAKE_CURRENT_LIST_DIR}/STM32H750VBTx_RAM.ld
   -Wl,--no-warn-rwx-segment
 )
 
@@ -80,11 +55,14 @@ add_subdirectory(Drivers/CMSIS)
 
 add_library(STM32H7xx_HAL_conf INTERFACE)
 target_include_directories(
-  STM32H7xx_HAL_conf
-  INTERFACE Core/Inc Drivers/CMSIS/Device/ST/STM32H7xx/Include
-) # Core/Inc/stm32h7xx_hal_conf.h
+  STM32H7xx_HAL_conf INTERFACE Core/Inc # stm32h7xx_hal_conf.h
+)
 add_subdirectory(Drivers/STM32H7xx_HAL_Driver)
 
+add_library(SeggerSysView_config INTERFACE)
+target_link_libraries(
+  SeggerSysView_config INTERFACE SeggerSysView_config_STM32H750
+)
 add_subdirectory(config/SEGGER_SYSVIEW)
 
 add_library(freertos_config INTERFACE)
@@ -93,29 +71,21 @@ target_include_directories(
   INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config
             Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 )
-target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL_conf)
-
 target_sources(
   freertos_config
   PUBLIC Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
          Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 )
-
-target_link_libraries(
-  freertos_config
-  INTERFACE STM32H7xx_HAL
-            SeggerSysView
-            ucprof_config
-            ucprof
-            CMSIS
-)
+if(SEGGER_SYSVIEW_ENABLED)
+  target_compile_options(
+    freertos_config
+    INTERFACE
+      -finstrument-functions-exclude-function-list=xPortIsInsideInterrupt
+  )
+endif()
+target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 target_link_libraries(
-  platform
-  INTERFACE STM32H7xx_HAL
-            freertos_kernel
-            SeggerSysView
-            ucprof
-            CMSIS
+  platform INTERFACE CMSIS STM32H7xx_HAL ucprof freertos_kernel
 )

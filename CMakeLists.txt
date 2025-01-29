@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 project(m8ec)
 
-message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
-
 enable_language(CXX C ASM)
 
 set(CMAKE_C_STANDARD 11)
@@ -24,11 +22,6 @@ add_compile_options(
 )
 
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
-
-add_library(SeggerSysView_config INTERFACE)
-target_link_libraries(
-  SeggerSysView_config INTERFACE SeggerSysView_config_STM32H750
-)
 
 add_library(ucprof_config INTERFACE)
 target_include_directories(

@@ -235,8 +235,6 @@ target_link_options(
   ${PROJECT_NAME} PRIVATE ${PLATFORM_INDEPENDENT_LINKER_OPTIONS}
   ${PLATFORM_SPECIFIC_LINKER_OPTIONS})
 
-target_link_libraries(${PROJECT_NAME})
-
 # Create hex file and print executable size
 add_custom_command(
   TARGET ${PROJECT_NAME}
