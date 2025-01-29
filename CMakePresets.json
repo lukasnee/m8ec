@@ -1,0 +1,98 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21
+    },
+    "configurePresets": [
+        {
+            "name": "STM32H750",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/.build",
+            "toolchainFile": "${sourceDir}/arm-none-eabi-gcc.STM32H750.cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_BUILD_TYPE": "Release",
+                "PLATFORM": "STM32H750",
+                "SEGGER_SYSVIEW_ENABLED": "OFF"
+            }
+        },
+        {
+            "name": "STM32H750-debug",
+            "inherits": "STM32H750",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "STM32H750-release",
+            "inherits": "STM32H750",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "STM32H750-sysview",
+            "inherits": "STM32H750-release",
+            "cacheVariables": {
+                "SEGGER_SYSVIEW_ENABLED": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "STM32H750-debug",
+            "configurePreset": "STM32H750-debug"
+        },
+        {
+            "name": "STM32H750-release",
+            "configurePreset": "STM32H750-release"
+        },
+        {
+            "name": "STM32H750-sysview",
+            "configurePreset": "STM32H750-sysview"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "STM32H750-debug",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "STM32H750-debug"
+                },
+                {
+                    "type": "build",
+                    "name": "STM32H750-debug"
+                }
+            ]
+        },
+        {
+            "name": "STM32H750-release",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "STM32H750-release"
+                },
+                {
+                    "type": "build",
+                    "name": "STM32H750-release"
+                }
+            ]
+        },
+        {
+            "name": "STM32H750-sysview",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "STM32H750-sysview"
+                },
+                {
+                    "type": "build",
+                    "name": "STM32H750-sysview"
+                }
+            ]
+        }
+    ]
+}
