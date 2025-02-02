@@ -80,7 +80,7 @@ if(SEGGER_SYSVIEW_ENABLED)
   target_compile_options(
     freertos_config
     INTERFACE
-      -finstrument-functions-exclude-function-list=xPortIsInsideInterrupt
+      -finstrument-functions-exclude-file-list=Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4,Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port
   )
 endif()
 target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)

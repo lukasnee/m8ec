@@ -15,7 +15,7 @@ add_compile_options(
   -fno-exceptions # big change in code size and performace
   # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
   # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
-  $<$<CONFIG:Debug>:-g>
+  -g
   $<$<CONFIG:Debug>:-gdwarf-2>
   $<$<CONFIG:Debug>:-Og>
   $<$<CONFIG:Release>:-O1>

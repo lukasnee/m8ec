@@ -4,6 +4,7 @@ platform/*/build/
 platform/Makefile
 .tmp/
 ucprof_*.json
+ucprof.json
 ucprof.dat
 comm.log
 serial.log
