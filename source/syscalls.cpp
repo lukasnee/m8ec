@@ -8,6 +8,8 @@
  * (at your option) any later version.
  */
 
+// The newlib syscalls implementation
+
 #if defined(STM32H750xx)
 #include "m8ec/periph/Uart4.hpp"
 #elif defined(STM32F411xE)
