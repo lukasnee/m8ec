@@ -80,8 +80,8 @@ private:
         ili9341_text_attr_t attr{.font = &ili9341_font_trash80_stealth57,
                                  .fg_color = ILI9341_WHITE,
                                  .bg_color = ILI9341_BLACK,
-                                 .origin_x = 0,
-                                 .origin_y = 0};
+                                 .origin = {.x = 0, .y = 0},
+                                 .h_wrap = ILI9341_H_WRAP_OFF};
         while (true) {
             static const char loadingChars[] = {'|', '/', '-', '\\'};
             static uint8_t loadingCharIndex = 0;

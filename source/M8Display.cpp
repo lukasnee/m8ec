@@ -34,9 +34,9 @@ int M8Display::draw_character(const m8::protocol::Character &character) {
     textAttr.bg_color = __ILI9341_COLOR565(character.background.r, character.background.g, character.background.b);
     textAttr.fg_color = __ILI9341_COLOR565(character.foreground.r, character.foreground.g, character.foreground.b);
     textAttr.font = &ili9341_font_trash80_stealth57;
-    textAttr.origin_x = character.pos.x;
-    constexpr decltype(textAttr.origin_y) char_to_rect_y_adjustment = 3U;
-    textAttr.origin_y = character.pos.y + char_to_rect_y_adjustment;
+    textAttr.origin.x = character.pos.x;
+    constexpr decltype(textAttr.origin.y) char_to_rect_y_adjustment = 3U;
+    textAttr.origin.y = character.pos.y + char_to_rect_y_adjustment;
     const auto c = static_cast<char>(character.c);
     ili9341_draw_char(this->lcd(), textAttr, c);
     return character.c;
