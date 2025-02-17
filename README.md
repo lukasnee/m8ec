@@ -30,6 +30,15 @@ graph LR
     end
 ```
 
+## Prototype Hardware
+
+- MCU dev board:
+  [lukasnee/W25Q64_STM32H750VB-DevEBox](https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git)
+- Display: 2.8" TFT LCD (ILI9341) module.
+- Keypad: Modified USB mechanical key number pad as GPIO input. Probably...
+- Audio out: PCM5102A module.
+- Audio in: PCM1802 module.
+
 ## Development Environment Setup
 
 This project was originally developed in WSL Ubuntu, and still is the primary
@@ -174,29 +183,28 @@ python3 tools/m8ec.py -f
 
 ## TODO
 
-- Start with the hardware you have on hand:
+- Consider upgrading to [this board](https://www.aliexpress.com/item/1005007227916481.html?spm=a2g0o.productlist.main.5.240f5dfbcMZCOX&algo_pvid=97c56860-6bd8-4b73-bccb-8bab31fc1a4f&algo_exp_id=97c56860-6bd8-4b73-bccb-8bab31fc1a4f-2&pdp_ext_f=%7B%22order%22%3A%2254%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21EUR%2123.88%2121.49%21%21%21177.55%21159.78%21%40211b80e117398267511244870e7eaf%2112000039882353598%21sea%21LT%210%21ABX&curPageLogUid=Q83YcP7qsL2k&utparam-url=scene%3Asearch%7Cquery_from%3A) - 2MB flash and a 7" IPS display.
+- Figure out Lua dynamic memory allocation and how to port it to FreeRTOS.
+- Worthy reads:
+  - [The feasibility of the embedded software development with Lua programming](https://nicksypark.medium.com/the-feasibility-of-the-embedded-software-development-with-lua-programming-e37c409c3c19)
+  - [From Zero to main(): Bootstrapping libc with Newlib](https://interrupt.memfault.com/blog/boostrapping-libc-with-newlib)
+- looks like the ucprof trims a lot recording from start and end. Figure out whats up.
 
-  - Microcontroller: WeAct STM32F411CEU6 Black Pill.
-  - Display: 2.8" TFT LCD (ILI9341) module. Keypad: Modified USB mechanical key
-    number pad as GPIO input. Probably...
-  - Audio out interface: PCM5102A module. Audio in the interface: PCM1802
-    module.
-
-- [ ] Figure out the USB client interface. Research what M8 Headless expects
+- Figure out the USB client interface. Research what M8 Headless expects
   from the client.
   - <https://github.com/laamaa/m8c> could be very useful, although it's for
     Windows/Linux/MacOS.
-- [ ] Get the USB client working with the Black Pill.
-- [ ] Get the display working with the M8 headless via USB client.
-- [ ] Modify the keypad to be driven by the Black Pill GPIO.
-- [ ] Get The Keypad working with the Black Pill.
-- [ ] Get the keypad working with the M8 headless via USB client.
-- [ ] Hook up the audio-out interface to the Black Pill.
-- [ ] Get the audio out working with the Black Pill.
-- [ ] Get the audio out working with the M8 headless via USB client.
-- [ ] Hook up the audio in the interface to the Black Pill.
-- [ ] Get the audio in working with the Black Pill.
-- [ ] Try to get the audio working with the M8 headless via a USB client. From
+- Get the USB client working with the MCU dev board.
+- Get the display working with the M8 headless via USB client.
+- Modify the keypad to be driven by the MCU dev board GPIO.
+- Get The Keypad working with the MCU dev board.
+- Get the keypad working with the M8 headless via USB client.
+- Hook up the audio-out interface to the MCU dev board.
+- Get the audio out working with the MCU dev board.
+- Get the audio out working with the M8 headless via USB client.
+- Hook up the audio in the interface to the MCU dev board.
+- Get the audio in working with the MCU dev board.
+- Try to get the audio working with the M8 headless via a USB client. From
   reading online, it's tricky.
 
 ## Future Ideas
