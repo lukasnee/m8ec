@@ -35,5 +35,6 @@ add_subdirectory(extern/ucprof)
 add_subdirectory(extern/freertos-addons)
 add_subdirectory(extern/fonas)
 add_subdirectory(extern/ILI9341-STM32-HAL)
+add_subdirectory(extern/lua)
 
 add_subdirectory(source)

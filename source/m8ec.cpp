@@ -19,6 +19,7 @@
 #endif
 #include "m8ec/periph/UsbCdc.hpp"
 
+#include "LuaThread.hpp"
 #include "m8ec/Display.hpp"
 #include "m8ec/M8Display.hpp"
 #include "m8ec/m8/protocol.hpp"
@@ -101,6 +102,7 @@ static bool init_apps() {
     LOGD("Display OK\n");
 
     LivenessThread::get_instance().Start();
+    LuaThread::get_instance().Start();
 
     // TODO: figure out why Keys::Service makes system hang
     // if (!keysService.init()) {

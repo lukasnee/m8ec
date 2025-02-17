@@ -44,6 +44,8 @@ def main():
         "--build_dir", help="build directory", default=".build")
     parser.add_argument(
         "-f", "--flash", help="flash (built) firmware to device", action="store_true")
+    parser.add_argument(
+        "--flash-lua-script", help="flash lua script to device", default=None)
     parser.add_argument("-r", "--reset", help="reset board",
                         action="store_true")
     parser.add_argument("-p", "--platform", help="platform",
@@ -111,6 +113,12 @@ def main():
         comm = Comm(args.serial_dev, log_level=args.log_level)
         comm.capture_bootloader(10.0)
         comm.upload_file(args.src_path, args.dst_path)
+        comm.release_bootloader()
+
+    if args.flash_lua_script:
+        comm = Comm(args.serial_dev, loglevel=100)
+        comm.await_bootloader(10.0)
+        comm.transfer_file(args.flash_lua_script, "main.lua")
         comm.release_bootloader()
 
     if args.serial:

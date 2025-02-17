@@ -14,6 +14,7 @@ target_sources(
           periph/Spi1.cpp
           periph/UsbCdc.cpp
           platform/${PLATFORM}/Keys.cpp
+          LuaThread.cpp
 )
 
 target_include_directories(m8ec PUBLIC ../include)
@@ -27,6 +28,7 @@ target_link_libraries(
          fonas
          ILI9341-STM32-HAL
          littlefs_W25Q64
+         lua
 )
 
 add_custom_command(
