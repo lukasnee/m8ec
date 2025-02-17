@@ -29,9 +29,10 @@ add_custom_command(
   POST_BUILD
   COMMAND ${CMAKE_OBJCOPY} -O ihex m8ec m8ec.hex
   COMMAND ${CMAKE_OBJCOPY} -O binary m8ec m8ec.bin
-  COMMAND ${CMAKE_OBJDUMP} -S -t m8ec > ${CMAKE_CURRENT_BINARY_DIR}/m8ec.dump
+  COMMAND ${CMAKE_OBJDUMP} -S -t m8ec > m8ec.dump
   COMMAND ${CMAKE_NM} m8ec -C -n -S -s > m8ec.address-sort.nm
   COMMAND ${CMAKE_NM} m8ec -C -S -s --size-sort > m8ec.size-sort.nm
+  COMMAND ${CMAKE_NM} -lnC m8ec > m8ec.symbols
   COMMAND arm-none-eabi-size m8ec
 )
 
