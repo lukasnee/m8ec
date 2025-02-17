@@ -32,6 +32,7 @@
 #include "m8ec/m8ec.h"
 #include "SEGGER_SYSVIEW.h"
 #include "ucprof/ucprof.h"
+#include "lfsapp/lfsapp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -116,7 +117,7 @@ int main(void)
   MX_I2S2_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-
+  lfsapp_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
