@@ -29,6 +29,8 @@ target_include_directories(
 )
 
 add_subdirectory(platform/${PLATFORM})
+add_subdirectory(extern/W25Q64_STM32H750VB-DevEBox)
+
 add_subdirectory(extern/ucprof)
 add_subdirectory(extern/freertos-addons)
 add_subdirectory(extern/fonas)

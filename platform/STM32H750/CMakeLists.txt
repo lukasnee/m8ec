@@ -51,13 +51,10 @@ target_link_options(
   -Wl,--no-warn-rwx-segment
 )
 
-add_subdirectory(Drivers/CMSIS)
-
 add_library(STM32H7xx_HAL_conf INTERFACE)
 target_include_directories(
   STM32H7xx_HAL_conf INTERFACE Core/Inc # stm32h7xx_hal_conf.h
 )
-add_subdirectory(Drivers/STM32H7xx_HAL_Driver)
 
 add_library(SeggerSysView_config INTERFACE)
 target_link_libraries(
