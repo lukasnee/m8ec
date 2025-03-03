@@ -12,6 +12,7 @@ sys.path.append(comm_relpath)
 from comm import Comm
 # autopep8: on
 
+
 def sys_cmd(cmd):
     print(' '.join(cmd))
     try:
@@ -23,6 +24,14 @@ def sys_cmd(cmd):
 
 def main():
     parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest='command', help='Sub-command help')
+
+    upload_parser = subparsers.add_parser('upload', help='Upload a file')
+    upload_parser.add_argument(
+        'src_path', type=str, help='Source file path (host)')
+    upload_parser.add_argument(
+        'dst_path', type=str, help='Destination file path (target)')
+
     parser.add_argument("-c", "--clean", help="clean build",
                         action="store_true")
     parser.add_argument(
@@ -84,8 +93,14 @@ def main():
 
     if args.flash:
         comm = Comm(args.serial_dev)
-        comm.await_bootloader(10.0)
-        comm.transfer_file(f".build/source/m8ec.bin", "boot/app.bin")
+        comm.capture_bootloader(10.0)
+        comm.upload_file(".build/source/m8ec.bin", "boot/app.bin")
+        comm.release_bootloader()
+
+    if args.command == "upload":
+        comm = Comm(args.serial_dev)
+        comm.capture_bootloader(10.0)
+        comm.upload_file(args.src_path, args.dst_path)
         comm.release_bootloader()
 
     if args.serial:
