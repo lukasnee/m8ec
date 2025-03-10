@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fonas/EventDrivenWriter.hpp"
+#include "fonas/EventDrivenStream.hpp"
 
 namespace m8ec::periph {
 
-class UsbCdc : public fonas::EventDrivenWriter {
+class UsbCdc : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w> {
 
 public:
     static UsbCdc &get_instance();
@@ -20,12 +20,12 @@ public:
 
 protected:
     bool ll_init() final override;
-    bool ll_async_write(const std::uint8_t *data, std::size_t size) final override;
+    bool ll_write_async(const std::uint8_t *data, std::size_t size) final override;
     bool ll_deinit() final override;
 
 private:
-    using fonas::EventDrivenWriter::ll_async_write;
-    using fonas::EventDrivenWriter::ll_async_write_completed_cb_from_isr;
+    using fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w>::ll_write_async;
+    using fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w>::ll_async_write_completed_cb_from_isr;
 
     fonas::StreamBuffer rx_stream_buffer;
     bool initialized = false;

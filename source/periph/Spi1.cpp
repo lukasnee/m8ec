@@ -23,7 +23,7 @@ Spi1 &Spi1::get_instance() {
 
 bool Spi1::ll_init() { return true; /* handled in main.c */ }
 
-bool Spi1::ll_async_read(std::uint8_t *data, std::size_t size) {
+bool Spi1::ll_read_async(std::uint8_t *data, std::size_t size) {
     if (!data) {
         return false;
     }
@@ -33,7 +33,7 @@ bool Spi1::ll_async_read(std::uint8_t *data, std::size_t size) {
     return true;
 }
 
-bool Spi1::ll_async_write(const std::uint8_t *data, std::size_t size) {
+bool Spi1::ll_write_async(const std::uint8_t *data, std::size_t size) {
     if (!data) {
         return false;
     }
@@ -43,7 +43,7 @@ bool Spi1::ll_async_write(const std::uint8_t *data, std::size_t size) {
     return true;
 }
 
-bool Spi1::ll_async_read_write(std::uint8_t *rd_data, const std::uint8_t *wr_data, std::size_t size) {
+bool Spi1::ll_read_write_async(std::uint8_t *rd_data, const std::uint8_t *wr_data, std::size_t size) {
     if (!rd_data || !wr_data) {
         return false;
     }

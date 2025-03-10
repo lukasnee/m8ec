@@ -10,19 +10,19 @@
 
 #pragma once
 
-#include "fonas/EventDrivenReaderWriter.hpp"
+#include "fonas/EventDrivenStream.hpp"
 
 namespace m8ec::periph {
 
-class Uart1 : public fonas::EventDrivenReaderWriter {
+class Uart1 : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::rw> {
 
 public:
     static Uart1 &get_instance();
 
 protected:
     bool ll_init() final override;
-    bool ll_async_read(std::uint8_t *data, std::size_t size) final override;
-    bool ll_async_write(const std::uint8_t *data, std::size_t size) final override;
+    bool ll_read_async(std::uint8_t *data, std::size_t size) final override;
+    bool ll_write_async(const std::uint8_t *data, std::size_t size) final override;
     bool ll_deinit() final override;
 };
 

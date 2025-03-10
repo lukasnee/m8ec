@@ -23,14 +23,14 @@ Uart1 &Uart1::get_instance() {
 
 bool Uart1::ll_init() { return true; /* handled in main.c */ }
 
-bool Uart1::ll_async_read(std::uint8_t *data, std::size_t size) {
+bool Uart1::ll_read_async(std::uint8_t *data, std::size_t size) {
     if (HAL_OK != HAL_UART_Receive_DMA(&huart1, data, size)) {
         return false;
     }
     return true;
 }
 
-bool Uart1::ll_async_write(const std::uint8_t *data, std::size_t size) {
+bool Uart1::ll_write_async(const std::uint8_t *data, std::size_t size) {
     if (HAL_OK != HAL_UART_Transmit_DMA(&huart1, const_cast<std::uint8_t *>(data), size)) {
         return false;
     }

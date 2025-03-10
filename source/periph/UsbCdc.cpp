@@ -36,7 +36,7 @@ bool UsbCdc::ll_init() {
     return true; /* hUsbHostFS is expected to be initialized in main.c */
 }
 
-bool UsbCdc::ll_async_write(const std::uint8_t *data, std::size_t size) {
+bool UsbCdc::ll_write_async(const std::uint8_t *data, std::size_t size) {
     if (!data) {
         return false;
     }

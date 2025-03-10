@@ -26,14 +26,14 @@ Uart4 &Uart4::get_instance() {
 
 bool Uart4::ll_init() { return true; /* handled in usart.c */ }
 
-bool Uart4::ll_async_read(std::uint8_t *data, std::size_t size) {
+bool Uart4::ll_read_async(std::uint8_t *data, std::size_t size) {
     if (HAL_OK != HAL_UART_Receive_DMA(&huart4, data, size)) {
         return false;
     }
     return true;
 }
 
-bool Uart4::ll_async_write(const std::uint8_t *data, std::size_t size) {
+bool Uart4::ll_write_async(const std::uint8_t *data, std::size_t size) {
     if (HAL_OK != HAL_UART_Transmit_DMA(&huart4, data, size)) {
         return false;
     }
