@@ -6,5 +6,4 @@ platform/Makefile
 ucprof_*.json
 ucprof.json
 ucprof.dat
-comm.log
-serial.log
+*.log
