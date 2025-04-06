@@ -16,18 +16,36 @@ extern SPI_HandleTypeDef hspi1;
 
 extern "C" void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi == &hspi1) {
-        m8ec::periph::Spi1::get_instance().ll_async_write_completed_cb_from_isr();
+        m8ec::periph::Spi1::get_instance().ll_async_write_completed_cb();
     }
 }
 
 extern "C" void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi == &hspi1) {
-        m8ec::periph::Spi1::get_instance().ll_async_read_completed_cb_from_isr();
+        m8ec::periph::Spi1::get_instance().ll_async_read_completed_cb();
     }
 }
 
 extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi == &hspi1) {
-        m8ec::periph::Spi1::get_instance().ll_async_read_write_completed_cb_from_isr();
+        m8ec::periph::Spi1::get_instance().ll_async_read_write_completed_cb();
+    }
+}
+
+extern "C" void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi == &hspi1) {
+        m8ec::periph::Spi1::get_instance().ll_async_abnormal_cb();
+    }
+}
+
+extern "C" void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi == &hspi1) {
+        m8ec::periph::Spi1::get_instance().ll_async_abnormal_cb();
+    }
+}
+
+extern "C" void HAL_SPI_SuspendCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi == &hspi1) {
+        m8ec::periph::Spi1::get_instance().ll_async_abnormal_cb();
     }
 }

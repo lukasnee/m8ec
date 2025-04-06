@@ -25,7 +25,6 @@ protected:
 
 private:
     using fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w>::ll_write_async;
-    using fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w>::ll_async_write_completed_cb_from_isr;
 
     fonas::StreamBuffer rx_stream_buffer;
     bool initialized = false;

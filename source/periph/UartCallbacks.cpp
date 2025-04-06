@@ -25,11 +25,11 @@ extern UART_HandleTypeDef huart1;
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 #if defined(STM32H750xx)
     if (huart == &huart4) {
-        m8ec::periph::Uart4::get_instance().ll_async_write_completed_cb_from_isr();
+        m8ec::periph::Uart4::get_instance().ll_async_write_completed_cb();
     }
 #elif defined(STM32F411xE)
     if (huart == &huart1) {
-        m8ec::periph::Uart1::get_instance().ll_async_write_completed_cb_from_isr();
+        m8ec::periph::Uart1::get_instance().ll_async_write_completed_cb();
     }
 #endif
 }
@@ -37,11 +37,11 @@ extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 #if defined(STM32H750xx)
     if (huart == &huart4) {
-        m8ec::periph::Uart4::get_instance().ll_async_read_completed_cb_from_isr();
+        m8ec::periph::Uart4::get_instance().ll_async_read_completed_cb();
     }
 #elif defined(STM32F411xE)
     if (huart == &huart1) {
-        m8ec::periph::Uart1::get_instance().ll_async_read_completed_cb_from_isr();
+        m8ec::periph::Uart1::get_instance().ll_async_read_completed_cb();
     }
 #endif
 }
