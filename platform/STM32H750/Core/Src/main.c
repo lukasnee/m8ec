@@ -28,7 +28,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ILI9341/ili9341.h"
 #include "m8ec/m8ec.h"
 #include "SEGGER_SYSVIEW.h"
 #include "ucprof/ucprof.h"

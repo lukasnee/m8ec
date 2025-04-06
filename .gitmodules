@@ -1,6 +1,3 @@
-[submodule "extern/ILI9341-STM32-HAL"]
-	path = extern/ILI9341-STM32-HAL
-	url = https://github.com/lukasnee/ILI9341-STM32-HAL.git
 [submodule "extern/freertos-addons"]
 	path = extern/freertos-addons
 	url = https://github.com/lukasnee/freertos-addons.git
@@ -13,3 +10,6 @@
 [submodule "extern/W25Q64_STM32H750VB-DevEBox"]
 	path = extern/W25Q64_STM32H750VB-DevEBox
 	url = https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git
+[submodule "extern/lvgl"]
+	path = extern/lvgl
+	url = https://github.com/lvgl/lvgl.git

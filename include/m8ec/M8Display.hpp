@@ -35,7 +35,7 @@ struct M8Display : public m8::protocol::Service::Display {
     void set_large_mode(int enabled);
 
 private:
-    ili9341_t *lcd() { return this->display.lcd(); }
+    lv_display_t *lcd() { return this->display.lcd(); }
 
     m8ec::Display &display;
 };

@@ -13,8 +13,7 @@
 
 #pragma once
 
-#include "ILI9341/ili9341.h"
-#include "ILI9341/ili9341_gfx.h"
+#include "lvgl.h"
 
 namespace m8ec {
 
@@ -25,15 +24,10 @@ struct Display {
 
     bool init();
 
-    ili9341_t *lcd();
-
-    ili9341_color_t get_bg_color() { return this->bg_color; }
-    void set_bg_color(ili9341_color_t color) { this->bg_color = color; }
+    lv_display_t *lcd();
 
 private:
-    ili9341_t *ili9341 = nullptr;
-
-    ili9341_color_t bg_color = ILI9341_BLACK;
+    lv_display_t *lv_display = nullptr;
 
     Display() = default;
 };

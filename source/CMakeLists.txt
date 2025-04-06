@@ -14,6 +14,7 @@ target_sources(
           periph/Spi1.cpp
           periph/UsbCdc.cpp
           platform/${PLATFORM}/Keys.cpp
+          trash80_stealth57.c
 )
 
 target_include_directories(m8ec PUBLIC ../include)
@@ -25,7 +26,7 @@ target_link_libraries(
   PUBLIC platform
          SeggerSysView
          fonas
-         ILI9341-STM32-HAL
+         lvgl
          littlefs_W25Q64
 )
 

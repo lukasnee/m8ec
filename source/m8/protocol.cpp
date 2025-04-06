@@ -13,7 +13,6 @@
 
 #include "m8ec/m8/protocol.hpp"
 
-#include "ILI9341/ili9341_gfx.h"
 #include "m8ec/m8ec.hpp" // LOG
 #include "m8ec/periph/UsbCdc.hpp"
 #include "m8ec/slip.h"

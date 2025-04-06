@@ -30,15 +30,15 @@ int M8Display::draw_character(const m8::protocol::Character &character) {
     if (!this->lcd()) {
         return -1;
     }
-    ili9341_text_attr_t textAttr;
-    textAttr.bg_color = __ILI9341_COLOR565(character.background.r, character.background.g, character.background.b);
-    textAttr.fg_color = __ILI9341_COLOR565(character.foreground.r, character.foreground.g, character.foreground.b);
-    textAttr.font = &ili9341_font_trash80_stealth57;
-    textAttr.origin.x = character.pos.x;
-    constexpr decltype(textAttr.origin.y) char_to_rect_y_adjustment = 3U;
-    textAttr.origin.y = character.pos.y + char_to_rect_y_adjustment;
-    const auto c = static_cast<char>(character.c);
-    ili9341_draw_char(this->lcd(), textAttr, c);
+    // ili9341_text_attr_t textAttr;
+    // textAttr.bg_color = __ILI9341_COLOR565(character.background.r, character.background.g, character.background.b);
+    // textAttr.fg_color = __ILI9341_COLOR565(character.foreground.r, character.foreground.g, character.foreground.b);
+    // textAttr.font = &ili9341_font_trash80_stealth57;
+    // textAttr.origin.x = character.pos.x;
+    // constexpr decltype(textAttr.origin.y) char_to_rect_y_adjustment = 3U;
+    // textAttr.origin.y = character.pos.y + char_to_rect_y_adjustment;
+    // const auto c = static_cast<char>(character.c);
+    // ili9341_draw_char(this->lcd(), textAttr, c);
     return character.c;
 }
 
@@ -46,11 +46,11 @@ void M8Display::draw_rectangle(const m8::protocol::Rectangle &rectangle) {
     if (!this->lcd()) {
         return;
     }
-    ili9341_color_t color = __ILI9341_COLOR565(rectangle.color.r, rectangle.color.g, rectangle.color.b);
-    ili9341_fill_rect(this->lcd(), color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
-    if (rectangle.size.h >= this->lcd()->screen_size.height || rectangle.size.w >= this->lcd()->screen_size.width) {
-        this->display.set_bg_color(color); // remember the screen clear color
-    }
+    // ili9341_color_t color = __ILI9341_COLOR565(rectangle.color.r, rectangle.color.g, rectangle.color.b);
+    // ili9341_fill_rect(this->lcd(), color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
+    // if (rectangle.size.h >= this->lcd()->screen_size.height || rectangle.size.w >= this->lcd()->screen_size.width) {
+    //     this->display.set_bg_color(color); // remember the screen clear color
+    // }
 }
 
 struct Canvas {
@@ -97,9 +97,9 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         const auto byte_bit = bmp_index % 8;
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
-    const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->display.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
-                           bmp_buff.data());
+    // const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
+    // ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->display.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
+    //                        bmp_buff.data());
     was_blank = is_blank;
 }
 } // namespace m8ec

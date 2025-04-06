@@ -29,7 +29,6 @@ set(PLATFORM_SPECIFIC_INCLUDES_STM32F4xx
     Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
     Drivers/CMSIS/Device/ST/STM32F4xx/Include
     Drivers/CMSIS/Include
-    ../../extern/ILI9341-STM32-HAL
     include)
 
 set(PLATFORM_SPECIFIC_SOURCES_STM32F4xx
@@ -80,9 +79,6 @@ set(PLATFORM_SPECIFIC_SOURCES_STM32F4xx
     Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
     Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c
     Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
-    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_font.c
-    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341_gfx.c
-    ../../extern/ILI9341-STM32-HAL/ILI9341/ili9341.c
     src/Keys.cpp)
 
 set(PLATFORM_SPECIFIC_DEFINES_STM32F4xx -DUSE_HAL_DRIVER -DSTM32F411xE
