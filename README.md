@@ -101,17 +101,13 @@ development environment.
 3. Build using the project tool:
 
     ```bash
-    python3 tools/m8ec.py -b
+    cmake --workflow STM32H750-rel
     ```
-
-    > By default, it builds for `STM32H750` platform. Use `-p <PLATFORM>` to
-    > specify different platform. For example
-    > [STM32F411](docs/platform_STM32F411.md).
 
 4. Build debug version:
 
     ```bash
-    python3 tools/m8ec.py -b -t Debug
+    cmake --workflow STM32H750-dbg
     ```
 
 > Run `python3 tools/m8ec.py -h` to see more options.
@@ -158,7 +154,7 @@ python3 tools/m8ec.py -f
 1. Build firmware with SEGGER SystemView enabled.
 
     ```bash
-    python3 tools/m8ec.py -t Debug --sysview -b
+    cmake --workflow STM32H750-sysview
     ```
 
 2. Flash the firmware to the target MCU.

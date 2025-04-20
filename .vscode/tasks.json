@@ -45,7 +45,7 @@
             },
             "type": "shell",
             "linux": {
-                "command": "python3 tools/m8ec.py -b",
+                "command": "cmake --workflow STM32H750-rel",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
@@ -60,7 +60,7 @@
             },
             "type": "shell",
             "linux": {
-                "command": "python3 tools/m8ec.py -bd",
+                "command": "cmake --workflow STM32H750-dbg",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
@@ -68,14 +68,14 @@
             }
         },
         {
-            "label": "Build m8ec and flash",
+            "label": "Build and flash [release]",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "type": "shell",
             "linux": {
-                "command": "python3 tools/m8ec.py -bf",
+                "command": "cmake --workflow STM32H750-rel && python3 tools/m8ec.py -fr",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
@@ -83,14 +83,14 @@
             }
         },
         {
-            "label": "Build m8ec debug and flash",
+            "label": "Build and flash [debug]",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "type": "shell",
             "linux": {
-                "command": "python3 tools/m8ec.py -bdf",
+                "command": "cmake --workflow STM32H750-dbg && python3 tools/m8ec.py -fr",
                 "problemMatcher": "$gcc"
             },
             "presentation": {
