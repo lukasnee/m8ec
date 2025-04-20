@@ -48,7 +48,21 @@ development environment.
 
     ```bash
     sudo apt update && sudo apt upgrade -y
-    sudo apt install -y git cmake ninja-build python3
+    sudo apt install -y git ninja-build python3
+    ```
+
+    `sudo apt install -y cmake` may install older version of CMake than 4.0.0.
+    Instead you may want to install latest CMake from
+    [here](https://cmake.org/download/). Look for
+    `cmake-<VERSION>-linux-x86_64.sh`.
+
+    Install CMake:
+
+    ```bash
+    cd /opt/
+    sh cmake-<VERSION>-linux-x86_64.sh # agree with creating directory (y)
+    echo 'export PATH=$PATH:/opt/cmake-<VERSION>-linux-x86_64/bin' >> ~/.bashrc
+    source ~/.bashrc
     ```
 
 2. Install Arm GNU Toolchain:
@@ -82,6 +96,20 @@ development environment.
     sudo apt install -y gdb-multiarch
     sudo mv /usr/bin/arm-none-eabi-gdb /usr/bin/arm-none-eabi-gdb.bak
     sudo ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
+    ```
+
+### Install J-Link Software and Documentation Pack
+
+1. Go to [SEGGER J-Link Software and Documentation Pack](https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack)
+
+2. Download `64-bit DEB Installer`.
+
+3. Install the downloaded package:
+
+    ```bash
+    sudo dpkg -i JLink_Linux_V<XXX>_x86_64.deb
+    echo 'export PATH=/opt/SEGGER/JLink:$PATH' >> ~/.bashrc
+    source ~/.bashrc
     ```
 
 ## Building the Firmware
