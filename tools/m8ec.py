@@ -3,6 +3,8 @@ import subprocess
 import argparse
 import sys
 import logging
+# import speedscope
+
 log = logging.getLogger("m8ec")
 
 comm_relpath = os.path.normpath(os.path.join(os.path.dirname(__file__), "..",
@@ -38,10 +40,14 @@ def main():
         'src_path', type=str, help='Source file path (host)')
     upload_parser.add_argument(
         'dst_path', type=str, help='Destination file path (target)')
+    # parser.add_argument(
+    #     "--build_dir", help="build directory", default=".build")
     parser.add_argument(
         "-f", "--flash", help="flash (built) firmware to device", action="store_true")
     parser.add_argument("-r", "--reset", help="reset board",
                         action="store_true")
+    # parser.add_argument("-p", "--platform", help="platform",
+    #                     choices=["STM32H750", "STM32F411"], default="STM32H750")
     parser.add_argument("--serial", help="enable serial", action="store_true")
     parser.add_argument(
         "--serial_dev", help="serial device for flashing and potentially for interfacing application", default="/dev/ttyACM0")
@@ -51,6 +57,8 @@ def main():
                         default=logging.WARNING, help='Log level')
     parser.add_argument('-L', '--log_file', type=str,
                         default=None, help='Log file')
+    # parser.add_argument(
+    #     "--ucprof", help="ucprof path. Record profiling data", default=None)
 
     args = parser.parse_args()
 
@@ -73,6 +81,35 @@ def main():
         comm.capture_bootloader(10.0)
         comm.upload_file(args.src_path, args.dst_path)
         comm.release_bootloader()
+
+    # if args.ucprof:
+        # sudo /mnt/c/Program\ Files/SEGGER/JLink_V794b/JLinkRTTLogger.exe -Device STM32H750VB -If SWD -Speed 4000 -RTTChannel 2 ucprof.dat
+        # arm-none-eabi-nm -lnC .build/source/m8ec > .build/source/m8ec.symbols
+        # python3 ucprof.py .build/source/m8ec.symbols ucprof.dat
+
+        # sys_cmd([
+        #     "sudo",
+        #     "/mnt/c/Program Files/SEGGER/JLink_V794b/JLinkRTTLogger.exe",
+        #     "-Device",
+        #     "STM32H750VB",
+        #     "-If",
+        #     "SWD",
+        #     "-Speed",
+        #     "4000",
+        #     "-RTTChannel",
+        #     "2",
+        #     args.ucprof])
+        # sys_cmd([
+        #     "arm-none-eabi-nm",
+        #     "-lnC",
+        #     f"{args.build_dir}/platform/{args.platform}/{args.platform}",
+        #     ">",
+        #     f"{args.build_dir}/platform/{args.platform}/{args.platform}.symbols"])
+        # sys_cmd([
+        #     "python3",
+        #     "extern/ucprof/ucprof.py",
+        #     f"{args.build_dir}/platform/{args.platform}/{args.platform}.symbols",
+        #     args.ucprof])
 
     if args.serial:
         sys_cmd(["minicom", "--baudrate", "921600", "-D",

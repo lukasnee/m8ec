@@ -22,6 +22,9 @@
             //     "${workspaceRoot}/.build/source/m8ec",
             //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
+            "preAttachCommands": [
+                "monitor tpiu config internal itm.fifo uart off 240000000"
+            ],
             "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
