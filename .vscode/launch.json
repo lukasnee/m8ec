@@ -15,6 +15,7 @@
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
             "executable": "${workspaceRoot}/.build/source/m8ec",
+            // "executable": "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
             // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
             // https://github.com/Marus/cortex-debug/issues/1007
             // "symbolFiles": [
