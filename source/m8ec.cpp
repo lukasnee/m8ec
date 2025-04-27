@@ -31,28 +31,20 @@ namespace m8ec {
 
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
-    if (!periph::Uart4::get_instance().init()) {
-        LOG("error: periph::Uart4::get_instance().init failed\n");
-        FONAS_PANIC();
-        return false;
-    }
+    ASSERT(periph::Uart4::get_instance().init());
     LOGD("UART4 OK\n");
 #elif defined(STM32F411xE)
-    if (!periph::Uart1::get_instance().init()) {
-        LOG("error: periph::Uart1::get_instance().init failed\n");
-        FONAS_PANIC();
-        return false;
-    }
+    ASSERT(periph::Uart1::get_instance().init());
     LOGD("UART1 OK\n");
 #endif
-
-    if (!periph::UsbCdc::get_instance().init()) {
-        LOG("error: periph::UsbCdc::get_instance().init failed\n");
-        FONAS_PANIC();
-        return false;
-    }
+    ASSERT(periph::UsbCdc::get_instance().init());
     LOGD("USB CDC OK\n");
+    return true;
+}
 
+static bool init_sw_periphs() {
+    ASSERT(Display::get_instance().init());
+    LOGD("Display OK\n");
     return true;
 }
 
@@ -66,15 +58,15 @@ static Service service(m8_display);
 }
 } // namespace m8::protocol
 
-struct LivenessThread : fonas::Thread {
+struct LivenessSvc : fonas::Thread {
 
-    static LivenessThread &get_instance() {
-        static LivenessThread instance;
+    static LivenessSvc &get_instance() {
+        static LivenessSvc instance;
         return instance;
     }
 
 private:
-    LivenessThread() : fonas::Thread("liveness", 1024, 1) {}
+    LivenessSvc() : fonas::Thread("liveness", 1024, 1) {}
 
     void Run() final {
         ili9341_text_attr_t attr{.font = &ili9341_font_trash80_stealth57,
@@ -92,45 +84,19 @@ private:
     }
 };
 
-static bool init_apps() {
-    if (!Display::get_instance().init()) {
-        LOG("error: display::initialize failed\n");
-        FONAS_PANIC();
-        return false;
-    }
-    LOGD("Display OK\n");
-
-    LivenessThread::get_instance().Start();
-
-    // TODO: figure out why Keys::Service makes system hang
-    // if (!keysService.init()) {
-    //     LOG("error: keysService.init failed\n");
-    //     FONAS_PANIC();
-    //     return false;
-    // }
+static bool init_services() {
+    ASSERT(LivenessSvc::get_instance().Start());
+    // ASSERT(keysService.init()); // TODO: figure out why Keys::Service makes system hang
     // LOGD("Keys::Service OK\n");
-
-    if (!m8::protocol::service.init()) {
-        LOG("error: m8::protocol::init\n");
-        FONAS_PANIC();
-        return false;
-    }
+    ASSERT(m8::protocol::service.init());
     LOGD("m8::protocol OK\n");
-
     return true;
 }
 
 void launch() {
-    if (!init_hw_periphs()) {
-        LOG("error: init_hw_periphs failed\n");
-        FONAS_PANIC();
-        return;
-    }
-    if (!init_apps()) {
-        LOG("error: init_apps failed\n");
-        FONAS_PANIC();
-        return;
-    }
+    ASSERT(init_hw_periphs());
+    ASSERT(init_sw_periphs());
+    ASSERT(init_services());
 }
 
 } // namespace m8ec

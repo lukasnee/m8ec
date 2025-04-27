@@ -35,7 +35,7 @@
 #include "stm32h7xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "m8ec/m8ec.h"
+#include "fonas/fonas.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_HOST_LIBRARY

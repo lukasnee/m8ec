@@ -15,17 +15,6 @@ extern "C"
 {
 #endif
 
-#include <stdint.h>
-#include <stdio.h>
-
-#define LOG(...) printf(__VA_ARGS__)
-
-#if DEBUG
-#define LOGD(...) printf(__VA_ARGS__)
-#else
-#define LOGD(...)
-#endif
-
 #ifdef __cplusplus
 }
 #endif

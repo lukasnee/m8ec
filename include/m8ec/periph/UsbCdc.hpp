@@ -2,6 +2,8 @@
 
 #include "fonas/EventDrivenStream.hpp"
 
+#include "fonas/StreamBuffer.hpp"
+
 namespace m8ec::periph {
 
 class UsbCdc : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w> {
