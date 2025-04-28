@@ -73,6 +73,10 @@
 #define configTOTAL_HEAP_SIZE                    ((size_t)(64*1024))
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
+void lv_freertos_task_switch_in(const char *name);
+void lv_freertos_task_switch_out(void);
+#define traceTASK_SWITCHED_IN() lv_freertos_task_switch_in(pxCurrentTCB->pcTaskName)
+#define traceTASK_SWITCHED_OUT() lv_freertos_task_switch_out
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
 #define configQUEUE_REGISTRY_SIZE                8

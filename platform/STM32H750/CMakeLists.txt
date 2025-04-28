@@ -80,7 +80,7 @@ if(SEGGER_SYSVIEW_ENABLED)
       -finstrument-functions-exclude-file-list=Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4,Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port
   )
 endif()
-target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)
+target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof lvgl)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 target_link_libraries(
