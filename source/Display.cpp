@@ -19,6 +19,77 @@
 
 #include "tickhook.hpp"
 
+#ifdef M8EC_LVGL_DISPLAY_STARTUP_TEST
+#include "lfsapp/lfsapp.h"
+
+int lfs_ls(lfs_t *lfs, const char *path, char *buff, size_t buff_size) {
+    auto printf = [&buff, &buff_size](const char *fmt, ...) -> void {
+        if (buff_size == 0) {
+            return;
+        }
+        va_list args;
+        va_start(args, fmt);
+        int len = vsnprintf(buff, buff_size, fmt, args);
+        va_end(args);
+        if (len < 0) {
+            return;
+        }
+        if (static_cast<size_t>(len) >= buff_size) {
+            len = buff_size - 1;
+        }
+        buff += len;
+        buff_size -= len;
+    };
+
+    lfs_dir_t dir;
+    int err = lfs_dir_open(lfs, &dir, path);
+    if (err) {
+        return err;
+    }
+
+    struct lfs_info info;
+    while (true) {
+        int res = lfs_dir_read(lfs, &dir, &info);
+        if (res < 0) {
+            return res;
+        }
+
+        if (res == 0) {
+            break;
+        }
+
+        switch (info.type) {
+        case LFS_TYPE_REG:
+            printf("reg ");
+            break;
+        case LFS_TYPE_DIR:
+            printf("dir ");
+            break;
+        default:
+            printf("?   ");
+            break;
+        }
+
+        static const char *prefixes[] = {"", "K", "M", "G"};
+        for (int i = sizeof(prefixes) / sizeof(prefixes[0]) - 1; i >= 0; i--) {
+            if (static_cast<int>(info.size) >= (1 << 10 * i) - 1) {
+                printf("%*u%sB ", 4 - (i != 0), info.size >> 10 * i, prefixes[i]);
+                break;
+            }
+        }
+
+        printf("%s\n", info.name);
+    }
+
+    err = lfs_dir_close(lfs, &dir);
+    if (err) {
+        return err;
+    }
+
+    return 0;
+}
+#endif
+
 namespace m8ec {
 
 Display &Display::get_instance() {
@@ -124,6 +195,8 @@ bool Display::init() {
     lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(scr, LV_OPA_100, 0);
 
+#ifdef M8EC_LVGL_DISPLAY_STARTUP_TEST
+
     // lv_obj_t *label_obj = lv_label_create(scr);
     // lv_obj_set_align(label_obj, LV_ALIGN_CENTER);
     // lv_obj_set_height(label_obj, LV_SIZE_CONTENT);
@@ -137,11 +210,15 @@ bool Display::init() {
     /*Create a white label, set its text and align it to the center*/
     lv_obj_t *label = lv_label_create(lv_screen_active());
     char buf[2 * 1024];
+#if 1
+    lfs_ls(&lfs, "/", buf, sizeof(buf));
+#else
     auto file = fopen("main.lua", "r");
     if (file) {
         fread(buf, 1, sizeof(buf), file);
         fclose(file);
     }
+#endif
     buf[sizeof(buf) - 1] = '\0';
     lv_label_set_text(label, buf);
     lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
@@ -166,6 +243,7 @@ bool Display::init() {
     lv_anim_set_time(&a, 4000);
     lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
     lv_anim_start(&a);
+#endif
     return LvlgTimerHandler::get_instance().Start();
 }
 
