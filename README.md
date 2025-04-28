@@ -53,16 +53,13 @@ development environment.
 
     `sudo apt install -y cmake` may install older version of CMake than 4.0.0.
     Instead you may want to install latest CMake from
-    [here](https://cmake.org/download/). Look for
-    `cmake-<VERSION>-linux-x86_64.sh`.
-
-    Install CMake:
+    [here](https://cmake.org/download/). For example:
 
     ```bash
-    cd /opt/
-    sh cmake-<VERSION>-linux-x86_64.sh # agree with creating directory (y)
-    echo 'export PATH=$PATH:/opt/cmake-<VERSION>-linux-x86_64/bin' >> ~/.bashrc
-    source ~/.bashrc
+    VERSION=4.0.1
+    cd /tmp/
+    wget https://github.com/Kitware/CMake/releases/download/v$VERSION/cmake-$VERSION-linux-x86_64.sh
+    sudo sh cmake-$VERSION-linux-x86_64.sh --skip-license --prefix=/usr/local/
     ```
 
 2. Install Arm GNU Toolchain:
