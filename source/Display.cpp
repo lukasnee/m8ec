@@ -19,10 +19,12 @@
 
 #include "tickhook.hpp"
 
-LV_FONT_DECLARE(trash80_stealth57);
+namespace m8ec {
 
-extern SPI_HandleTypeDef hspi1; // main.c
-extern DMA_HandleTypeDef hdma_spi1_tx;
+Display &Display::get_instance() {
+    static Display instance;
+    return instance;
+}
 
 class LvlgTickHook : public cpp_freertos::TickHook {
 public:
@@ -35,12 +37,25 @@ private:
     void Run() final { lv_tick_inc(1); }
 };
 
-namespace m8ec {
+class LvlgTimerHandler : public cpp_freertos::Thread {
+public:
+    static LvlgTimerHandler &get_instance() {
+        static LvlgTimerHandler instance;
+        return instance;
+    }
 
-Display &Display::get_instance() {
-    static Display instance;
-    return instance;
-}
+private:
+    LvlgTimerHandler() : cpp_freertos::Thread("lvlgTimHdlr", 1024, 1) {}
+    void Run() final {
+        while (true) {
+            uint32_t time_till_next_ms = lv_timer_handler();
+            if (time_till_next_ms == LV_NO_TIMER_READY) {
+                time_till_next_ms = LV_DEF_REFR_PERIOD;
+            }
+            fonas::delay_ms(time_till_next_ms);
+        }
+    }
+};
 
 bool Display::init() {
     lv_init();
@@ -151,10 +166,7 @@ bool Display::init() {
     lv_anim_set_time(&a, 4000);
     lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
     lv_anim_start(&a);
-    for (;;) {
-        fonas::delay_ms(lv_timer_handler());
-    }
-    return true;
+    return LvlgTimerHandler::get_instance().Start();
 }
 
 lv_display_t *Display::lcd() { return this->lv_display; }
