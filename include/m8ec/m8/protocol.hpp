@@ -117,6 +117,7 @@ struct KeysState {
 struct Service : public fonas::Thread {
 
     struct Display {
+        virtual void init() = 0;
         virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
         virtual void draw_rectangle(const Rectangle &rectangle) = 0;
         virtual int draw_character(const Character &character) = 0;

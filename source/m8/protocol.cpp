@@ -116,6 +116,9 @@ void Service::send_keys_state(Keys::State keys_state) {
 
 // TODO separate out cmd parsing from the service into m8ec/m8
 void Service::Run() {
+
+    this->display.init();
+
     uint8_t slip_buffer[Config::slip_buffer_size];
     const slip_descriptor_s slip_descriptor = {
         .buf = slip_buffer,
@@ -179,8 +182,8 @@ void Service::Run() {
             return 1;
         },
     };
-    slip_handler_s slip;
 
+    slip_handler_s slip;
     if (SLIP_NO_ERROR != slip_init(&slip, &slip_descriptor)) {
         LOG("Error: SLIP: slip_init failed\n");
         return;

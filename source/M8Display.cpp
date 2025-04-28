@@ -22,7 +22,37 @@
 #include <array>
 // #include <cstdio>
 
+#include "lvgl.h"
+
+#include "src/osal/lv_os.h"
+
+LV_DRAW_BUF_DEFINE_STATIC(m8_draw_buf, 320/2, 240 / 2, LV_COLOR_FORMAT_RGB565);
+
 namespace m8ec {
+
+void M8Display::init() {
+    lv_lock();
+    LV_DRAW_BUF_INIT_STATIC(m8_draw_buf);
+
+    lv_draw_label_dsc_t label_dsc;
+    lv_draw_label_dsc_init(&label_dsc);
+    label_dsc.color = lv_palette_main(LV_PALETTE_ORANGE);
+    label_dsc.text = "Some text on text canvas";
+
+    lv_obj_t *canvas = lv_canvas_create(lv_screen_active());
+    lv_canvas_set_draw_buf(canvas, &m8_draw_buf);
+    lv_obj_center(canvas);
+    lv_canvas_fill_bg(canvas, lv_palette_lighten(LV_PALETTE_BLUE, 3), LV_OPA_COVER);
+
+    lv_layer_t layer;
+    lv_canvas_init_layer(canvas, &layer);
+
+    lv_area_t coords_text = {40, 80, 100, 120};
+    lv_draw_label(&layer, &label_dsc, &coords_text);
+
+    lv_canvas_finish_layer(canvas, &layer);
+    lv_unlock();
+}
 
 void M8Display::set_large_mode(int enabled) { LOG("error: set_large_mode: %d: not implemented\n", enabled); }
 
@@ -84,6 +114,7 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         LOG("warning: draw_waveform: canvas_w: %u: too large\n", canvas_w);
         return;
     }
+
     const auto canvas_x = static_cast<uint16_t>(canvas_max.w - canvas_w);
     const auto canvas = Canvas{canvas_x, canvas_max.y, canvas_w, canvas_max.h};
     last_waveform_width = waveform_width;
@@ -98,7 +129,8 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     // const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    // ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->display.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
+    // ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->display.get_bg_color(), canvas.x, canvas.y, canvas.w,
+    // canvas.h,
     //                        bmp_buff.data());
     was_blank = is_blank;
 }

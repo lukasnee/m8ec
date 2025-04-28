@@ -29,6 +29,7 @@ struct M8Display : public m8::protocol::Service::Display {
     using Rectangle = m8::protocol::Rectangle;
     using Waveform = m8::protocol::Waveform;
 
+    void init();
     void draw_waveform(const Waveform &waveform, uint16_t waveform_width);
     void draw_rectangle(const Rectangle &rectangle);
     int draw_character(const Character &character);
