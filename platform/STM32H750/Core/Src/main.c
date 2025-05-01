@@ -22,6 +22,7 @@
 #include "dma.h"
 #include "i2s.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_host.h"
 #include "gpio.h"
@@ -116,6 +117,7 @@ int main(void)
   MX_SPI1_Init();
   MX_I2S2_Init();
   MX_UART4_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   lfsapp_init();
   /* USER CODE END 2 */

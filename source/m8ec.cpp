@@ -85,7 +85,7 @@ private:
 };
 
 static bool init_services() {
-    ASSERT(LivenessSvc::get_instance().Start());
+    // ASSERT(LivenessSvc::get_instance().Start());
     // ASSERT(keysService.init()); // TODO: figure out why Keys::Service makes system hang
     // LOGD("Keys::Service OK\n");
     ASSERT(m8::protocol::service.init());
@@ -102,3 +102,12 @@ void launch() {
 } // namespace m8ec
 
 extern "C" void platform_app() { m8ec::launch(); }
+
+extern "C" void platform_print_freertos_stats(const char *buff) {
+    const ili9341_text_attr_t attr{.font = &ili9341_font_trash80_stealth57,
+                                   .fg_color = ILI9341_WHITE,
+                                   .bg_color = ILI9341_BLACK,
+                                   .origin = {.x = 0, .y = 0},
+                                   .h_wrap = ILI9341_H_WRAP_OFF};
+    ili9341_draw_string(m8ec::Display::get_instance().lcd(), attr, buff);
+}

@@ -134,5 +134,26 @@ void startupTask(void *arg)
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
+#include "tim.h"
+
+void freertos_config_configure_timer_for_run_time_stats() { HAL_TIM_Base_Start(&htim2); }
+
+uint32_t freertos_config_get_run_time_counter_value() { return __HAL_TIM_GET_COUNTER(&htim2); }
+
+const TickType_t FREERTOS_STATS_PRINT_PERIOD = pdMS_TO_TICKS(1000);
+const uint32_t FREERTOS_STATS_MAX_LINE_LENGTH = 48;
+
+void vApplicationIdleHook(void) {
+  static uint32_t lastWakeTime = 0;
+  if ((xTaskGetTickCount() - lastWakeTime) >= FREERTOS_STATS_PRINT_PERIOD) {
+    lastWakeTime = xTaskGetTickCount();
+    char *buff = pvPortMalloc(uxTaskGetNumberOfTasks() * FREERTOS_STATS_MAX_LINE_LENGTH);
+    if (buff) {
+      vTaskGetRunTimeStats(buff);
+      platform_print_freertos_stats(buff);
+      vPortFree(buff);
+    }
+  }
+}
 /* USER CODE END Application */
 

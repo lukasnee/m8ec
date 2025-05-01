@@ -10,6 +10,12 @@ extern "C"
    */
   void platform_app();
 
+  /**
+   * @brief Prints FreeRTOS statistics.
+   * @param buff Buffer containing the statistics.
+   */
+  void platform_print_freertos_stats(const char *buff);
+
 #ifdef __cplusplus
 }
 #endif
