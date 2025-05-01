@@ -135,6 +135,8 @@ void startupTask(void *arg)
 /* USER CODE BEGIN Application */
 
 #include "tim.h"
+#include <stdio.h>
+#include <string.h>
 
 void freertos_config_configure_timer_for_run_time_stats() { HAL_TIM_Base_Start(&htim2); }
 
@@ -147,12 +149,34 @@ void vApplicationIdleHook(void) {
   static uint32_t lastWakeTime = 0;
   if ((xTaskGetTickCount() - lastWakeTime) >= FREERTOS_STATS_PRINT_PERIOD) {
     lastWakeTime = xTaskGetTickCount();
-    char *buff = pvPortMalloc(uxTaskGetNumberOfTasks() * FREERTOS_STATS_MAX_LINE_LENGTH);
-    if (buff) {
-      vTaskGetRunTimeStats(buff);
-      platform_print_freertos_stats(buff);
-      vPortFree(buff);
+    UBaseType_t numTasks = uxTaskGetNumberOfTasks();
+    TaskStatus_t *taskStatusArray = pvPortMalloc(numTasks * sizeof(TaskStatus_t));
+    if (!taskStatusArray) {
+      return;
     }
+    uint32_t ulTotalTime;
+    numTasks = uxTaskGetSystemState(taskStatusArray, numTasks, &ulTotalTime);
+    ulTotalTime /= 100UL;
+    if (ulTotalTime == 0UL) {
+      vPortFree(taskStatusArray);
+      return;
+    }
+    const uint32_t buff_size = (1 + numTasks) * FREERTOS_STATS_MAX_LINE_LENGTH;
+    char *buff = pvPortMalloc(buff_size);
+    if (!buff) {
+      vPortFree(taskStatusArray);
+      return;
+    }
+    char *buff_ = buff;
+    buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "Task Name        %% CPU Stack Used\r\n");
+    for (size_t i = 0; i < numTasks; i++) {
+      const float ulStatsAsPercentage = (float)taskStatusArray[i].ulRunTimeCounter / (float)ulTotalTime;
+      buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "%-16s %02.02f %-16u\r\n", taskStatusArray[i].pcTaskName,
+                        ulStatsAsPercentage, uxTaskGetStackHighWaterMark(taskStatusArray[i].xHandle));
+    }
+    platform_print_freertos_stats(buff);
+    vPortFree(taskStatusArray);
+    vPortFree(buff);
   }
 }
 /* USER CODE END Application */
