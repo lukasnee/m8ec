@@ -168,11 +168,15 @@ void vApplicationIdleHook(void) {
       return;
     }
     char *buff_ = buff;
-    buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "Task Name        %% CPU Stack Used\r\n");
+    buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "Task              CPU %%  Stack %%\n");
     for (size_t i = 0; i < numTasks; i++) {
-      const float ulStatsAsPercentage = (float)taskStatusArray[i].ulRunTimeCounter / (float)ulTotalTime;
-      buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "%-16s %02.02f %-16u\r\n", taskStatusArray[i].pcTaskName,
-                        ulStatsAsPercentage, uxTaskGetStackHighWaterMark(taskStatusArray[i].xHandle));
+      const float cpuUsagePercentage = (float)taskStatusArray[i].ulRunTimeCounter / (float)ulTotalTime;
+      extern uint32_t taskGetStackSizeWords(TaskHandle_t taskHandle);
+      const uint32_t stackSizeWords = taskGetStackSizeWords(taskStatusArray[i].xHandle);
+      const uint32_t stackUsedWords = stackSizeWords - uxTaskGetStackHighWaterMark2(taskStatusArray[i].xHandle);
+      const float stackUsagePercentage = 100.0f * (float)stackUsedWords / (float)stackSizeWords;
+      buff_ += snprintf(buff_, (buff_size - (buff_ - buff)), "%-16s  %5.2f  %5.2f\n", taskStatusArray[i].pcTaskName,
+                        cpuUsagePercentage, stackUsagePercentage);
     }
     platform_print_freertos_stats(buff);
     vPortFree(taskStatusArray);

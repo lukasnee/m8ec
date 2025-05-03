@@ -57,6 +57,7 @@
 #endif /* CMSIS_device_header */
 
 #define configRECORD_STACK_HIGH_ADDRESS 1
+#define configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H 1
 
 #define configENABLE_FPU                         0
 #define configENABLE_MPU                         0
