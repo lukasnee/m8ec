@@ -804,6 +804,9 @@ USBH_StatusTypeDef USBH_CtlReq(USBH_HandleTypeDef *phost, uint8_t *buff,
   return status;
 }
 
+const char *CTRL_STATE_STRINGS[] = {"IDLE",          "SETUP",     "SETUP_WAIT",     "DATA_IN",    "DATA_IN_WAIT",    "DATA_OUT",
+                                    "DATA_OUT_WAIT", "STATUS_IN", "STATUS_IN_WAIT", "STATUS_OUT", "STATUS_OUT_WAIT", "ERROR",
+                                    "STALLED",       "COMPLETE"};
 
 /**
   * @brief  USBH_HandleControl
@@ -816,6 +819,8 @@ static USBH_StatusTypeDef USBH_HandleControl(USBH_HandleTypeDef *phost)
   uint8_t direction;
   USBH_StatusTypeDef status = USBH_BUSY;
   USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+
+  CTRL_StateTypeDef state_prev = phost->Control.state;
 
   switch (phost->Control.state)
   {
@@ -1180,6 +1185,8 @@ static USBH_StatusTypeDef USBH_HandleControl(USBH_HandleTypeDef *phost)
       break;
   }
 
+  USBH_TrcLog("Control State: %s -> %s", CTRL_STATE_STRINGS[state_prev],
+              CTRL_STATE_STRINGS[phost->Control.state]);
   return status;
 }
 

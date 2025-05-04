@@ -582,21 +582,30 @@ USBH_StatusTypeDef USBH_ReEnumerate(USBH_HandleTypeDef *phost)
 }
 
 const char *USBH_STATE_STRINGS[] = {"IDLE",
-                                     "DEV_WAIT_FOR_ATTACHMENT",
-                                     "DEV_ATTACHED",
-                                     "DEV_DISCONNECTED",
-                                     "DETECT_DEVICE_SPEED",
-                                     "ENUMERATION",
-                                     "CLASS_REQUEST",
-                                     "INPUT",
-                                     "SET_CONFIGURATION",
-                                     "SET_WAKEUP_FEATURE",
-                                     "CHECK_CLASS",
-                                     "CLASS",
-                                     "SUSPENDED",
-                                     "ABORT_STATE"};
+                                    "DEV_WAIT_FOR_ATTACHMENT",
+                                    "DEV_ATTACHED",
+                                    "DEV_DISCONNECTED",
+                                    "DETECT_DEVICE_SPEED",
+                                    "ENUMERATION",
+                                    "CLASS_REQUEST",
+                                    "INPUT",
+                                    "SET_CONFIGURATION",
+                                    "SET_WAKEUP_FEATURE",
+                                    "CHECK_CLASS",
+                                    "CLASS",
+                                    "SUSPENDED",
+                                    "ABORT_STATE"};
 const char *USBH_EVENT_STRINGS[] = {"", "PORT", "URB", "CONTROL", "CLASS", "STATE_CHANGED"};
 const char *USBH_STATUS_STRINGS[] = {"OK", "BUSY", "FAIL", "NOT_SUPPORTED", "UNRECOVERED_ERROR", "ERROR_SPEED_UNKNOWN"};
+const char *USBH_ENUM_STATE_STRINGS[] = {"IDLE",
+                                         "GET_FULL_DEV_DESC",
+                                         "SET_ADDR",
+                                         "GET_CFG_DESC",
+                                         "GET_FULL_CFG_DESC",
+                                         "GET_MFC_STRING_DESC",
+                                         "GET_PRODUCT_STRING_DESC",
+                                         "GET_SERIALNUM_STRING_DESC"};
+
 /**
   * @brief  USBH_Process
   *         Background process of the USB Core.
@@ -606,7 +615,8 @@ const char *USBH_STATUS_STRINGS[] = {"OK", "BUSY", "FAIL", "NOT_SUPPORTED", "UNR
 USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
 {
   __IO USBH_StatusTypeDef status = USBH_FAIL;
-  USBH_TrcLog("proc: %s %s", USBH_STATE_STRINGS[phost->gState], USBH_EVENT_STRINGS[phost->os_msg]);
+  USBH_TrcLog("p:{c:%u:%u, s:%s,e:%s}", USBH_GetActiveClassCode(phost), USBH_GetActiveSubClassCode(phost),
+              USBH_STATE_STRINGS[phost->gState], USBH_EVENT_STRINGS[phost->os_msg]);
   /* check for Host pending port disconnect event */
   if (phost->device.is_disconnected == 1U)
   {
@@ -721,6 +731,7 @@ USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost)
     case HOST_ENUMERATION:
       /* Check for enumeration status */
       status = USBH_HandleEnum(phost);
+      USBH_DbgLog("HandleEnum() => %s (%d)", USBH_STATUS_STRINGS[status], status);
       if (status == USBH_OK)
       {
         /* The function shall return USBH_OK when full enumeration is complete */
@@ -976,11 +987,13 @@ static USBH_StatusTypeDef USBH_HandleEnum(USBH_HandleTypeDef *phost)
   USBH_StatusTypeDef Status = USBH_BUSY;
   USBH_StatusTypeDef ReqStatus = USBH_BUSY;
 
+  USBH_TrcLog("EnumState:%s", USBH_ENUM_STATE_STRINGS[phost->EnumState]);
   switch (phost->EnumState)
   {
     case ENUM_IDLE:
       /* Get Device Desc for only 1st 8 bytes : To get EP0 MaxPacketSize */
       ReqStatus = USBH_Get_DevDesc(phost, 8U);
+      USBH_TrcLog("Get_DevDesc(8) => %s (%d)", USBH_STATUS_STRINGS[ReqStatus], ReqStatus);
       if (ReqStatus == USBH_OK)
       {
         phost->Control.pipe_size = phost->device.DevDesc.bMaxPacketSize;
