@@ -128,7 +128,7 @@
 
 #if (USBH_DEBUG_LEVEL > 0U)
 #define  USBH_UsrLog(...)   do { \
-                            LOG("USBH|U: ") ; \
+                            LOG("%ld|USBH|U|", xTaskGetTickCount()); \
                             LOG(__VA_ARGS__); \
                             LOG("\n"); \
 } while (0)
@@ -139,7 +139,7 @@
 #if (USBH_DEBUG_LEVEL > 1U)
 
 #define  USBH_ErrLog(...) do { \
-                            LOG("USBH|E: ") ; \
+                            LOG("%ld|USBH|E|", xTaskGetTickCount()); \
                             LOG(__VA_ARGS__); \
                             LOG("\n"); \
 } while (0)
@@ -149,7 +149,7 @@
 
 #if (USBH_DEBUG_LEVEL > 2U)
 #define  USBH_DbgLog(...)   do { \
-                            LOGD("USBH|D: ") ; \
+                            LOGD("%ld|USBH|D|", xTaskGetTickCount()); \
                             LOGD(__VA_ARGS__); \
                             LOGD("\n"); \
 } while (0)
@@ -159,7 +159,7 @@
 
 #if (USBH_DEBUG_LEVEL > 3U)
 #define  USBH_TrcLog(...)   do { \
-                            LOGD("USBH|T: ") ; \
+                            LOGD("%ld|USBH|T|", xTaskGetTickCount()); \
                             LOGD(__VA_ARGS__); \
                             LOGD("\n"); \
 } while (0)
