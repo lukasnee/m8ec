@@ -497,7 +497,7 @@ USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state)
       /* USER CODE END DRIVE_LOW_CHARGE_FOR_FS */
     }
   }
-  USBH_Delay(200);
+  vTaskDelay(200);
   return USBH_OK;
 }
 
