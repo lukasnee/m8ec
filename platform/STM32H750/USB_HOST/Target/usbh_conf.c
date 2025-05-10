@@ -139,10 +139,7 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
   */
 void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
 {
-  //SEGGER_SYSVIEW_RecordEnterISR();
-  //SEGGER_SYSVIEW_Print("SOF");
   USBH_LL_IncTimer(hhcd->pData);
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 
 /**
@@ -152,10 +149,7 @@ void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
 {
-  //SEGGER_SYSVIEW_RecordEnterISR();
-    //SEGGER_SYSVIEW_Print("Connect");
   USBH_LL_Connect(hhcd->pData);
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 
 /**
@@ -165,10 +159,7 @@ void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
 {
-  //SEGGER_SYSVIEW_RecordEnterISR();
-    //SEGGER_SYSVIEW_Print("Disconnect");
   USBH_LL_Disconnect(hhcd->pData);
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 
 /**
@@ -180,15 +171,10 @@ void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum, HCD_URBStateTypeDef urb_state)
 {
-  UNUSED(chnum);
-  UNUSED(urb_state);
-  //SEGGER_SYSVIEW_RecordEnterISR();
-  //SEGGER_SYSVIEW_Print("URB");
   /* To be used with OS to sync URB state with the global state machine */
 #if (USBH_USE_OS == 1)
   USBH_LL_NotifyURBChange(hhcd->pData);
 #endif
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 /**
 * @brief  Port Port Enabled callback.
@@ -197,10 +183,7 @@ void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum,
   */
 void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
 {
-  //SEGGER_SYSVIEW_RecordEnterISR();
-  //SEGGER_SYSVIEW_Print("Port Enabled");
   USBH_LL_PortEnabled(hhcd->pData);
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 
 /**
@@ -210,10 +193,7 @@ void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_PortDisabled_Callback(HCD_HandleTypeDef *hhcd)
 {
-  //SEGGER_SYSVIEW_RecordEnterISR();
-  //SEGGER_SYSVIEW_Print("Port Disabled");
   USBH_LL_PortDisabled(hhcd->pData);
-  //SEGGER_SYSVIEW_RecordExitISR();
 }
 
 /*******************************************************************************

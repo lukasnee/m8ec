@@ -19,7 +19,6 @@ target_sources(
             Core/Src/stm32h7xx_hal_timebase_tim.c
             USB_HOST/App/usb_host.c
             USB_HOST/Target/usbh_conf.c
-            USB_HOST/Target/usbh_platform.c
             Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
             Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
             Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
