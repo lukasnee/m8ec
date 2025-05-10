@@ -37,25 +37,7 @@ m8::protocol::Keys::Svc &m8::protocol::Keys::Svc::get_instance() {
     return instance;
 }
 
-static bool init_hw_periphs() {
-#if defined(STM32H750xx)
-    ASSERT(periph::Uart4::get_instance().init());
-    LOGD("UART4 OK\n");
-#elif defined(STM32F411xE)
-    ASSERT(periph::Uart1::get_instance().init());
-    LOGD("UART1 OK\n");
-#endif
-    ASSERT(periph::UsbCdc::get_instance().init());
-    LOGD("USB CDC OK\n");
-    return true;
-}
-
-static bool init_sw_periphs() {
-    ASSERT(Display::get_instance().init());
-    LOGD("Display OK\n");
-    return true;
-}
-
+#ifdef M8EC_LIVENESS_SVC
 struct LivenessSvc : fonas::Thread {
 
     static LivenessSvc &get_instance() {
@@ -81,9 +63,31 @@ private:
         }
     }
 };
+#endif // M8EC_LIVENESS_SVC
+
+static bool init_hw_periphs() {
+#if defined(STM32H750xx)
+    ASSERT(periph::Uart4::get_instance().init());
+    LOGD("UART4 OK\n");
+#elif defined(STM32F411xE)
+    ASSERT(periph::Uart1::get_instance().init());
+    LOGD("UART1 OK\n");
+#endif
+    ASSERT(periph::UsbCdc::get_instance().init());
+    LOGD("USB CDC OK\n");
+    return true;
+}
+
+static bool init_sw_periphs() {
+    ASSERT(Display::get_instance().init());
+    LOGD("Display OK\n");
+    return true;
+}
 
 static bool init_services() {
-    // ASSERT(LivenessSvc::get_instance().Start());
+#ifdef M8EC_LIVENESS_SVC
+    ASSERT(LivenessSvc::get_instance().Start());
+#endif // M8EC_LIVENESS_SVC
     ASSERT(m8::protocol::Keys::Svc::get_instance().Start());
     LOGD("Keys::Svc::Service OK\n");
     ASSERT(service.init());
