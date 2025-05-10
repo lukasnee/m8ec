@@ -214,31 +214,54 @@ void Service::Run() {
     }
 }
 
-void print_keys_change(const Keys::State &prev_keys_state, const Keys::State &keys_state) {
+namespace Keys {
 
-    for (const auto &key : Keys::keys) {
+const char *key_to_string(Key key) {
+    switch (key) {
+    case Key::edit:
+        return "edit";
+    case Key::option:
+        return "option";
+    case Key::right:
+        return "right";
+    case Key::play:
+        return "play";
+    case Key::shift:
+        return "shift";
+    case Key::down:
+        return "down";
+    case Key::up:
+        return "up";
+    case Key::left:
+        return "left";
+    default:
+        return "none";
+    }
+}
+
+void print_keys_change(const State &prev_keys_state, const State &keys_state) {
+
+    for (const auto &key : Svc::keys) {
         if (prev_keys_state.get(key) != keys_state.get(key)) {
-            LOG("%s%c\n", Keys::key_to_string(key), (keys_state.get(key) ? '+' : '-'));
+            LOG("%s%c\n", key_to_string(key), (keys_state.get(key) ? '+' : '-'));
         }
     }
 }
 
-void Keys::Run() {
+void Svc::Run() {
+    this->ll_init();
+    State prev_keys_state = {};
     while (true) {
-        Keys::get_instance().init();
-        Keys::State prev_keys_state = {};
-        while (true) {
-            const Keys::State keys_state = this->ll_get_state();
-            if (prev_keys_state.underlying != keys_state.underlying) {
-                this->protocol_service.send_keys_state(keys_state);
-                if (m8ec::Config::debug_keys) {
-                    print_keys_change(prev_keys_state, keys_state);
-                }
-                prev_keys_state = keys_state;
+        const State keys_state = this->ll_get_state();
+        if (prev_keys_state.underlying != keys_state.underlying) {
+            this->protocol_service.send_keys_state(keys_state);
+            if (m8ec::Config::debug_keys) {
+                print_keys_change(prev_keys_state, keys_state);
             }
-            Thread::DelayUntil(m8ec::Config::keys_refresh_period);
+            prev_keys_state = keys_state;
         }
+        Thread::DelayUntil(m8ec::Config::keys_refresh_period);
     }
 }
-
+} // namespace Keys
 } // namespace m8ec::m8::protocol

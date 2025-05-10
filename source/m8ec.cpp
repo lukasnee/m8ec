@@ -29,6 +29,14 @@
 
 namespace m8ec {
 
+static M8Display display(Display::get_instance());
+static m8::protocol::Service service(display);
+
+m8::protocol::Keys::Svc &m8::protocol::Keys::Svc::get_instance() {
+    static Svc instance("keysSvc", 2 * 1024, 1, service);
+    return instance;
+}
+
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
     ASSERT(periph::Uart4::get_instance().init());
@@ -47,16 +55,6 @@ static bool init_sw_periphs() {
     LOGD("Display OK\n");
     return true;
 }
-
-M8Display m8_display(Display::get_instance());
-namespace m8::protocol {
-static Service service(m8_display);
-
-::m8ec::m8::protocol::Keys & ::m8ec::m8::protocol::Keys::get_instance() {
-    static ::m8ec::m8::protocol::Keys instance("keysSvc", 2 * 1024, 1, service);
-    return instance;
-}
-} // namespace m8::protocol
 
 struct LivenessSvc : fonas::Thread {
 
@@ -86,9 +84,9 @@ private:
 
 static bool init_services() {
     // ASSERT(LivenessSvc::get_instance().Start());
-    // ASSERT(keysService.init()); // TODO: figure out why Keys::Service makes system hang
-    // LOGD("Keys::Service OK\n");
-    ASSERT(m8::protocol::service.init());
+    ASSERT(m8::protocol::Keys::Svc::get_instance().Start());
+    LOGD("Keys::Svc::Service OK\n");
+    ASSERT(service.init());
     LOGD("m8::protocol OK\n");
     return true;
 }

@@ -87,6 +87,8 @@ struct SystemInfo {
 };
 #pragma pack(pop)
 
+namespace Keys {
+
 enum Key : uint8_t {
     edit,
     option,
@@ -99,7 +101,10 @@ enum Key : uint8_t {
 
     none = 0xff,
 };
-struct KeysState {
+
+const char *key_to_string(Key key);
+
+struct State {
     void set(Key key, bool value) {
         if (value) {
             this->underlying |= 1 << key;
@@ -113,6 +118,8 @@ struct KeysState {
 
     std::uint8_t underlying;
 };
+
+} // namespace Keys
 
 struct Service : public fonas::Thread {
 
@@ -130,65 +137,33 @@ struct Service : public fonas::Thread {
 
     static void enable_display();
     static void reset_display();
-    static void send_keys_state(KeysState keys_state);
+    static void send_keys_state(Keys::State keys_state);
 
 private:
     void Run() final;
 
     Display &display;
 };
+namespace Keys {
 
-struct Keys : fonas::Thread {
-
-    using State = KeysState;
-    using Key = ::m8ec::m8::protocol::Key;
-
-    static constexpr Key keys[] = {Key::edit, Key::option, Key::right, Key::play, Key::shift, Key::down, Key::up, Key::left};
-
-    static const char *key_to_string(Key key) {
-        switch (key) {
-        case Key::edit:
-            return "edit";
-        case Key::option:
-            return "option";
-        case Key::right:
-            return "right";
-        case Key::play:
-            return "play";
-        case Key::shift:
-            return "shift";
-        case Key::down:
-            return "down";
-        case Key::up:
-            return "up";
-        case Key::left:
-            return "left";
-        default:
-            return "none";
-        }
-    }
-
-    static Keys &get_instance();
-
-    bool init();
+struct Svc : fonas::Thread {
+    static constexpr Key keys[] = {Key::edit,  Key::option, Key::right, Key::play,
+                                   Key::shift, Key::down,   Key::up,    Key::left};
+    static Svc &get_instance();
 
 protected:
     bool ll_init();
     State ll_get_state();
 
 private:
-    ~Keys() = default;
-    Keys(const Keys &) = delete;
-    Keys &operator=(const Keys &) = delete;
-
-    Keys(const char *Name, uint16_t StackDepth, UBaseType_t Priority, protocol::Service &protocol_service)
-        : fonas::Thread(Name, StackDepth, Priority), protocol_service(protocol_service) {
-        this->fonas::Thread::Start();
-    }
-
+    ~Svc() = default;
+    Svc(const Svc &) = delete;
+    Svc &operator=(const Svc &) = delete;
+    Svc(const char *Name, uint16_t StackDepth, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service)
+        : fonas::Thread(Name, StackDepth, Priority), protocol_service(protocol_service) {}
     void Run() final override;
 
-    protocol::Service &protocol_service;
+    m8ec::m8::protocol::Service &protocol_service;
 };
-
+} // namespace Keys
 } // namespace m8ec::m8::protocol

@@ -22,7 +22,7 @@ const Keys::Key key_map[ARRAY_SZ(columns)][ARRAY_SZ(rows)] = {
     {Keys::Key::edit, Keys::Key::none, Keys::Key::none},
 };
 
-bool Keys::ll_init() {
+bool Keys::Svc::ll_init() {
 
     GPIO_InitTypeDef GPIO_InitStruct = {};
 
@@ -44,7 +44,7 @@ bool Keys::ll_init() {
     return true;
 }
 
-Keys::State Keys::ll_get_state() {
+Keys::State Keys::Svc::ll_get_state() {
     State state = {};
     // keyboard matrix with diodes
     for (size_t cIdx = 0; cIdx < ARRAY_SZ(columns); ++cIdx) {
