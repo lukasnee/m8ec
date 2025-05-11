@@ -90,7 +90,7 @@ struct SystemInfo {
 namespace Keys {
 
 enum Key : uint8_t {
-    edit,
+    edit = 0,
     option,
     right,
     play,

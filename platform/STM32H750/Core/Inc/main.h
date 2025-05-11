@@ -65,6 +65,20 @@ void Error_Handler(void);
 #define TFT_DC_GPIO_Port GPIOA
 #define USB_OTG_VBUS_OUT_Pin GPIO_PIN_15
 #define USB_OTG_VBUS_OUT_GPIO_Port GPIOD
+#define keys_col0_Pin GPIO_PIN_0
+#define keys_col0_GPIO_Port GPIOD
+#define keys_col1_Pin GPIO_PIN_1
+#define keys_col1_GPIO_Port GPIOD
+#define keys_col2_Pin GPIO_PIN_2
+#define keys_col2_GPIO_Port GPIOD
+#define keys_col3_Pin GPIO_PIN_3
+#define keys_col3_GPIO_Port GPIOD
+#define keys_row0_Pin GPIO_PIN_4
+#define keys_row0_GPIO_Port GPIOD
+#define keys_row1_Pin GPIO_PIN_5
+#define keys_row1_GPIO_Port GPIOD
+#define keys_row2_Pin GPIO_PIN_6
+#define keys_row2_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
 

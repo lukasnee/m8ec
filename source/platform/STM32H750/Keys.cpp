@@ -2,6 +2,7 @@
 
 #include "fonas/fonas.hpp"
 
+#include "main.h"
 #include "stm32h7xx_hal.h"
 
 #define ARRAY_SZ(x) (sizeof(x) / sizeof((x)[0]))
@@ -12,14 +13,13 @@ struct Config {
     static constexpr std::size_t gpio_transient_delay_ms = 1;
 };
 
-const uint16_t rows[] = {GPIO_PIN_13, GPIO_PIN_1, GPIO_PIN_0};
-const uint16_t columns[] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7};
+const uint16_t cols[] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};
+const uint16_t rows[] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_6};
 
-const Keys::Key key_map[ARRAY_SZ(columns)][ARRAY_SZ(rows)] = {
-    {Keys::Key::none, Keys::Key::left, Keys::Key::none},
-    {Keys::Key::up, Keys::Key::down, Keys::Key::shift},
-    {Keys::Key::option, Keys::Key::right, Keys::Key::play},
-    {Keys::Key::edit, Keys::Key::none, Keys::Key::none},
+const Keys::Key key_map[ARRAY_SZ(rows)][ARRAY_SZ(cols)] = {
+    {Keys::Key::none, Keys::Key::up, Keys::Key::option, Keys::Key::edit},
+    {Keys::Key::left, Keys::Key::down, Keys::Key::right, Keys::Key::none},
+    {Keys::Key::none, Keys::Key::shift, Keys::Key::play, Keys::Key::none},
 };
 
 bool Keys::Svc::ll_init() {
@@ -28,33 +28,33 @@ bool Keys::Svc::ll_init() {
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    // key rows
-    GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_1 | GPIO_PIN_0;
+    // key cols
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    // key columns
-    GPIO_InitStruct.Pin = GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    // key rows
+    GPIO_InitStruct.Pin = GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
     return true;
 }
 
 Keys::State Keys::Svc::ll_get_state() {
     State state = {};
     // keyboard matrix with diodes
-    for (size_t cIdx = 0; cIdx < ARRAY_SZ(columns); ++cIdx) {
-        HAL_GPIO_WritePin(GPIOB, columns[cIdx], GPIO_PIN_RESET);
+    for (size_t row_i = 0; row_i < ARRAY_SZ(rows); ++row_i) {
+        HAL_GPIO_WritePin(GPIOD, rows[row_i], GPIO_PIN_RESET);
         fonas::delay_ms(Config::gpio_transient_delay_ms);
-        for (size_t rIdx = 0; rIdx < ARRAY_SZ(rows); ++rIdx) {
-            const bool is_pressed = HAL_GPIO_ReadPin(GPIOB, rows[rIdx]) == GPIO_PIN_RESET;
-            state.set(key_map[cIdx][rIdx], is_pressed);
+        for (size_t col_i = 0; col_i < ARRAY_SZ(cols); ++col_i) {
+            const bool is_pressed = HAL_GPIO_ReadPin(GPIOD, cols[col_i]) == GPIO_PIN_RESET;
+            state.set(key_map[row_i][col_i], is_pressed);
         }
-        HAL_GPIO_WritePin(GPIOB, columns[cIdx], GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOD, rows[row_i], GPIO_PIN_SET);
     }
     return state;
 }
