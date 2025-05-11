@@ -27,43 +27,37 @@ namespace m8ec::m8::protocol {
 namespace cmd {
 
 const char *id_to_name(uint8_t cmd_id);
-template <typename Tcmd, uint8_t Tcmd_id, size_t Tcmd_size_min, size_t Tcmd_size_max> struct Cmd {
+template <uint8_t Tcmd_id, size_t Tcmd_size_min, size_t Tcmd_size_max> struct Cmd {
 public:
     static constexpr uint8_t cmd_id = Tcmd_id;
-    static constexpr size_t cmd_size_min = Tcmd_size_min;
-    static constexpr size_t cmd_size_max = Tcmd_size_max;
     static bool validate_size(uint32_t actual_size) {
-        if (actual_size < cmd_size_min || actual_size > cmd_size_max) {
+        if (actual_size < Tcmd_size_min || actual_size > Tcmd_size_max) {
             if (m8ec::Config::debug_m8_protocol) {
-                LOG(err_fmt_invalid_packet_length_range, id_to_name(cmd_id), cmd_size_min, cmd_size_max, actual_size);
+                LOG("Error: %s: Invalid packet length: expected [%u %u], got %lu\n", id_to_name(cmd_id), Tcmd_size_min,
+                    Tcmd_size_max, actual_size);
             }
             return false;
         }
         return true;
     }
-
-private:
-    static constexpr const char *err_fmt_invalid_packet_length_range =
-        "Error: %s: Invalid packet length: expected [%u %u], got %lu\n";
 };
 #pragma pack(push, 1)
-struct KeyState : public Cmd<KeyState, 0xFB, 2, 2> {
+struct KeyState : public Cmd<0xFB, 2, 2> {
     struct Payload {
         std::uint8_t key_state;
         std::uint8_t unknown; // TODO figure out what this is
     } payload;
 };
-struct DrawWaveform
-    : public Cmd<DrawWaveform, 0xFC, sizeof(Waveform::color), sizeof(Waveform::color) + sizeof(Waveform::buffer)> {
+struct DrawWaveform : public Cmd<0xFC, sizeof(Waveform::color), sizeof(Waveform::color) + sizeof(Waveform::buffer)> {
     Waveform waveform;
 };
-struct DrawCharacter : public Cmd<DrawCharacter, 0xFD, sizeof(Character), sizeof(Character)> {
+struct DrawCharacter : public Cmd<0xFD, sizeof(Character), sizeof(Character)> {
     Character character;
 };
-struct DrawRectangle : public Cmd<DrawRectangle, 0xFE, sizeof(Rectangle), sizeof(Rectangle)> {
+struct DrawRectangle : public Cmd<0xFE, sizeof(Rectangle), sizeof(Rectangle)> {
     Rectangle rectangle;
 };
-struct PrintSystemInfo : public Cmd<SystemInfo, 0xFF, sizeof(SystemInfo), sizeof(SystemInfo)> {
+struct PrintSystemInfo : public Cmd<0xFF, sizeof(SystemInfo), sizeof(SystemInfo)> {
     SystemInfo system_info;
 };
 #pragma pack(pop)
