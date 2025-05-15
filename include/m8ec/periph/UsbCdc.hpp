@@ -1,8 +1,8 @@
 #pragma once
 
 #include "fonas/EventDrivenStream.hpp"
-
 #include "fonas/StreamBuffer.hpp"
+#include "fonas/logger/logger.hpp"
 
 namespace m8ec::periph {
 
@@ -30,6 +30,8 @@ private:
 
     fonas::StreamBuffer rx_stream_buffer;
     bool initialized = false;
+
+    fonas::Logger::Module logger{"m8ec::periph::UsbCdc"};
 };
 
 } // namespace m8ec::periph

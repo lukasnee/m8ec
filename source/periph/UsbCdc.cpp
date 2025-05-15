@@ -48,7 +48,7 @@ bool UsbCdc::ll_write_async(const std::uint8_t *data, std::size_t size) {
     }
     const auto status = USBH_CDC_Transmit(&hUsbHostFS, const_cast<std::uint8_t *>(data), size);
     if (USBH_OK != status) {
-        LOG("error: USBH_CDC_Transmit: %d\n", status);
+        logger.error("USBH_CDC_Transmit: %d", status);
         return false;
     }
     return true;
@@ -70,7 +70,7 @@ bool UsbCdc::ll_rx_input(const uint8_t *data, size_t size) {
         return false;
     }
     if (size != this->rx_stream_buffer.send(data, size, portMAX_DELAY)) {
-        LOG("rx_stream_buffer.send failed\n");
+        logger.error("rx_stream_buffer.send failed");
         return false;
     }
     return true;

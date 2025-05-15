@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "fonas/fonas.hpp"
+#include "fonas/logger/logger.hpp"
+
+#include <cstdint>
 
 namespace m8ec::m8::protocol {
 
@@ -135,14 +136,16 @@ struct Service : public fonas::Thread {
 
     bool init();
 
-    static void enable_display();
-    static void reset_display();
-    static void send_keys_state(Keys::State keys_state);
+    void enable_display();
+    void reset_display();
+    void send_keys_state(Keys::State keys_state);
 
 private:
     void Run() final;
 
     Display &display;
+
+    fonas::Logger::Module logger{"m8ec::m8::protocol::Service"};
 };
 namespace Keys {
 
@@ -163,7 +166,11 @@ private:
         : fonas::Thread(Name, StackDepth, Priority), protocol_service(protocol_service) {}
     void Run() final override;
 
+    void print_keys_change(const State &prev_keys_state, const State &keys_state);
+
     m8ec::m8::protocol::Service &protocol_service;
+
+    fonas::Logger::Module logger{"m8ec::m8::protocol::Keys::Svc"};
 };
 } // namespace Keys
 } // namespace m8ec::m8::protocol

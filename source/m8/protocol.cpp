@@ -26,16 +26,16 @@
 namespace m8ec::m8::protocol {
 namespace cmd {
 
+static fonas::Logger::Module logger{"m8ec::m8::protocol::cmd"};
+
 const char *id_to_name(uint8_t cmd_id);
 template <uint8_t Tcmd_id, size_t Tcmd_size_min, size_t Tcmd_size_max> struct Cmd {
 public:
     static constexpr uint8_t cmd_id = Tcmd_id;
     static bool validate_size(uint32_t actual_size) {
         if (actual_size < Tcmd_size_min || actual_size > Tcmd_size_max) {
-            if (m8ec::Config::debug_m8_protocol) {
-                LOG("Error: %s: Invalid packet length: expected [%u %u], got %lu\n", id_to_name(cmd_id), Tcmd_size_min,
-                    Tcmd_size_max, actual_size);
-            }
+            logger.error("%s: Invalid packet length: expected [%u %u], got %lu", id_to_name(cmd_id), Tcmd_size_min,
+                         Tcmd_size_max, actual_size);
             return false;
         }
         return true;
@@ -88,25 +88,20 @@ bool Service::init() { return this->fonas::Thread::Start(); }
 
 void Service::enable_display() {
     uint8_t buf[] = {'E'};
-    if (!m8ec::periph::UsbCdc::get_instance().write(buf, 1)) {
-        LOG("m8::protocol::enable_display failed\n");
-    }
-    LOG("m8::protocol::enable_display\n");
+    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 1);
+    logger.log(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "enable_display");
 }
 
 void Service::reset_display() {
     uint8_t buf[] = {'R'};
-    if (!m8ec::periph::UsbCdc::get_instance().write(buf, 1)) {
-        LOG("m8::protocol::reset_display failed\n");
-    }
-    LOG("m8::protocol::reset_display\n");
+    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 1);
+    logger.log(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "reset_display");
 }
 
 void Service::send_keys_state(Keys::State keys_state) {
     uint8_t buf[2] = {'C', keys_state.underlying};
-    if (!m8ec::periph::UsbCdc::get_instance().write(buf, 2)) {
-        LOG("m8::protocol::send_keys_state failed\n");
-    }
+    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 2);
+    logger.log(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "send_keys_state: 0x%02x", keys_state.underlying);
 }
 
 // TODO separate out cmd parsing from the service into m8ec/m8
@@ -117,58 +112,55 @@ void Service::Run() {
         .buf_size = sizeof(slip_buffer),
         .recv_ctx = this,
         .recv_message = [](uint8_t *data, uint32_t size, void *recv_ctx) -> int {
-            auto *service = reinterpret_cast<Service *>(recv_ctx);
-            if (size < 1) {
+            if (!data) {
                 return 0;
             }
+            if (size == 0) {
+                return 0;
+            }
+            if (!recv_ctx) {
+                return 0;
+            }
+            auto &service = *reinterpret_cast<Service *>(recv_ctx);
             const uint8_t cmd_id = data[0];
             const uint8_t *payload_data = &data[1];
             const uint32_t payload_size = size - 1;
             if (cmd_id == cmd::KeyState::cmd_id && cmd::KeyState::validate_size(payload_size)) {
                 const auto &payload = reinterpret_cast<const cmd::KeyState *>(payload_data)->payload;
-                if (m8ec::Config::debug_m8_protocol) {
-                    LOG("KeyState: s:%02x,?:%02x\n", payload.key_state, payload.unknown);
-                }
+                service.logger.debug("KeyState: s:%02x,?:%02x", payload.key_state, payload.unknown);
             }
             else if (cmd_id == cmd::DrawWaveform::cmd_id && cmd::DrawWaveform::validate_size(payload_size)) {
                 const auto &waveform = reinterpret_cast<const cmd::DrawWaveform *>(payload_data)->waveform;
                 const auto waveform_width = static_cast<uint16_t>(payload_size - sizeof(Color));
-                if (m8ec::Config::debug_m8_protocol) {
-                    LOG("DrawWaveform: w:%hu\n", waveform_width);
-                }
-                service->display.draw_waveform(waveform, waveform_width);
+                service.logger.debug("DrawWaveform: w:%hu", waveform_width);
+                service.display.draw_waveform(waveform, waveform_width);
             }
             else if (cmd_id == cmd::DrawCharacter::cmd_id && cmd::DrawCharacter::validate_size(payload_size)) {
                 const auto &character = reinterpret_cast<const cmd::DrawCharacter *>(payload_data)->character;
-                if (m8ec::Config::debug_m8_protocol) {
-                    LOG("DrawCharacter: c:'%c'(0x%02X)@x:%u,y:%u\n", character.c, character.c, character.pos.x,
-                        character.pos.y);
-                }
-                service->display.draw_character(character);
+                service.logger.debug("DrawCharacter: c:'%c'(0x%02X)@x:%u,y:%u", character.c, character.c,
+                                     character.pos.x, character.pos.y);
+                service.display.draw_character(character);
             }
             else if (cmd_id == cmd::DrawRectangle::cmd_id && cmd::DrawRectangle::validate_size(payload_size)) {
                 const auto &rectangle = reinterpret_cast<const cmd::DrawRectangle *>(payload_data)->rectangle;
-                if (m8ec::Config::debug_m8_protocol) {
-                    LOG("DrawRectangle: x:%u,y:%u,w:%u,h:%u\n", rectangle.pos.x, rectangle.pos.y, rectangle.size.w,
-                        rectangle.size.h);
-                }
-                service->display.draw_rectangle(rectangle);
+                service.logger.debug("DrawRectangle: x:%u,y:%u,w:%u,h:%u", rectangle.pos.x, rectangle.pos.y,
+                                     rectangle.size.w, rectangle.size.h);
+                service.display.draw_rectangle(rectangle);
             }
             else if (cmd_id == cmd::PrintSystemInfo::cmd_id && cmd::PrintSystemInfo::validate_size(payload_size)) {
                 const auto &system_info = reinterpret_cast<const cmd::PrintSystemInfo *>(payload_data)->system_info;
                 const char *device_type[] = {"Headless", "M8 Beta", "M8 Production"};
                 static bool system_info_already_printed = false;
                 if (!system_info_already_printed) {
-                    LOG("System Info: device type: %s, firmware version %d.%d.%d\n", device_type[system_info.hw_type],
-                        system_info.version.major, system_info.version.minor, system_info.version.patch);
+                    service.logger.debug("SystemInfo: device type: %s, firmware version %d.%d.%d",
+                                         device_type[system_info.hw_type], system_info.version.major,
+                                         system_info.version.minor, system_info.version.patch);
                     system_info_already_printed = true;
                 }
-                service->display.set_large_mode(system_info.font_mode == SystemInfo::FontMode::large);
+                service.display.set_large_mode(system_info.font_mode == SystemInfo::FontMode::large);
             }
             else {
-                if (m8ec::Config::debug_m8_protocol) {
-                    LOG("Error: Unknown command: %02x of size %lu\n", data[0], payload_size);
-                }
+                service.logger.error("Unknown command: %02x of size %lu", data[0], payload_size);
                 return 0;
             }
             return 1;
@@ -177,7 +169,7 @@ void Service::Run() {
     slip_handler_s slip;
 
     if (SLIP_NO_ERROR != slip_init(&slip, &slip_descriptor)) {
-        LOG("Error: SLIP: slip_init failed\n");
+        logger.error("SLIP: slip_init");
         return;
     }
 
@@ -185,7 +177,7 @@ void Service::Run() {
     while (true) {
         if (first_run || !periph::UsbCdc::get_instance().ready()) {
             while (!periph::UsbCdc::get_instance().ready()) {
-                LOG("Waiting for USB virtual COM");
+                logger.info("Waiting for USB virtual COM");
                 fonas::delay_ms(250);
             }
             enable_display();
@@ -197,9 +189,7 @@ void Service::Run() {
         for (std::size_t i = 0; i < bytes_read; i++) {
             const slip_error_t n = slip_read_byte(&slip, buffer[i]);
             if (n != SLIP_NO_ERROR) {
-                if (m8ec::Config::debug_slip) {
-                    LOG("Error: SLIP: %d\n", n);
-                }
+                logger.log(LOGGER_LEVEL_DEBUG3, "SLIP: %d", n);
                 if (n == SLIP_ERROR_INVALID_PACKET) {
                     this->reset_display();
                 }
@@ -233,11 +223,10 @@ const char *key_to_string(Key key) {
     }
 }
 
-void print_keys_change(const State &prev_keys_state, const State &keys_state) {
-
+void Svc::print_keys_change(const State &prev_keys_state, const State &keys_state) {
     for (const auto &key : Svc::keys) {
         if (prev_keys_state.get(key) != keys_state.get(key)) {
-            LOG("%s%c\n", key_to_string(key), (keys_state.get(key) ? '+' : '-'));
+            this->logger.log(LOGGER_LEVEL_DEBUG2, "%s%c", key_to_string(key), (keys_state.get(key) ? '+' : '-'));
         }
     }
 }
@@ -249,9 +238,7 @@ void Svc::Run() {
         const State keys_state = this->ll_get_state();
         if (prev_keys_state.underlying != keys_state.underlying) {
             this->protocol_service.send_keys_state(keys_state);
-            if (m8ec::Config::debug_keys) {
-                print_keys_change(prev_keys_state, keys_state);
-            }
+            print_keys_change(prev_keys_state, keys_state);
             prev_keys_state = keys_state;
         }
         Thread::DelayUntil(m8ec::Config::keys_refresh_period);

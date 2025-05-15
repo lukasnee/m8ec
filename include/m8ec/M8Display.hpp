@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "m8ec/m8/protocol.hpp"
-
+#include "fonas/logger/logger.hpp"
 #include "m8ec/Display.hpp"
+#include "m8ec/m8/protocol.hpp"
 
 #include <cstddef>
 
@@ -38,6 +38,8 @@ private:
     ili9341_t *lcd() { return this->display.lcd(); }
 
     m8ec::Display &display;
+
+    fonas::Logger::Module logger{"m8ec::M8Display"};
 };
 
 } // namespace m8ec

@@ -24,16 +24,22 @@
 #include "m8ec/m8/protocol.hpp"
 
 #include "fonas/fonas.hpp"
+#include "fonas/logger/logger.hpp"
 
 #include <cstdio>
 
-namespace m8ec {
+fonas::Logger::Module logger("m8ec");
 
+namespace m8ec {
+namespace m8 {
 static M8Display display(Display::get_instance());
+namespace protocol {
 static m8::protocol::Service service(display);
+} // namespace protocol
+} // namespace m8
 
 m8::protocol::Keys::Svc &m8::protocol::Keys::Svc::get_instance() {
-    static Svc instance("keysSvc", 2 * 1024, 1, service);
+    static Svc instance("keysSvc", 2 * 1024, 1, m8::protocol::service);
     return instance;
 }
 
@@ -68,19 +74,19 @@ private:
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
     ASSERT(periph::Uart4::get_instance().init());
-    LOGD("UART4 OK\n");
+    logger.info("UART4 OK");
 #elif defined(STM32F411xE)
     ASSERT(periph::Uart1::get_instance().init());
-    LOGD("UART1 OK\n");
+    logger.info("UART1 OK");
 #endif
     ASSERT(periph::UsbCdc::get_instance().init());
-    LOGD("USB CDC OK\n");
+    logger.info("USB CDC OK");
     return true;
 }
 
 static bool init_sw_periphs() {
     ASSERT(Display::get_instance().init());
-    LOGD("Display OK\n");
+    logger.info("Display OK");
     return true;
 }
 
@@ -89,9 +95,9 @@ static bool init_services() {
     ASSERT(LivenessSvc::get_instance().Start());
 #endif // M8EC_LIVENESS_SVC
     ASSERT(m8::protocol::Keys::Svc::get_instance().Start());
-    LOGD("Keys::Svc::Service OK\n");
-    ASSERT(service.init());
-    LOGD("m8::protocol OK\n");
+    logger.info("Keys::Svc::Service OK");
+    ASSERT(m8::protocol::service.init());
+    logger.info("m8::protocol::Service OK");
     return true;
 }
 

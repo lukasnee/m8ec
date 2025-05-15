@@ -15,6 +15,7 @@
 
 #include "ILI9341/ili9341.h"
 #include "ILI9341/ili9341_gfx.h"
+#include "fonas/logger/logger.hpp"
 
 namespace m8ec {
 
@@ -31,11 +32,13 @@ struct Display {
     void set_bg_color(ili9341_color_t color) { this->bg_color = color; }
 
 private:
+    Display() = default;
+
     ili9341_t *ili9341 = nullptr;
 
     ili9341_color_t bg_color = ILI9341_BLACK;
 
-    Display() = default;
+    fonas::Logger::Module logger{"m8ec::Display"};
 };
 
 } // namespace m8ec

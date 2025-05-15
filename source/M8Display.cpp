@@ -16,15 +16,12 @@
 
 #include "m8ec/Display.hpp"
 #include "m8ec/m8/protocol.hpp"
-#include "m8ec/m8ec.h" // LOG
 
-// #include <algorithm>
 #include <array>
-// #include <cstdio>
 
 namespace m8ec {
 
-void M8Display::set_large_mode(int enabled) { LOG("error: set_large_mode: %d: not implemented\n", enabled); }
+void M8Display::set_large_mode(int enabled) { logger.error("set_large_mode: %d: not implemented", enabled); }
 
 int M8Display::draw_character(const m8::protocol::Character &character) {
     if (!this->lcd()) {
@@ -68,7 +65,7 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         return;
     }
     if (waveform_width > canvas_max.w) {
-        LOG("warning: draw_waveform: waveform_width: %zu: too large\n", waveform_width);
+        logger.warning("draw_waveform: waveform_width: %zu: too large", waveform_width);
         waveform_width = canvas_max.w; // limit the width
     }
 
@@ -81,7 +78,7 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
     }
     const auto canvas_w = is_blank ? last_waveform_width : waveform_width;
     if (canvas_w > canvas_max.w) {
-        LOG("warning: draw_waveform: canvas_w: %u: too large\n", canvas_w);
+        logger.warning("draw_waveform: canvas_w: %u: too large", canvas_w);
         return;
     }
     const auto canvas_x = static_cast<uint16_t>(canvas_max.w - canvas_w);

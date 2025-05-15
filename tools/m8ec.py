@@ -52,7 +52,7 @@ def main():
     parser.add_argument(
         "--serial_dev", help="serial device for flashing and potentially for interfacing application", default="/dev/ttyACM0")
     parser.add_argument("--serial_log", help="serial log path",
-                        default="serial.log")
+                        default="m8ec.log")
     parser.add_argument('-l', '--log_level', type=int,
                         default=logging.WARNING, help='Log level')
     parser.add_argument('-L', '--log_file', type=str,
@@ -113,7 +113,7 @@ def main():
 
     if args.serial:
         sys_cmd(["minicom", "--baudrate", "921600", "-D",
-                args.serial_dev, "-C", args.serial_log])
+                args.serial_dev, "-C", args.serial_log, "--color=off"])
 
 
 if __name__ == "__main__":

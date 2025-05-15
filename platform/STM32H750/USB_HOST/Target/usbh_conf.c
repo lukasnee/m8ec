@@ -33,7 +33,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+LoggerModule logmod_usbh = {"USBH", LOGGER_LEVEL_DEBUG3};
 /* USER CODE END PV */
 
 HCD_HandleTypeDef hhcd_USB_OTG_FS;

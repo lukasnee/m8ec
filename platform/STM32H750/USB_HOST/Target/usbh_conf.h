@@ -85,7 +85,7 @@
 #define USBH_MAX_DATA_BUFFER      1024U
 
 /*----------   -----------*/
-#define USBH_DEBUG_LEVEL      3U
+#define USBH_DEBUG_LEVEL      4U
 
 /*----------   -----------*/
 #define USBH_USE_OS      1U
@@ -126,47 +126,45 @@
 
 /* DEBUG macros */
 
+#include "fonas/logger/logger.h"
+
+extern LoggerModule logmod_usbh;
+
 #if (USBH_DEBUG_LEVEL > 0U)
-#define  USBH_UsrLog(...)   do { \
-                            LOG("%ld|USBH|U|", xTaskGetTickCount()); \
-                            LOG(__VA_ARGS__); \
-                            LOG("\n"); \
-} while (0)
+#define USBH_ErrLog(...)                                                                                                       \
+  do {                                                                                                                         \
+    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_ERROR, __VA_ARGS__);                                                                 \
+  } while (0)
 #else
-#define USBH_UsrLog(...) do {} while (0)
+#define USBH_ErrLog(...)
 #endif
 
 #if (USBH_DEBUG_LEVEL > 1U)
-
-#define  USBH_ErrLog(...) do { \
-                            LOG("%ld|USBH|E|", xTaskGetTickCount()); \
-                            LOG(__VA_ARGS__); \
-                            LOG("\n"); \
-} while (0)
+#define USBH_UsrLog(...)                                                                                                       \
+  do {                                                                                                                         \
+    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_INFO, __VA_ARGS__);                                                                  \
+  } while (0)
 #else
-#define USBH_ErrLog(...) do {} while (0)
+#define USBH_UsrLog(...)
 #endif
 
 #if (USBH_DEBUG_LEVEL > 2U)
-#define  USBH_DbgLog(...)   do { \
-                            LOGD("%ld|USBH|D|", xTaskGetTickCount()); \
-                            LOGD(__VA_ARGS__); \
-                            LOGD("\n"); \
-} while (0)
+#define USBH_DbgLog(...)                                                                                                       \
+  do {                                                                                                                         \
+    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG, __VA_ARGS__);                                                                 \
+  } while (0)
 #else
-#define USBH_DbgLog(...) do {} while (0)
+#define USBH_DbgLog(...)
 #endif
 
 #if (USBH_DEBUG_LEVEL > 3U)
-#define  USBH_TrcLog(...)   do { \
-                            LOGD("%ld|USBH|T|", xTaskGetTickCount()); \
-                            LOGD(__VA_ARGS__); \
-                            LOGD("\n"); \
-} while (0)
+#define USBH_TrcLog(...)                                                                                                       \
+  do {                                                                                                                         \
+    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG2, __VA_ARGS__);                                                                \
+  } while (0)
 #else
-#define USBH_TrcLog(...) do {} while (0)
+#define USBH_TrcLog(...)
 #endif
-
 /**
   * @}
   */
