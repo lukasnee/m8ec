@@ -488,6 +488,7 @@ static USBH_StatusTypeDef USBH_ParseCfgDesc(USBH_HandleTypeDef *phost, uint8_t *
 
           if (pdesc->bDescriptorType == USB_DESC_TYPE_ENDPOINT)
           {
+            const uint8_t bLength = pdesc->bLength;
             /* Check if the endpoint is appartening to an audio streaming interface */
             if ((pif->bInterfaceClass == 0x01U) && (pif->bInterfaceSubClass == 0x02U))
             {
@@ -507,7 +508,7 @@ static USBH_StatusTypeDef USBH_ParseCfgDesc(USBH_HandleTypeDef *phost, uint8_t *
             pep = &cfg_desc->Itf_Desc[if_ix].Ep_Desc[ep_ix];
 
             status = USBH_ParseEPDesc(phost, pep, (uint8_t *)(void *)pdesc);
-
+            pdesc->bLength = bLength; /* Restore the original length */
             ep_ix++;
           }
         }
