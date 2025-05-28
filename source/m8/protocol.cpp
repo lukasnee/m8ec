@@ -30,8 +30,7 @@ namespace cmd {
 static fonas::Logger::Module logger{"m8ec::m8::protocol::cmd"};
 
 const char *id_to_name(uint8_t cmd_id);
-template <typename Derived, typename TPayload, uint8_t Tcmd_id, size_t Tpayload_size_min, size_t Tpayload_size_max>
-struct Cmd {
+template <typename Derived, uint8_t Tcmd_id, size_t Tpayload_size_min, size_t Tpayload_size_max> struct Cmd {
 public:
     static constexpr uint8_t cmd_id = Tcmd_id;
     static bool validate(uint8_t cmd_id, const uint8_t *payload_data, uint32_t payload_size) {
@@ -51,78 +50,19 @@ public:
         }
         return true;
     }
-
-    static const TPayload *try_parse(const uint8_t *data, uint32_t size) {
-        const uint8_t cmd_id = data[0];
-        const uint8_t *payload_data = &data[1];
-        const uint32_t payload_size = size - 1;
-        if (!validate(cmd_id, payload_data, payload_size)) {
-            return nullptr;
-        }
-        return Derived::parse(payload_data, payload_size);
-    }
 };
 
 #pragma pack(push, 1)
-struct DrawWaveform : public Cmd<DrawWaveform, Waveform, 0xFC, sizeof(Waveform::color), sizeof(Waveform)> {
-    static const Waveform *parse(const uint8_t *payload_data, uint32_t payload_size) {
-        (void)payload_size;
-        return reinterpret_cast<const Waveform *>(payload_data);
-    }
-};
-struct KeyState : public Cmd<KeyState, KeyState, 0xFB, 2, 2> {
-    static const KeyState *parse(const uint8_t *payload_data, uint32_t payload_size) {
-        (void)payload_size;
-        return reinterpret_cast<const cmd::KeyState *>(payload_data);
-    }
+struct KeyState : public Cmd<KeyState, 0xFB, 2, 2> {
     std::uint8_t key_state;
     std::uint8_t unknown; // TODO figure out what this is
 };
+struct DrawWaveform : public Cmd<DrawWaveform, 0xFC, sizeof(Waveform::color), sizeof(Waveform)>, public Waveform {};
+struct DrawCharacter : public Cmd<DrawCharacter, 0xFD, sizeof(Character), sizeof(Character)>, public Character {};
 
-struct DrawCharacter : public Cmd<DrawCharacter, Character, 0xFD, sizeof(Character), sizeof(Character)> {
-    static const Character *parse(const uint8_t *payload_data, uint32_t payload_size) {
-        (void)payload_size;
-        return reinterpret_cast<const Character *>(payload_data);
-    }
-};
-struct DrawRectangle : public Cmd<DrawRectangle, Rectangle, 0xFE, 4, sizeof(Rectangle)> {
-    static const Rectangle *parse(const uint8_t *payload_data, uint32_t payload_size) {
-        static Rectangle rectangle;
-        rectangle.pos.x = *reinterpret_cast<const uint16_t *>(&payload_data[0]);
-        rectangle.pos.y = *reinterpret_cast<const uint16_t *>(&payload_data[2]);
-        switch (payload_size) {
-        case 4:
-            rectangle.size.w = 1;
-            rectangle.size.h = 1;
-            break;
-        case 7:
-            rectangle.size.w = 1;
-            rectangle.size.h = 1;
-            rectangle.color.r = payload_data[4];
-            rectangle.color.g = payload_data[5];
-            rectangle.color.b = payload_data[6];
-            break;
-        case 8:
-            rectangle.size.w = *reinterpret_cast<const uint16_t *>(&payload_data[4]);
-            rectangle.size.h = *reinterpret_cast<const uint16_t *>(&payload_data[6]);
-            break;
-        default:
-            rectangle.size.w = *reinterpret_cast<const uint16_t *>(&payload_data[4]);
-            rectangle.size.h = *reinterpret_cast<const uint16_t *>(&payload_data[6]);
-            rectangle.color.r = payload_data[8];
-            rectangle.color.g = payload_data[9];
-            rectangle.color.b = payload_data[10];
-            break;
-        }
-        return &rectangle;
-    }
-};
-struct PrintSystemInfo : public Cmd<PrintSystemInfo, SystemInfo, 0xFF, sizeof(SystemInfo), sizeof(SystemInfo)> {
-    static const SystemInfo *parse(const uint8_t *payload_data, uint32_t payload_size) {
-        (void)payload_size;
-        return reinterpret_cast<const SystemInfo *>(payload_data);
-    }
-};
+struct DrawRectangle : public Cmd<DrawRectangle, 0xFE, 4, sizeof(Rectangle)>, public Rectangle {};
+struct PrintSystemInfo : public Cmd<PrintSystemInfo, 0xFF, sizeof(SystemInfo), sizeof(SystemInfo)>,
+                         public SystemInfo {};
 #pragma pack(pop)
 
 const char *id_to_name(uint8_t cmd_id) {
@@ -185,38 +125,72 @@ void Service::Run() {
                 return 0;
             }
             auto &service = *reinterpret_cast<Service *>(recv_ctx);
-            if (auto payload = cmd::KeyState::try_parse(data, size)) {
-                service.logger.debug("KeyState: s:%02x,?:%02x", payload->key_state, payload->unknown);
+            const uint8_t cmd_id = data[0];
+            const uint8_t *payload_data = &data[1];
+            const uint32_t payload_size = size - 1;
+            if (cmd::KeyState::validate(cmd_id, payload_data, payload_size)) {
+                const auto &payload = *reinterpret_cast<const cmd::KeyState *>(payload_data);
+                service.logger.debug("KeyState: s:%02x,?:%02x", payload.key_state, payload.unknown);
             }
-            else if (auto payload = cmd::DrawWaveform::try_parse(data, size)) {
-                const auto waveform_width = static_cast<uint16_t>(size - 1 - sizeof(Color));
+            else if (cmd::DrawWaveform::validate(cmd_id, payload_data, payload_size)) {
+                const auto &waveform = *reinterpret_cast<const cmd::DrawWaveform *>(payload_data);
+                const auto waveform_width = static_cast<uint16_t>(payload_size - sizeof(Color));
                 service.logger.debug("DrawWaveform: w:%hu", waveform_width);
-                service.display.draw_waveform(*payload, waveform_width);
+                service.display.draw_waveform(waveform, waveform_width);
             }
-            else if (auto character = cmd::DrawCharacter::try_parse(data, size)) {
+            else if (cmd::DrawCharacter::validate(cmd_id, payload_data, payload_size)) {
+                const auto &character = *reinterpret_cast<const cmd::DrawCharacter *>(payload_data);
                 service.logger.debug(
                     "DrawCharacter:{c:'%c'(0x%02X),pos:{x:%u,y:%u},fg:{r:%u,g:%u,b:%u},bg{r:%u,g:%u,b:%u}}",
-                    character->c, character->c, character->pos.x, character->pos.y, character->foreground.r,
-                    character->foreground.g, character->foreground.b, character->background.r, character->background.g,
-                    character->background.b);
-                service.display.draw_character(*character);
+                    character.c, character.c, character.pos.x, character.pos.y, character.foreground.r,
+                    character.foreground.g, character.foreground.b, character.background.r, character.background.g,
+                    character.background.b);
+                service.display.draw_character(character);
             }
-            else if (auto rectangle = cmd::DrawRectangle::try_parse(data, size)) {
+            else if (cmd::DrawRectangle::validate(cmd_id, payload_data, payload_size)) {
+                static Rectangle rectangle;
+                rectangle.pos.x = *reinterpret_cast<const uint16_t *>(&payload_data[0]);
+                rectangle.pos.y = *reinterpret_cast<const uint16_t *>(&payload_data[2]);
+                switch (payload_size) {
+                case 4:
+                    rectangle.size.w = 1;
+                    rectangle.size.h = 1;
+                    break;
+                case 7:
+                    rectangle.size.w = 1;
+                    rectangle.size.h = 1;
+                    rectangle.color.r = payload_data[4];
+                    rectangle.color.g = payload_data[5];
+                    rectangle.color.b = payload_data[6];
+                    break;
+                case 8:
+                    rectangle.size.w = *reinterpret_cast<const uint16_t *>(&payload_data[4]);
+                    rectangle.size.h = *reinterpret_cast<const uint16_t *>(&payload_data[6]);
+                    break;
+                default:
+                    rectangle.size.w = *reinterpret_cast<const uint16_t *>(&payload_data[4]);
+                    rectangle.size.h = *reinterpret_cast<const uint16_t *>(&payload_data[6]);
+                    rectangle.color.r = payload_data[8];
+                    rectangle.color.g = payload_data[9];
+                    rectangle.color.b = payload_data[10];
+                    break;
+                }
                 service.logger.debug("DrawRectangle:{pos:{x:%u,y:%u},size:{w:%u,h:%u},color:{r:%u,g:%u,b:%u}}",
-                                     rectangle->pos.x, rectangle->pos.y, rectangle->size.w, rectangle->size.h,
-                                     rectangle->color.r, rectangle->color.g, rectangle->color.b);
-                service.display.draw_rectangle(*rectangle);
+                                     rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h,
+                                     rectangle.color.r, rectangle.color.g, rectangle.color.b);
+                service.display.draw_rectangle(rectangle);
             }
-            else if (auto system_info = cmd::PrintSystemInfo::try_parse(data, size)) {
+            else if (cmd::PrintSystemInfo::validate(cmd_id, payload_data, payload_size)) {
+                const auto &system_info = *reinterpret_cast<const cmd::PrintSystemInfo *>(payload_data);
                 const char *device_type[] = {"Headless", "M8 Beta", "M8 Production"};
                 static bool system_info_already_printed = false;
                 if (!system_info_already_printed) {
                     service.logger.debug("SystemInfo: device type: %s, firmware version %d.%d.%d",
-                                         device_type[system_info->hw_type], system_info->version.major,
-                                         system_info->version.minor, system_info->version.patch);
+                                         device_type[system_info.hw_type], system_info.version.major,
+                                         system_info.version.minor, system_info.version.patch);
                     system_info_already_printed = true;
                 }
-                service.display.set_large_mode(system_info->font_mode == SystemInfo::FontMode::large);
+                service.display.set_large_mode(system_info.font_mode == SystemInfo::FontMode::large);
             }
             else {
                 service.logger.error("Unknown command: %02x of payload size %lu", data[0], size - 1);
