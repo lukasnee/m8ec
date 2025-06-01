@@ -39,6 +39,14 @@ struct Color {
     uint8_t r;
     uint8_t g;
     uint8_t b;
+
+    Color &operator=(const Color &other) {
+        r = other.r;
+        g = other.g;
+        b = other.b;
+        return *this;
+    }
+    bool operator==(const Color &other) const { return r == other.r && g == other.g && b == other.b; }
 };
 #pragma pack(pop)
 
@@ -62,7 +70,7 @@ struct Character {
 #pragma pack(push, 1)
 struct Waveform {
     Color color;
-    uint8_t buffer[320];
+    uint8_t buffer[480];
 };
 #pragma pack(pop)
 

@@ -120,7 +120,7 @@ void Service::Run() {
             }
             auto &service = *reinterpret_cast<Service *>(recv_ctx);
             const uint8_t cmd_id = data[0];
-            const uint8_t *payload_data = &data[1];
+            uint8_t *payload_data = &data[1];
             const uint32_t payload_size = size - 1;
             if (cmd::KeyState::validate(cmd_id, payload_data, payload_size)) {
                 const auto &payload = *reinterpret_cast<const cmd::KeyState *>(payload_data);
@@ -133,13 +133,19 @@ void Service::Run() {
                 service.display.draw_waveform(waveform, waveform_width);
             }
             else if (cmd::DrawCharacter::validate(cmd_id, payload_data, payload_size)) {
-                const auto &character = *reinterpret_cast<const cmd::DrawCharacter *>(payload_data);
+                auto &character = *reinterpret_cast<cmd::DrawCharacter *>(payload_data);
+                static Color last_bg_color{};
+                // workaround play marker background issue
+                if (character.c == '>' && character.foreground == character.background) {
+                    character.background = last_bg_color;
+                }
                 service.logger.debug(
                     "DrawCharacter:{c:'%c'(0x%02X),pos:{x:%u,y:%u},fg:{r:%u,g:%u,b:%u},bg{r:%u,g:%u,b:%u}}",
                     character.c, character.c, character.pos.x, character.pos.y, character.foreground.r,
                     character.foreground.g, character.foreground.b, character.background.r, character.background.g,
                     character.background.b);
                 service.display.draw_character(character);
+                last_bg_color = character.background;
             }
             else if (cmd::DrawRectangle::validate(cmd_id, payload_data, payload_size)) {
                 static Rectangle rectangle;
