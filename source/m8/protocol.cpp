@@ -40,12 +40,6 @@ public:
         if (payload_size < Tpayload_size_min || payload_size > Tpayload_size_max) {
             logger.error("%s: Invalid packet length: expected [%u %u], got %lu", id_to_name(cmd_id), Tpayload_size_min,
                          Tpayload_size_max, payload_size);
-            std::array<uint8_t, 64> hex_ascii_buffer;
-            for (size_t i = 0; i < payload_size && i < hex_ascii_buffer.size(); i++) {
-                std::snprintf(reinterpret_cast<char *>(&hex_ascii_buffer[i * 3]), 4, "%02X ",
-                              reinterpret_cast<const uint8_t *>(payload_data)[i]);
-            }
-            logger.error("Received: %s", hex_ascii_buffer.data());
             return false;
         }
         return true;
