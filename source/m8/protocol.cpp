@@ -193,6 +193,7 @@ void Service::Run() {
                     std::snprintf(reinterpret_cast<char *>(&hex_ascii_buffer[i * 3]), 4, "%02X ",
                                   reinterpret_cast<const uint8_t *>(data)[i]);
                 }
+                service.logger.error("Received: %s", hex_ascii_buffer.data());
                 return 0;
             }
             return 1;
