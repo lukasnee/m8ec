@@ -1,27 +1,27 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : freertos.c
+ * Description        : Code for freertos applications
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
-#include "task.h"
-#include "main.h"
 #include "cmsis_os.h"
+#include "main.h"
+#include "task.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -55,9 +55,9 @@
 /* Definitions for startupTask */
 osThreadId_t startupTaskHandle;
 const osThreadAttr_t startupTask_attributes = {
-  .name = "startup",
-  .stack_size = 8 * 1024,
-  .priority = (osPriority_t) osPriorityRealtime,
+    .name = "startup",
+    .stack_size = 8 * 1024,
+    .priority = (osPriority_t)osPriorityRealtime,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,10 +71,10 @@ extern void MX_USB_HOST_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
@@ -107,26 +107,24 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartupTask */
 /**
-  * @brief  Function implementing the startupTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the startupTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartupTask */
-void startupTask(void *arg)
-{
+void startupTask(void *arg) {
   UNUSED(arg);
   SEGGER_SYSVIEW_Start();
   /* init code for USB_HOST */
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
   platform_app();
-//  static uint16_t audio_out_buffer[256];
-//  HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
+  //  static uint16_t audio_out_buffer[256];
+  //  HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
   osThreadTerminate(startupTaskHandle);
   /* USER CODE END 5 */
 }
@@ -144,8 +142,10 @@ uint32_t freertos_config_get_run_time_counter_value() { return __HAL_TIM_GET_COU
 
 const TickType_t FREERTOS_STATS_PRINT_PERIOD = pdMS_TO_TICKS(1000);
 const uint32_t FREERTOS_STATS_MAX_LINE_LENGTH = 48;
+#define PRINT_FREERTOS_STATS_ENABLED 0
 
 void vApplicationIdleHook(void) {
+#if PRINT_FREERTOS_STATS_ENABLED
   static uint32_t lastWakeTime = 0;
   if ((xTaskGetTickCount() - lastWakeTime) >= FREERTOS_STATS_PRINT_PERIOD) {
     lastWakeTime = xTaskGetTickCount();
@@ -182,6 +182,6 @@ void vApplicationIdleHook(void) {
     vPortFree(taskStatusArray);
     vPortFree(buff);
   }
+#endif
 }
 /* USER CODE END Application */
-
