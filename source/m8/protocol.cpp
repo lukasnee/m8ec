@@ -228,7 +228,7 @@ void Service::Run() {
         for (std::size_t i = 0; i < bytes_read; i++) {
             const slip_error_t n = slip_read_byte(&slip, buffer[i]);
             if (n != SLIP_NO_ERROR) {
-                logger.log(LOGGER_LEVEL_DEBUG3, "SLIP: %d", n);
+                logger.log(LOGGER_LEVEL_ERROR, "SLIP: %d", n);
                 if (n == SLIP_ERROR_INVALID_PACKET) {
                     // this->reset_display();
                 }
