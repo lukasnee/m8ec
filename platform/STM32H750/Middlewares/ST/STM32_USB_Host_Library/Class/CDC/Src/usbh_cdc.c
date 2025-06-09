@@ -47,9 +47,20 @@ EndBSPDependencies */
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_cdc.h"
+#include "fonas/logger/logger.h"
+LOG_SCOPE(usbh_cdc, LOGGER_LEVEL_INFO);
+const char *URB_STATE_STRINGS[] = {
+    "IDLE", "DONE", "NOTREADY", "NYET", "ERROR", "STALL"
+};
 
-#include "m8ec/m8ec.h"
-#include "SEGGER_SYSVIEW.h"
+const char *RX_STATE_STRINGS[] = {
+  "CDC_IDLE",
+  "CDC_SEND_DATA",
+  "CDC_SEND_DATA_WAIT",
+  "CDC_RECEIVE_DATA",
+  "CDC_RECEIVE_DATA_WAIT",
+};
+
 
 /** @addtogroup USBH_LIB
   * @{
@@ -717,9 +728,9 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
   USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
   uint32_t length;
 
+  LOG_INFO("RX_STATE: %s", RX_STATE_STRINGS[CDC_Handle->data_rx_state]);
   switch (CDC_Handle->data_rx_state)
   {
-
     case CDC_IDLE:
       /*Always receive and wait for data*/
       USBH_CDC_Receive(phost, USBH_CDC_GetRxBufferData(phost), USBH_CDC_RX_BUFFER_SIZE);
@@ -742,6 +753,7 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
     case CDC_RECEIVE_DATA_WAIT:
 
       URB_Status = USBH_LL_GetURBState(phost, CDC_Handle->DataItf.InPipe);
+      LOG_INFO("URB: %s", URB_STATE_STRINGS[URB_Status]);
 
       /*Check the status done for reception*/
       if (URB_Status == USBH_URB_DONE)

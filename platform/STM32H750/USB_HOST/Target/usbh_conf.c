@@ -33,7 +33,10 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-LoggerModule logmod_usbh = {"USBH", LOGGER_LEVEL_DEBUG3};
+#include "fonas/logger/logger.h"
+LoggerModule logmod_usbh = {.name = "logmod_usbh", .log_level = LOGGER_LEVEL_INFO};
+static LOG_SCOPE(usbh_conf, LOGGER_LEVEL_LOWEST);
+
 /* USER CODE END PV */
 
 HCD_HandleTypeDef hhcd_USB_OTG_FS;
@@ -139,6 +142,7 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
   */
 void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
 {
+  LOG_DEBUG("HAL_HCD_SOF_Callback");
   USBH_LL_IncTimer(hhcd->pData);
 }
 
@@ -149,6 +153,7 @@ void HAL_HCD_SOF_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
 {
+  LOG_DEBUG("HAL_HCD_Connect_Callback");
   USBH_LL_Connect(hhcd->pData);
 }
 
@@ -159,6 +164,7 @@ void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
 {
+  LOG_DEBUG("HAL_HCD_Disconnect_Callback");
   USBH_LL_Disconnect(hhcd->pData);
 }
 
@@ -171,6 +177,7 @@ void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum, HCD_URBStateTypeDef urb_state)
 {
+    LOG_DEBUG("HAL_HCD_HC_NotifyURBChange_Callback: chnum=%d, urb_state=%d", chnum, urb_state);
   /* To be used with OS to sync URB state with the global state machine */
 #if (USBH_USE_OS == 1)
   USBH_LL_NotifyURBChange(hhcd->pData);
@@ -183,6 +190,7 @@ void HAL_HCD_HC_NotifyURBChange_Callback(HCD_HandleTypeDef *hhcd, uint8_t chnum,
   */
 void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
 {
+    LOG_DEBUG("HAL_HCD_PortEnabled_Callback");
   USBH_LL_PortEnabled(hhcd->pData);
 }
 
@@ -193,6 +201,7 @@ void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
   */
 void HAL_HCD_PortDisabled_Callback(HCD_HandleTypeDef *hhcd)
 {
+    LOG_DEBUG("HAL_HCD_PortDisabled_Callback");
   USBH_LL_PortDisabled(hhcd->pData);
 }
 
@@ -412,6 +421,8 @@ USBH_StatusTypeDef USBH_LL_SubmitURB(USBH_HandleTypeDef *phost, uint8_t pipe, ui
                                      uint8_t ep_type, uint8_t token, uint8_t *pbuff, uint16_t length,
                                      uint8_t do_ping)
 {
+    LOG_DEBUG("USBH_LL_SubmitURB: pipe=%d, direction=%d, ep_type=%d, token=%d, length=%d, do_ping=%d",
+                 pipe, direction, ep_type, token, length, do_ping);
   HAL_StatusTypeDef hal_status = HAL_OK;
   USBH_StatusTypeDef usb_status = USBH_OK;
 

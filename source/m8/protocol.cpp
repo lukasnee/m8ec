@@ -122,6 +122,8 @@ void Service::Run() {
             const uint8_t cmd_id = data[0];
             uint8_t *payload_data = &data[1];
             const uint32_t payload_size = size - 1;
+            std::array<uint8_t, 256> buff;
+            service.logger.info("recv: %s", fonas::Logger::fmt_hex(buff, data, size));
             if (cmd::KeyState::validate(cmd_id, payload_data, payload_size)) {
                 const auto &payload = *reinterpret_cast<const cmd::KeyState *>(payload_data);
                 service.logger.debug("KeyState: s:%02x,?:%02x", payload.key_state, payload.unknown);

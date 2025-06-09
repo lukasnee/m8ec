@@ -1,5 +1,6 @@
 #include "m8ec/periph/UsbCdc.hpp"
 
+#include "fonas/logger/logger.hpp"
 #include "m8ec/m8/protocol.hpp"
 #include "m8ec/m8ec.hpp"
 #include "m8ec/slip.h"
@@ -48,6 +49,8 @@ bool UsbCdc::ll_write_async(const std::uint8_t *data, std::size_t size) {
     if (!this->ready()) {
         return false;
     }
+    std::array<char, 256> buff;
+    logger.info("TX:{size: %d, data: %s}", size, fonas::Logger::Hex::format(buff, data, size));
     const auto status = USBH_CDC_Transmit(&hUsbHostFS, const_cast<std::uint8_t *>(data), size);
     if (USBH_OK != status) {
         logger.error("USBH_CDC_Transmit: %d", status);
@@ -104,6 +107,9 @@ extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_
         //         }
         //     }
         //     return;
+        static LOG_SCOPE(USBH_CDC, LOGGER_LEVEL_DEBUG2);
+        std::array<char, 256> buff;
+        LOG_INFO("RX:{size: %d, data: %s}", size, fonas::Logger::Hex::format(buff, data, size));
         m8ec::periph::UsbCdc::get_instance().ll_rx_input(data, size);
     }
 }
