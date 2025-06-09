@@ -320,6 +320,7 @@ static USBH_StatusTypeDef USBH_CDC_ClassRequest(USBH_HandleTypeDef *phost)
 
   /** @attention Dirtyware M8 headless as a USB device appears not to respond to CDC GetLineCoding request. It is probably not 
    * implemented in full standard compliance. We know what LineCoding to expect, so we can skip the request and go straight to
+   * @todo Investigate
    */
   phost->pUser(phost, HOST_USER_CLASS_ACTIVE);
   return USBH_OK;
@@ -522,13 +523,8 @@ USBH_StatusTypeDef USBH_CDC_SetLineCoding(USBH_HandleTypeDef *phost,
     CDC_Handle->pUserLineCoding = linecoding;
 
 #if (USBH_USE_OS == 1U)
-    phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-    (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+    USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
   }
 
   return USBH_OK;
@@ -596,13 +592,8 @@ USBH_StatusTypeDef USBH_CDC_Transmit(USBH_HandleTypeDef *phost, uint8_t *pbuff, 
     Status = USBH_OK;
 
 #if (USBH_USE_OS == 1U)
-    phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-    (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+    USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
   }
   return Status;
 }
@@ -627,13 +618,8 @@ USBH_StatusTypeDef USBH_CDC_Receive(USBH_HandleTypeDef *phost, uint8_t *pbuff, u
     Status = USBH_OK;
 
 #if (USBH_USE_OS == 1U)
-    phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-    (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+    USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
   }
   return Status;
 }
@@ -699,13 +685,8 @@ static void CDC_ProcessTransmission(USBH_HandleTypeDef *phost)
         }
 
 #if (USBH_USE_OS == 1U)
-        phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       else
       {
@@ -714,13 +695,8 @@ static void CDC_ProcessTransmission(USBH_HandleTypeDef *phost)
           CDC_Handle->data_tx_state = CDC_SEND_DATA;
 
 #if (USBH_USE_OS == 1U)
-          phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-          (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-          (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+          USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
         }
       }
       break;
@@ -754,6 +730,10 @@ static void CDC_ProcessReception(USBH_HandleTypeDef *phost)
                                  CDC_Handle->pRxData,
                                  CDC_Handle->DataItf.InEpSize,
                                  CDC_Handle->DataItf.InPipe);
+
+#if defined (USBH_IN_NAK_PROCESS) && (USBH_IN_NAK_PROCESS == 1U)
+      phost->NakTimer = phost->Timer;
+#endif  /* defined (USBH_IN_NAK_PROCESS) && (USBH_IN_NAK_PROCESS == 1U) */
 
       CDC_Handle->data_rx_state = CDC_RECEIVE_DATA_WAIT;
 

@@ -85,10 +85,13 @@
 #define USBH_MAX_DATA_BUFFER      1024U
 
 /*----------   -----------*/
-#define USBH_DEBUG_LEVEL      4U
+#define USBH_DEBUG_LEVEL      2U
 
 /*----------   -----------*/
 #define USBH_USE_OS      1U
+
+#define USBH_IN_NAK_PROCESS                   0
+
 
 /****************************************/
 /* #define for FS and HS identification */

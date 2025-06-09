@@ -63,7 +63,6 @@ EndBSPDependencies */
   * @}
   */
 
-
 /** @defgroup USBH_AUDIO_CORE_Private_Defines
   * @{
   */
@@ -72,14 +71,12 @@ EndBSPDependencies */
   * @}
   */
 
-
 /** @defgroup USBH_AUDIO_CORE_Private_Macros
   * @{
   */
 /**
   * @}
   */
-
 
 /** @defgroup USBH_AUDIO_CORE_Private_Variables
   * @{
@@ -88,7 +85,6 @@ EndBSPDependencies */
 /**
   * @}
   */
-
 
 /** @defgroup USBH_AUDIO_CORE_Private_FunctionPrototypes
   * @{
@@ -415,13 +411,8 @@ static USBH_StatusTypeDef USBH_AUDIO_ClassRequest(USBH_HandleTypeDef *phost)
         AUDIO_Handle->req_state = AUDIO_REQ_SET_DEFAULT_OUT_INTERFACE;
 
 #if (USBH_USE_OS == 1U)
-        phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       break;
 
@@ -456,13 +447,8 @@ static USBH_StatusTypeDef USBH_AUDIO_ClassRequest(USBH_HandleTypeDef *phost)
         AUDIO_Handle->cs_req_state = AUDIO_REQ_GET_VOLUME;
 
 #if (USBH_USE_OS == 1U)
-        phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       break;
 
@@ -499,13 +485,8 @@ static USBH_StatusTypeDef USBH_AUDIO_ClassRequest(USBH_HandleTypeDef *phost)
         AUDIO_Handle->req_state = AUDIO_REQ_SET_OUT_INTERFACE;
 
 #if (USBH_USE_OS == 1U)
-        phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       break;
     case AUDIO_REQ_SET_OUT_INTERFACE:
@@ -534,13 +515,8 @@ static USBH_StatusTypeDef USBH_AUDIO_ClassRequest(USBH_HandleTypeDef *phost)
         AUDIO_Handle->req_state = AUDIO_REQ_IDLE;
 
 #if (USBH_USE_OS == 1U)
-        phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       break;
     case AUDIO_REQ_IDLE:
@@ -549,13 +525,8 @@ static USBH_StatusTypeDef USBH_AUDIO_ClassRequest(USBH_HandleTypeDef *phost)
       status  = USBH_OK;
 
 #if (USBH_USE_OS == 1U)
-      phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-      (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-      (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+      USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       break;
 
     default:
@@ -692,13 +663,8 @@ static USBH_StatusTypeDef USBH_AUDIO_HandleCSRequest(USBH_HandleTypeDef *phost)
     AUDIO_Handle->cs_req_state = AUDIO_REQ_GET_VOLUME;
 
 #if (USBH_USE_OS == 1U)
-    phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-    (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-    (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+    USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
   }
 
   return status;
@@ -1578,7 +1544,7 @@ static USBH_StatusTypeDef USBH_AUDIO_SetEndpointControls(USBH_HandleTypeDef *pho
 
   wValue = SAMPLING_FREQ_CONTROL << 8U;
   wIndex = Ep;
-  wLength = 3U; /*length of the frequency parameter*/
+  wLength = 3U; /* length of the frequency parameter */
 
   phost->Control.setup.b.bmRequestType = USB_H2D | USB_REQ_RECIPIENT_ENDPOINT | \
                                          USB_REQ_TYPE_CLASS;
@@ -1589,7 +1555,6 @@ static USBH_StatusTypeDef USBH_AUDIO_SetEndpointControls(USBH_HandleTypeDef *pho
   phost->Control.setup.b.wLength.w = wLength;
 
   return (USBH_CtlReq(phost, (uint8_t *)buff, wLength));
-
 }
 
 /**
@@ -1708,13 +1673,8 @@ static USBH_StatusTypeDef USBH_AUDIO_OutputStream(USBH_HandleTypeDef *phost)
       }
 
 #if (USBH_USE_OS == 1U)
-      phost->os_msg = (uint32_t)USBH_URB_EVENT;
-#if (osCMSIS < 0x20000U)
-      (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-      (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+      USBH_OS_PutMessage(phost, USBH_URB_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       break;
 
     case AUDIO_PLAYBACK_SET_EP_FREQ:
@@ -1742,13 +1702,8 @@ static USBH_StatusTypeDef USBH_AUDIO_OutputStream(USBH_HandleTypeDef *phost)
       status = USBH_OK;
 
 #if (USBH_USE_OS == 1U)
-      phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-      (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-      (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+      USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       break;
 
     case AUDIO_PLAYBACK_PLAY:
@@ -1792,17 +1747,10 @@ static USBH_StatusTypeDef USBH_AUDIO_Transmit(USBH_HandleTypeDef *phost)
       }
       else
       {
-
 #if (USBH_USE_OS == 1U)
         osDelay(1);
-        phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-
-#if (osCMSIS < 0x20000U)
-        (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-        (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+        USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
       }
       break;
 
@@ -1903,6 +1851,10 @@ USBH_StatusTypeDef USBH_AUDIO_SetFrequency(USBH_HandleTypeDef *phost,
         AUDIO_Handle->play_state = AUDIO_PLAYBACK_SET_EP;
         Status = USBH_OK;
       }
+      else
+      {
+        USBH_ErrLog("Sample Rate not supported by the Audio Device");
+      }
     }
   }
   return Status;
@@ -1935,13 +1887,8 @@ USBH_StatusTypeDef USBH_AUDIO_Play(USBH_HandleTypeDef *phost, uint8_t *buf, uint
       Status = USBH_OK;
 
 #if (USBH_USE_OS == 1U)
-      phost->os_msg = (uint32_t)USBH_CLASS_EVENT;
-#if (osCMSIS < 0x20000U)
-      (void)osMessagePut(phost->os_event, phost->os_msg, 0U);
-#else
-      (void)osMessageQueuePut(phost->os_event, &phost->os_msg, 0U, 0U);
-#endif
-#endif
+      USBH_OS_PutMessage(phost, USBH_CLASS_EVENT, 0U, 0U);
+#endif /* (USBH_USE_OS == 1U) */
     }
   }
   return Status;

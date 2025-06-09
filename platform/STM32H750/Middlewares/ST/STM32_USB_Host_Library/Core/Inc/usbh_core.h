@@ -84,29 +84,27 @@ extern "C" {
 /** @defgroup USBH_CORE_Exported_FunctionsPrototype
   * @{
   */
+USBH_StatusTypeDef USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_HandleTypeDef *phost, uint8_t id), uint8_t id);
 
+USBH_StatusTypeDef USBH_DeInit(USBH_HandleTypeDef *phost);
+USBH_StatusTypeDef USBH_Start(USBH_HandleTypeDef *phost);
+USBH_StatusTypeDef USBH_Stop(USBH_HandleTypeDef *phost);
+USBH_StatusTypeDef USBH_Process(USBH_HandleTypeDef *phost);
+USBH_StatusTypeDef USBH_ReEnumerate(USBH_HandleTypeDef *phost);
+USBH_StatusTypeDef USBH_RegisterClass(USBH_HandleTypeDef *phost, USBH_ClassTypeDef *pclass);
+USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t interface);
 
-USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_HandleTypeDef *phost, uint8_t id), uint8_t id);
-USBH_StatusTypeDef  USBH_DeInit(USBH_HandleTypeDef *phost);
-USBH_StatusTypeDef  USBH_RegisterClass(USBH_HandleTypeDef *phost, USBH_ClassTypeDef *pclass);
-USBH_StatusTypeDef  USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t interface);
+uint8_t             USBH_FindInterfaceIndex(USBH_HandleTypeDef *phost,
+                                            uint8_t interface_number,
+                                            uint8_t alt_settings);
 uint8_t             USBH_FindInterface(USBH_HandleTypeDef *phost,
                                        uint8_t Class,
                                        uint8_t SubClass,
                                        uint8_t Protocol);
 uint8_t             USBH_GetActiveClassCode(USBH_HandleTypeDef *phost);
 uint8_t             USBH_GetActiveSubClassCode(USBH_HandleTypeDef *phost);
+uint8_t             USBH_IsPortEnabled(USBH_HandleTypeDef *phost);
 
-uint8_t             USBH_FindInterfaceIndex(USBH_HandleTypeDef *phost,
-                                            uint8_t interface_number,
-                                            uint8_t alt_settings);
-
-uint8_t              USBH_IsPortEnabled(USBH_HandleTypeDef *phost);
-
-USBH_StatusTypeDef  USBH_Start(USBH_HandleTypeDef *phost);
-USBH_StatusTypeDef  USBH_Stop(USBH_HandleTypeDef *phost);
-USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost);
-USBH_StatusTypeDef  USBH_ReEnumerate(USBH_HandleTypeDef *phost);
 
 /* USBH Low Level Driver */
 USBH_StatusTypeDef   USBH_LL_Init(USBH_HandleTypeDef *phost);
@@ -132,8 +130,8 @@ USBH_StatusTypeDef   USBH_LL_OpenPipe(USBH_HandleTypeDef *phost,
                                       uint8_t ep_type,
                                       uint16_t mps);
 
-USBH_StatusTypeDef   USBH_LL_ClosePipe(USBH_HandleTypeDef *phost,
-                                       uint8_t pipe);
+USBH_StatusTypeDef USBH_LL_ActivatePipe(USBH_HandleTypeDef *phost, uint8_t pipe);
+USBH_StatusTypeDef USBH_LL_ClosePipe(USBH_HandleTypeDef *phost, uint8_t pipe);
 
 USBH_StatusTypeDef   USBH_LL_SubmitURB(USBH_HandleTypeDef *phost,
                                        uint8_t pipe,
@@ -148,8 +146,9 @@ USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost,
                                          uint8_t pipe);
 
 #if (USBH_USE_OS == 1U)
-USBH_StatusTypeDef  USBH_LL_NotifyURBChange(USBH_HandleTypeDef *phost);
-#endif
+USBH_StatusTypeDef USBH_LL_NotifyURBChange(USBH_HandleTypeDef *phost);
+void USBH_OS_PutMessage(USBH_HandleTypeDef *phost, USBH_OSEventTypeDef message, uint32_t timeout, uint32_t priority);
+#endif /*(USBH_USE_OS == 1U) */
 
 USBH_StatusTypeDef USBH_LL_SetToggle(USBH_HandleTypeDef *phost,
                                      uint8_t pipe, uint8_t toggle);
