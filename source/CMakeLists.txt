@@ -27,6 +27,7 @@ target_link_libraries(
          fonas
          ILI9341-STM32-HAL
          littlefs_W25Q64
+         CherryUSB
 )
 
 add_custom_command(

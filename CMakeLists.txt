@@ -35,4 +35,10 @@ add_subdirectory(extern/freertos-addons)
 add_subdirectory(extern/fonas)
 add_subdirectory(extern/ILI9341-STM32-HAL)
 
+add_library(CherryUSB_config INTERFACE)
+target_include_directories(CherryUSB_config INTERFACE source/CherryUSB)
+target_sources(CherryUSB_config INTERFACE source/CherryUSB/usb_config.c)
+
+include(extern/CherryUSB.cmake)
+
 add_subdirectory(source)
