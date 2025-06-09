@@ -1,6 +1,8 @@
 #include "m8ec/periph/UsbCdc.hpp"
 
+#include "m8ec/m8/protocol.hpp"
 #include "m8ec/m8ec.hpp"
+#include "m8ec/slip.h"
 
 #include "stm32xxxx_hal.h"
 #include "usb_host.h"
@@ -83,8 +85,6 @@ extern "C" void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost) {
         m8ec::periph::UsbCdc::get_instance().ll_async_write_completed_cb();
     }
 }
-#include "m8ec/m8/protocol.hpp"
-#include "m8ec/slip.h"
 
 namespace m8ec::m8::protocol {
 extern slip_handler_s slip;
