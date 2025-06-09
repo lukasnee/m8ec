@@ -194,12 +194,8 @@ void Service::Run() {
             }
             else {
                 service.logger.error("Unknown command: %02x of payload size %lu", data[0], size - 1);
-                std::array<uint8_t, 64> hex_ascii_buffer;
-                for (size_t i = 0; i < size && i < hex_ascii_buffer.size(); i++) {
-                    std::snprintf(reinterpret_cast<char *>(&hex_ascii_buffer[i * 3]), 4, "%02X ",
-                                  reinterpret_cast<const uint8_t *>(data)[i]);
-                }
-                service.logger.error("Received: %s", hex_ascii_buffer.data());
+                std::array<char, 256> buff;
+                service.logger.error("Received: %s", fonas::Logger::Hex::format(buff, data, size));
                 return 0;
             }
             return 1;
