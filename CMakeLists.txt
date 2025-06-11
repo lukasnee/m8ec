@@ -11,6 +11,7 @@ add_compile_options(
   -fstack-usage
   -Wall
   -Wextra
+  -Werror
   -fno-exceptions # big change in code size and performace
   # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
   # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
