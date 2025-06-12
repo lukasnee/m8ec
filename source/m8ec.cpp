@@ -28,7 +28,7 @@
 
 #include <cstdio>
 
-fonas::Logger::Module logger("m8ec");
+LOG_SCOPE(m8ec, LOGGER_LEVEL_INFO);
 
 namespace m8ec {
 namespace m8 {
@@ -74,19 +74,19 @@ private:
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
     ASSERT(periph::Uart4::get_instance().init());
-    logger.info("UART4 OK");
+    LOG_INFO("UART4 OK");
 #elif defined(STM32F411xE)
     ASSERT(periph::Uart1::get_instance().init());
-    logger.info("UART1 OK");
+    LOG_INFO("UART1 OK");
 #endif
     ASSERT(periph::UsbCdc::get_instance().init());
-    logger.info("USB CDC OK");
+    LOG_INFO("USB CDC OK");
     return true;
 }
 
 static bool init_sw_periphs() {
     ASSERT(Display::get_instance().init());
-    logger.info("Display OK");
+    LOG_INFO("Display OK");
     return true;
 }
 
@@ -95,9 +95,9 @@ static bool init_services() {
     ASSERT(LivenessSvc::get_instance().Start());
 #endif // M8EC_LIVENESS_SVC
     ASSERT(m8::protocol::Keys::Svc::get_instance().Start());
-    logger.info("Keys::Svc::Service OK");
+    LOG_INFO("Keys::Svc::Service OK");
     ASSERT(m8::protocol::service.init());
-    logger.info("m8::protocol::Service OK");
+    LOG_INFO("m8::protocol::Service OK");
     return true;
 }
 

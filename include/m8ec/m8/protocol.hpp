@@ -153,7 +153,7 @@ private:
 
     Display &display;
 
-    fonas::Logger::Module logger{"m8ec::m8::protocol::Service"};
+    LOG_SCOPE(m8ec::m8::protocol::Service, LOGGER_LEVEL_INFO);
 };
 namespace Keys {
 
@@ -178,7 +178,7 @@ private:
 
     m8ec::m8::protocol::Service &protocol_service;
 
-    fonas::Logger::Module logger{"m8ec::m8::protocol::Keys::Svc"};
+    LOG_SCOPE(m8ec::m8::protocol::Keys::Svc, LOGGER_LEVEL_INFO);
 };
 } // namespace Keys
 } // namespace m8ec::m8::protocol

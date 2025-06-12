@@ -31,7 +31,7 @@ private:
     fonas::StreamBuffer rx_stream_buffer;
     bool initialized = false;
 
-    fonas::Logger::Module logger{"m8ec::periph::UsbCdc"};
+    LOG_SCOPE(m8ec::periph::UsbCdc, LOGGER_LEVEL_INFO);
 };
 
 } // namespace m8ec::periph
