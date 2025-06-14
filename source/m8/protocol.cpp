@@ -37,6 +37,10 @@ public:
         if (cmd_id != Tcmd_id) {
             return false;
         }
+        if (!payload_data) {
+            LOG_ERROR("%s: Invalid payload data", id_to_name(cmd_id));
+            return false;
+        }
         if (payload_size < Tpayload_size_min || payload_size > Tpayload_size_max) {
             LOG_ERROR("%s: Invalid packet length: expected [%u %u], got %lu", id_to_name(cmd_id), Tpayload_size_min,
                       Tpayload_size_max, payload_size);

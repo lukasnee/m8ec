@@ -812,8 +812,6 @@ static USBH_StatusTypeDef USBH_HandleControl(USBH_HandleTypeDef *phost)
   USBH_StatusTypeDef status = USBH_BUSY;
   USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
 
-  CTRL_StateTypeDef state_prev = phost->Control.state;
-
   switch (phost->Control.state)
   {
     case CTRL_SETUP:
@@ -1142,8 +1140,6 @@ static USBH_StatusTypeDef USBH_HandleControl(USBH_HandleTypeDef *phost)
       break;
   }
 
-  USBH_TrcLog("Control State: %s -> %s", CTRL_STATE_STRINGS[state_prev],
-              CTRL_STATE_STRINGS[phost->Control.state]);
   return status;
 }
 
