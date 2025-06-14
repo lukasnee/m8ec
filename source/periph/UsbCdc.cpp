@@ -2,7 +2,6 @@
 
 #include "m8ec/m8/protocol.hpp"
 #include "m8ec/m8ec.hpp"
-#include "m8ec/slip.h"
 
 #include "stm32xxxx_hal.h"
 #include "usb_host.h"
@@ -14,14 +13,7 @@ extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 
 namespace m8ec::periph {
 
-UsbCdc &UsbCdc::get_instance() {
-    static UsbCdc instance(m8ec::Config::usb_cdc_rx_stream_buffer_size);
-    return instance;
-}
-
 UsbCdc::UsbCdc(UBaseType_t rx_stream_buffer_size) : rx_stream_buffer(rx_stream_buffer_size, sizeof(char)) {}
-
-bool UsbCdc::ready() const { return this->initialized && m8ec_virtual_com_ready(); }
 
 std::uint8_t UsbCdc::read() {
     std::uint8_t byte = 0;
@@ -39,13 +31,10 @@ bool UsbCdc::ll_init() {
 }
 
 bool UsbCdc::ll_write_async(const std::uint8_t *data, std::size_t size) {
-    if (!data) {
+    if (!this->initialized) {
         return false;
     }
-    if (size == 0) {
-        return false;
-    }
-    if (!this->ready()) {
+    if (!this->is_ready()) {
         return false;
     }
     const auto status = USBH_CDC_Transmit(&hUsbHostFS, const_cast<std::uint8_t *>(data), size);
@@ -62,13 +51,10 @@ bool UsbCdc::ll_deinit() {
 }
 
 bool UsbCdc::ll_rx_input(const uint8_t *data, size_t size) {
-    if (!data) {
+    if (!this->initialized) {
         return false;
     }
-    if (size == 0) {
-        return false;
-    }
-    if (!this->ready()) {
+    if (!this->is_ready()) {
         return false;
     }
     if (size != this->rx_stream_buffer.send(data, size, portMAX_DELAY)) {
@@ -82,13 +68,9 @@ bool UsbCdc::ll_rx_input(const uint8_t *data, size_t size) {
 
 extern "C" void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost) {
     if (phost == &hUsbHostFS) {
-        m8ec::periph::UsbCdc::get_instance().ll_async_write_completed_cb();
+        m8ec::get_usb_cdc().ll_async_write_completed_cb();
     }
 }
-
-namespace m8ec::m8::protocol {
-extern slip_handler_s slip;
-} // namespace m8ec::m8::protocol
 
 extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size) {
     if (phost == &hUsbHostFS) {
@@ -104,6 +86,6 @@ extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_
         //         }
         //     }
         //     return;
-        m8ec::periph::UsbCdc::get_instance().ll_rx_input(data, size);
+        m8ec::get_usb_cdc().ll_rx_input(data, size);
     }
 }

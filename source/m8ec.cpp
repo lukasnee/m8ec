@@ -17,11 +17,8 @@
 #elif defined(STM32F411xE)
 #include "m8ec/periph/Uart1.hpp"
 #endif
-#include "m8ec/periph/UsbCdc.hpp"
 
-#include "m8ec/Display.hpp"
-#include "m8ec/M8Display.hpp"
-#include "m8ec/m8/protocol.hpp"
+#include "usb_host.h"
 
 #include "fonas/fonas.hpp"
 #include "fonas/logger/logger.hpp"
@@ -31,15 +28,31 @@
 LOG_MODULE(m8ec, LOGGER_LEVEL_INFO);
 
 namespace m8ec {
-namespace m8 {
-static M8Display display(Display::get_instance());
-namespace protocol {
-static m8::protocol::Service service(display);
-} // namespace protocol
-} // namespace m8
+periph::UsbCdc &get_usb_cdc() {
+    class UsbCdc : public periph::UsbCdc {
+    public:
+        static UsbCdc &get_instance() {
+            static UsbCdc instance;
+            return instance;
+        }
 
-m8::protocol::Keys::Svc &m8::protocol::Keys::Svc::get_instance() {
-    static Svc instance("keysSvc", 2 * 1024, 1, m8::protocol::service);
+        UsbCdc() : periph::UsbCdc(m8ec::Config::usb_cdc_rx_stream_buffer_size) {}
+        bool is_ready() final {
+            return usbh_ready();
+        }
+    };
+    return UsbCdc::get_instance();
+}
+M8Display &get_display() {
+    static M8Display instance(Display::get_instance());
+    return instance;
+}
+m8::protocol::Service &get_m8_svc() {
+    static m8::protocol::Service instance(get_display());
+    return instance;
+}
+m8::protocol::Keys::Svc &get_key_svc() {
+    static m8::protocol::Keys::Svc instance("keysSvc", 1, get_m8_svc());
     return instance;
 }
 
@@ -79,7 +92,7 @@ static bool init_hw_periphs() {
     ASSERT(periph::Uart1::get_instance().init());
     LOG_INFO("UART1 OK");
 #endif
-    ASSERT(periph::UsbCdc::get_instance().init());
+    FONAS_ASSERT(m8ec::get_usb_cdc().init());
     LOG_INFO("USB CDC OK");
     return true;
 }
@@ -94,9 +107,9 @@ static bool init_services() {
 #ifdef M8EC_LIVENESS_SVC
     ASSERT(LivenessSvc::get_instance().Start());
 #endif // M8EC_LIVENESS_SVC
-    ASSERT(m8::protocol::Keys::Svc::get_instance().Start());
+    ASSERT(get_key_svc().Start());
     LOG_INFO("Keys::Svc::Service OK");
-    ASSERT(m8::protocol::service.init());
+    ASSERT(get_m8_svc().init());
     LOG_INFO("m8::protocol::Service OK");
     return true;
 }

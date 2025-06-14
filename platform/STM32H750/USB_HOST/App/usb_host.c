@@ -99,7 +99,7 @@ void MX_USB_HOST_Init(void)
   /* USER CODE END USB_HOST_Init_PostTreatment */
 }
 
-uint8_t m8ec_virtual_com_ready() {
+uint8_t usbh_ready() {
     return Appli_state == APPLICATION_READY;
 }
 

@@ -9,11 +9,12 @@ namespace m8ec::periph {
 class UsbCdc : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w> {
 
 public:
-    static UsbCdc &get_instance();
-
     UsbCdc(UBaseType_t rx_stream_buffer_size);
-
-    bool ready() const;
+   
+    /**
+     * @brief Check if low-level implementation is ready for streaming.
+     */
+    virtual bool is_ready() = 0;
 
     std::uint8_t read();
     std::size_t read(std::uint8_t *buffer, std::size_t bufferSize);

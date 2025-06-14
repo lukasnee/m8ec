@@ -89,19 +89,19 @@ bool Service::init() { return this->fonas::Thread::Start(); }
 
 void Service::enable_display() {
     uint8_t buf[] = {'E'};
-    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 1);
+    const auto res = get_usb_cdc().write(buf, 1);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "enable_display");
 }
 
 void Service::reset_display() {
     uint8_t buf[] = {'R'};
-    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 1);
+    const auto res = get_usb_cdc().write(buf, 1);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "reset_display");
 }
 
 void Service::send_keys_state(Keys::State keys_state) {
     uint8_t buf[2] = {'C', keys_state.underlying};
-    const auto res = m8ec::periph::UsbCdc::get_instance().write(buf, 2);
+    const auto res = get_usb_cdc().write(buf, 2);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "send_keys_state: 0x%02x", keys_state.underlying);
 }
 
@@ -214,8 +214,8 @@ void Service::Run() {
 
     bool first_run = true;
     while (true) {
-        if (first_run || !periph::UsbCdc::get_instance().ready()) {
-            while (!periph::UsbCdc::get_instance().ready()) {
+        if (first_run || !get_usb_cdc().is_ready()) {
+            while (!get_usb_cdc().is_ready()) {
                 LOG_INFO("Waiting for USB virtual COM");
                 fonas::delay_ms(250);
             }
@@ -224,7 +224,7 @@ void Service::Run() {
             first_run = false;
         }
         std::uint8_t buffer[Config::usbcdc_to_slip_buffer_size];
-        const auto bytes_read = m8ec::periph::UsbCdc::get_instance().read(buffer, sizeof(buffer));
+        const auto bytes_read = get_usb_cdc().read(buffer, sizeof(buffer));
         for (std::size_t i = 0; i < bytes_read; i++) {
             const slip_error_t n = slip_read_byte(&slip, buffer[i]);
             if (n != SLIP_NO_ERROR) {
@@ -261,6 +261,9 @@ const char *key_to_string(Key key) {
         return "none";
     }
 }
+
+Svc::Svc(const char *Name, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service)
+    : fonas::Thread(Name, Svc::stack_size, Priority), protocol_service(protocol_service) {}
 
 void Svc::print_keys_change(const State &prev_keys_state, const State &keys_state) {
     for (const auto &key : Svc::keys) {

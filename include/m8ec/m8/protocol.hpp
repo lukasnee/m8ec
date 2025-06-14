@@ -158,20 +158,21 @@ private:
 namespace Keys {
 
 struct Svc : fonas::Thread {
+
+    static constexpr uint16_t stack_size = 2 * 1024;
+
     static constexpr Key keys[] = {Key::edit,  Key::option, Key::right, Key::play,
                                    Key::shift, Key::down,   Key::up,    Key::left};
-    static Svc &get_instance();
+    Svc(const char *Name, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service);
+    virtual ~Svc() = default;
 
 protected:
     bool ll_init();
     State ll_get_state();
 
 private:
-    ~Svc() = default;
     Svc(const Svc &) = delete;
     Svc &operator=(const Svc &) = delete;
-    Svc(const char *Name, uint16_t StackDepth, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service)
-        : fonas::Thread(Name, StackDepth, Priority), protocol_service(protocol_service) {}
     void Run() final override;
 
     void print_keys_change(const State &prev_keys_state, const State &keys_state);
