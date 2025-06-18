@@ -91,7 +91,10 @@ SECTIONS
 
     KEEP (*(.init))
     KEEP (*(.fini))
-
+    . = ALIGN(4);
+    __usbh_class_info_start__ = .;
+    KEEP(*(.usbh_class_info))
+    __usbh_class_info_end__ = .;
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
   } >RAM_D1

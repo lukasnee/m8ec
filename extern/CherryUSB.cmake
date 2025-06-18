@@ -26,6 +26,7 @@ target_include_directories(
   CherryUSB
   PUBLIC ${repo}/core
          ${repo}/class/cdc
+         ${repo}/class/audio
          ${repo}/common
          ${repo}/class/hub
          source/CherryUSB

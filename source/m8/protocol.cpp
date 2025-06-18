@@ -18,8 +18,6 @@
 #include "m8ec/periph/UsbCdc.hpp"
 #include "m8ec/slip.h"
 
-#include "usb_host.h" // TODO decouple
-
 #include <array>
 #include <cstdio>
 #include <cstring>

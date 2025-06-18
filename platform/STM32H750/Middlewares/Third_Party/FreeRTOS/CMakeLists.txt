@@ -9,7 +9,7 @@ target_sources(
           Source/queue.c
           Source/stream_buffer.c
           Source/tasks.c
-          # Source/timers.c
+          Source/timers.c
           Source/CMSIS_RTOS_V2/cmsis_os2.c
 )
 

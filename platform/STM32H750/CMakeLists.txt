@@ -17,25 +17,9 @@ target_sources(
             Core/Src/stm32h7xx_it.c
             Core/Src/stm32h7xx_hal_msp.c
             Core/Src/stm32h7xx_hal_timebase_tim.c
-            USB_HOST/App/usb_host.c
-            USB_HOST/Target/usbh_conf.c
-            Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c
-            Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c
-            Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c
-            Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c
-            Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Src/usbh_audio.c
-            Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.c
 )
 
-target_include_directories(
-  platform
-  INTERFACE Core/Inc
-            USB_HOST/App
-            USB_HOST/Target
-            Middlewares/ST/STM32_USB_Host_Library/Core/Inc
-            Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc
-            Middlewares/ST/STM32_USB_Host_Library/Class/AUDIO/Inc
-)
+target_include_directories(platform INTERFACE Core/Inc)
 
 if(SEGGER_SYSVIEW_ENABLED)
   target_compile_options(
@@ -84,5 +68,10 @@ target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 target_link_libraries(
-  platform INTERFACE CMSIS STM32H7xx_HAL ucprof freertos_kernel
+  platform
+  INTERFACE CMSIS
+            STM32H7xx_HAL
+            ucprof
+            freertos_kernel
+            CherryUSB
 )

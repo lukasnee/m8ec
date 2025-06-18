@@ -18,8 +18,6 @@
 #include "m8ec/periph/Uart1.hpp"
 #endif
 
-#include "usb_host.h"
-
 #include "fonas/fonas.hpp"
 #include "fonas/logger/logger.hpp"
 
@@ -37,12 +35,10 @@ periph::UsbCdc &get_usb_cdc() {
         }
 
         UsbCdc() : periph::UsbCdc(m8ec::Config::usb_cdc_rx_stream_buffer_size) {}
-        bool is_ready() final {
-            return usbh_ready();
-        }
     };
     return UsbCdc::get_instance();
-}
+};
+
 M8Display &get_display() {
     static M8Display instance(Display::get_instance());
     return instance;
@@ -89,8 +85,6 @@ static bool init_hw_periphs() {
     FONAS_ASSERT(periph::Uart1::get_instance().init());
     LOG_INFO("UART1 OK");
 #endif
-    FONAS_ASSERT(m8ec::get_usb_cdc().init());
-    LOG_INFO("USB CDC OK");
     return true;
 }
 
@@ -127,3 +121,9 @@ extern "C" void platform_print_freertos_stats(const char *buff) {
                                    .h_wrap = ILI9341_H_WRAP_OFF};
     ili9341_draw_string(m8ec::Display::get_instance().lcd(), attr, buff);
 }
+
+extern "C" void usbh_cdc_acm_run(struct usbh_cdc_acm *cdc_acm_class) {
+    FONAS_ASSERT(m8ec::get_usb_cdc().init(cdc_acm_class));
+    LOG_INFO("USB CDC OK");
+}
+extern "C" void usbh_cdc_acm_stop(struct usbh_cdc_acm *cdc_acm_class) { (void)cdc_acm_class; }
