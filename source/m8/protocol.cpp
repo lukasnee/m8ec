@@ -27,7 +27,7 @@
 namespace m8ec::m8::protocol {
 namespace cmd {
 
-LOG_SCOPE(m8ec::m8::protocol::cmd, LOGGER_LEVEL_INFO);
+LOG_MODULE(m8ec::m8::protocol::cmd, LOGGER_LEVEL_INFO);
 
 const char *id_to_name(uint8_t cmd_id);
 template <typename Derived, uint8_t Tcmd_id, size_t Tpayload_size_min, size_t Tpayload_size_max> struct Cmd {
@@ -123,7 +123,7 @@ void Service::Run() {
                 return 0;
             }
             auto &service = *reinterpret_cast<Service *>(recv_ctx);
-            LOG_SCOPE_REF(service.logger_module);
+            LOG_SCOPE(service.logger_module);
             const uint8_t cmd_id = data[0];
             uint8_t *payload_data = &data[1];
             const uint32_t payload_size = size - 1;

@@ -28,7 +28,7 @@
 
 #include <cstdio>
 
-LOG_SCOPE(m8ec, LOGGER_LEVEL_INFO);
+LOG_MODULE(m8ec, LOGGER_LEVEL_INFO);
 
 namespace m8ec {
 namespace m8 {
