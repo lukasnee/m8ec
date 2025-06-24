@@ -156,7 +156,7 @@ extern "C" int _write(int fd, char *ptr, int len) {
 #elif defined(STM32F411xE)
         using SerialDebug = m8ec::periph::Uart1;
 #endif
-        ASSERT(SerialDebug::get_instance().write(reinterpret_cast<std::uint8_t *>(ptr), len));
+        SerialDebug::get_instance().write(reinterpret_cast<std::uint8_t *>(ptr), len);
 #endif // #ifdef SEGGER_SYSVIEW_ENABLED
         return len;
     }

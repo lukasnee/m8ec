@@ -86,10 +86,10 @@ private:
 
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
-    ASSERT(periph::Uart4::get_instance().init());
+    FONAS_ASSERT(periph::Uart4::get_instance().init());
     LOG_INFO("UART4 OK");
 #elif defined(STM32F411xE)
-    ASSERT(periph::Uart1::get_instance().init());
+    FONAS_ASSERT(periph::Uart1::get_instance().init());
     LOG_INFO("UART1 OK");
 #endif
     FONAS_ASSERT(m8ec::get_usb_cdc().init());
@@ -98,26 +98,26 @@ static bool init_hw_periphs() {
 }
 
 static bool init_sw_periphs() {
-    ASSERT(Display::get_instance().init());
+    FONAS_ASSERT(Display::get_instance().init());
     LOG_INFO("Display OK");
     return true;
 }
 
 static bool init_services() {
 #ifdef M8EC_LIVENESS_SVC
-    ASSERT(LivenessSvc::get_instance().Start());
+    FONAS_ASSERT(LivenessSvc::get_instance().Start());
 #endif // M8EC_LIVENESS_SVC
-    ASSERT(get_key_svc().Start());
+    FONAS_ASSERT(get_key_svc().Start());
     LOG_INFO("Keys::Svc::Service OK");
-    ASSERT(get_m8_svc().init());
+    FONAS_ASSERT(get_m8_svc().init());
     LOG_INFO("m8::protocol::Service OK");
     return true;
 }
 
 void launch() {
-    ASSERT(init_hw_periphs());
-    ASSERT(init_sw_periphs());
-    ASSERT(init_services());
+    FONAS_ASSERT(init_hw_periphs());
+    FONAS_ASSERT(init_sw_periphs());
+    FONAS_ASSERT(init_services());
 }
 
 } // namespace m8ec
