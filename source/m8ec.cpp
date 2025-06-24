@@ -55,34 +55,31 @@ m8::protocol::Keys::Svc &get_key_svc() {
     static m8::protocol::Keys::Svc instance("keysSvc", 1, get_m8_svc());
     return instance;
 }
+// #define M8EC_LIVENESS_DISPLAY_INDICATOR
 
-#ifdef M8EC_LIVENESS_SVC
-struct LivenessSvc : fonas::Thread {
+struct IdleMonitoringSvc : fonas::Thread {
 
-    static LivenessSvc &get_instance() {
-        static LivenessSvc instance;
+    static IdleMonitoringSvc &get_instance() {
+        static IdleMonitoringSvc instance;
         return instance;
     }
 
 private:
-    LivenessSvc() : fonas::Thread("liveness", 1024, 1) {}
+    IdleMonitoringSvc() : fonas::Thread("idle_mon", 1024, tskIDLE_PRIORITY) {}
 
     void Run() final {
-        ili9341_text_attr_t attr{.font = &ili9341_font_trash80_stealth57,
-                                 .fg_color = ILI9341_WHITE,
-                                 .bg_color = ILI9341_BLACK,
-                                 .origin = {.x = 0, .y = 0},
-                                 .h_wrap = ILI9341_H_WRAP_OFF};
         while (true) {
+            fonas_logger_flush_buffer();
+#ifdef M8EC_LIVENESS_DISPLAY_INDICATOR
             static const char loadingChars[] = {'|', '/', '-', '\\'};
             static uint8_t loadingCharIndex = 0;
             ili9341_draw_char(Display::get_instance().lcd(), attr, loadingChars[loadingCharIndex]);
             loadingCharIndex = (loadingCharIndex + 1) % sizeof(loadingChars);
-            fonas::delay_ms(250);
+#endif
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
     }
 };
-#endif // M8EC_LIVENESS_SVC
 
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
@@ -104,9 +101,7 @@ static bool init_sw_periphs() {
 }
 
 static bool init_services() {
-#ifdef M8EC_LIVENESS_SVC
-    FONAS_ASSERT(LivenessSvc::get_instance().Start());
-#endif // M8EC_LIVENESS_SVC
+    FONAS_ASSERT(IdleMonitoringSvc::get_instance().Start());
     FONAS_ASSERT(get_key_svc().Start());
     LOG_INFO("Keys::Svc::Service OK");
     FONAS_ASSERT(get_m8_svc().init());
