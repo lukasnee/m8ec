@@ -41,6 +41,15 @@ add_custom_command(
   COMMAND arm-none-eabi-size m8ec
 )
 
+add_custom_target(
+  m8ec_flash
+  DEPENDS m8ec
+  COMMAND python3 ${PROJECT_SOURCE_DIR}/tools/m8ec.py -fr
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  COMMENT "Flashing the device"
+  VERBATIM USES_TERMINAL
+)
+
 if(SEGGER_SYSVIEW_ENABLED)
   target_compile_options(
     m8ec
