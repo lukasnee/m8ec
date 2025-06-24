@@ -16,3 +16,4 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 AccessModifierOffset: -4
 ColumnLimit: 128
+SortIncludes: false
