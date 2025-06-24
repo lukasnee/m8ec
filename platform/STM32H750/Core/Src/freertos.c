@@ -30,6 +30,7 @@
 #include "usb_host.h"
 
 #include "SEGGER_SYSVIEW.h"
+#include "fonas/fonas.h"
 #include "fonas/logger/logger.h"
 
 /* USER CODE END Includes */
@@ -186,4 +187,7 @@ void vApplicationIdleHook(void) {
   }
 #endif
 }
+
+void vApplicationMallocFailedHook() { FONAS_PANIC(); }
+
 /* USER CODE END Application */
