@@ -85,13 +85,12 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
     const auto canvas = Canvas{canvas_x, canvas_max.y, canvas_w, canvas_max.h};
     last_waveform_width = waveform_width;
     bmp_buff.fill(0);
-    for (std::size_t i = 0; i < waveform_width; i++) {
+    for (std::size_t x = 0; x < waveform_width; x++) {
         // limit the waveform value (y) to canvas max height - allegedly it can glitch // TODO investigate
-        const auto y = std::min(waveform.buffer[i], static_cast<uint8_t>(canvas.h - 1));
-        const auto x = i;
-        const auto bmp_index = (y * waveform_width) + x;
-        const auto byte_index = bmp_index / 8;
-        const auto byte_bit = bmp_index % 8;
+        const auto y = std::min(waveform.buffer[x], static_cast<uint8_t>(canvas.h - 1));
+        const auto pixel_index = (y * canvas.w) + x;
+        const auto byte_index = pixel_index / 8;
+        const auto byte_bit = pixel_index % 8;
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);

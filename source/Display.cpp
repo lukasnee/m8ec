@@ -33,10 +33,10 @@ bool Display::init() {
     this->ili9341 = ili9341_new(
         &hspi1,
         [](uint8_t *data, uint16_t size) -> uint16_t {
-            return m8ec::periph::Spi1::get_instance().write(data, size) ? 1 : 0;
+            return m8ec::periph::Spi1::get_instance().write(data, size) ? size : 0;
         },
         [](uint8_t *rd_data, const uint8_t *wr_data, uint16_t size) -> uint16_t {
-            return m8ec::periph::Spi1::get_instance().read_write(rd_data, wr_data, size) ? 1 : 0;
+            return m8ec::periph::Spi1::get_instance().read_write(rd_data, wr_data, size) ? size : 0;
         },
         [](uint32_t delay_ms) { vTaskDelay(pdMS_TO_TICKS(delay_ms)); }, TFT_RESET_GPIO_Port, TFT_RESET_Pin,
         TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port, TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE);
