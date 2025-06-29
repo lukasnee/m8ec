@@ -57,7 +57,7 @@ struct Canvas {
     uint16_t h;
 };
 
-constexpr auto canvas_max = Canvas{0, 0, 320, 21};
+constexpr auto canvas_max = Canvas{0, 0, 320, 25};
 std::array<uint8_t, (canvas_max.w * canvas_max.h / 8)> bmp_buff = {0};
 
 void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t waveform_width) {
