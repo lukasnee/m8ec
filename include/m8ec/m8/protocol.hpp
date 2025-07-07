@@ -153,7 +153,7 @@ private:
 
     Display &display;
 
-    LOG_MODULE(m8ec::m8::protocol::Service, LOGGER_LEVEL_INFO);
+    LOG_MODULE_CLASS_MEMBER(m8ec::m8::protocol::Service, LOGGER_LEVEL_INFO);
 };
 namespace Keys {
 
@@ -179,7 +179,7 @@ private:
 
     m8ec::m8::protocol::Service &protocol_service;
 
-    LOG_MODULE(m8ec::m8::protocol::Keys::Svc, LOGGER_LEVEL_INFO);
+    LOG_MODULE_CLASS_MEMBER(m8ec::m8::protocol::Keys::Svc, LOGGER_LEVEL_INFO);
 };
 } // namespace Keys
 } // namespace m8ec::m8::protocol
