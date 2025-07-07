@@ -39,6 +39,17 @@ periph::UsbCdc &get_usb_cdc() {
     return UsbCdc::get_instance();
 };
 
+periph::UsbAudio &get_usb_audio() {
+    class UsbAudio : public periph::UsbAudio {
+    public:
+        static UsbAudio &get_instance() {
+            static UsbAudio instance;
+            return instance;
+        }
+    };
+    return UsbAudio::get_instance();
+};
+
 M8Display &get_display() {
     static M8Display instance(Display::get_instance());
     return instance;
@@ -127,3 +138,9 @@ extern "C" void usbh_cdc_acm_run(struct usbh_cdc_acm *cdc_acm_class) {
     LOG_INFO("USB CDC OK");
 }
 extern "C" void usbh_cdc_acm_stop(struct usbh_cdc_acm *cdc_acm_class) { (void)cdc_acm_class; }
+
+extern "C" void usbh_audio_run(struct usbh_audio *audio_class) {
+    FONAS_ASSERT(m8ec::get_usb_audio().init(audio_class));
+    LOG_INFO("USB Audio OK");
+}
+extern "C" void usbh_audio_stop(struct usbh_audio *audio_class) { (void)audio_class; }

@@ -13,6 +13,7 @@ target_sources(
           periph/SpiCallbacks.cpp
           periph/Spi1.cpp
           periph/UsbCdc.cpp
+          periph/UsbAudio.cpp
           platform/${PLATFORM}/Keys.cpp
 )
 

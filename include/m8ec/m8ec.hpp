@@ -16,6 +16,7 @@
 #include "m8ec/M8Display.hpp"
 #include "m8ec/m8/protocol.hpp"
 #include "m8ec/periph/UsbCdc.hpp"
+#include "m8ec/periph/UsbAudio.hpp"
 
 #include <cstdint>
 
@@ -29,6 +30,7 @@ struct Config {
 };
 
 periph::UsbCdc &get_usb_cdc();
+periph::UsbAudio &get_usb_audio();
 M8Display &get_display();
 m8::protocol::Service &get_m8_svc();
 m8::protocol::Keys::Svc &get_key_svc();
