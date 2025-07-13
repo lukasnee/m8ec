@@ -10,7 +10,7 @@
             "request": "attach",
             "servertype": "openocd",
             "configFiles": [
-                "../openocd.jlink.cfg"
+                "../config/openocd.jlink.cfg"
             ],
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
@@ -57,7 +57,7 @@
             "request": "attach",
             "servertype": "openocd",
             "configFiles": [
-                "../openocd.stlink.cfg"
+                "../config/openocd.stlink.cfg"
             ],
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
