@@ -43,7 +43,9 @@ def main():
     # parser.add_argument(
     #     "--build_dir", help="build directory", default=".build")
     parser.add_argument(
-        "-f", "--flash", help="flash (built) firmware to device", action="store_true")
+        "-f", "--flash", help="flash firmware to device", action="store_true")
+    parser.add_argument(
+        "--fw_path", help="firmware path", default=".build/source/m8ec.bin")
     parser.add_argument("-r", "--reset", help="reset board",
                         action="store_true")
     # parser.add_argument("-p", "--platform", help="platform",
@@ -72,7 +74,7 @@ def main():
     if args.flash:
         comm = Comm(args.serial_dev, log_level=args.log_level)
         comm.capture_bootloader(10.0)
-        comm.upload_file(".build/source/m8ec.bin", "boot/app.bin")
+        comm.upload_file(args.fw_path, "boot/app.bin")
         comm.release_bootloader()
 
     if args.command == "upload":
