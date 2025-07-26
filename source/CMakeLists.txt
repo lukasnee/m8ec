@@ -22,7 +22,8 @@ target_link_options(m8ec PUBLIC -Wl,-Map=m8ec.map -Wl,--cref)
 
 target_link_libraries(
   m8ec
-  PUBLIC platform
+  PUBLIC FreeRTOS-Cpp
+         platform
          SeggerSysView
          fonas
          ILI9341-STM32-HAL

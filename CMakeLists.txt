@@ -31,8 +31,7 @@ add_subdirectory(platform/${PLATFORM})
 add_subdirectory(extern/W25Q64_STM32H750VB-DevEBox)
 
 add_subdirectory(extern/ucprof)
-add_subdirectory(extern/freertos-addons)
-add_subdirectory(extern/fonas)
+add_subdirectory(extern/ln)
 add_subdirectory(extern/ILI9341-STM32-HAL)
 
 add_subdirectory(source)
