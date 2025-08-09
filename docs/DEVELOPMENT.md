@@ -34,7 +34,7 @@ Some notes on the development of the m8ec project.
     [here](https://cmake.org/download/). For example:
 
     ```bash
-    VERSION=4.0.1
+    VERSION=$(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep -Po '"tag_name": "v\K[^"]*')
     cd /tmp/
     wget https://github.com/Kitware/CMake/releases/download/v$VERSION/cmake-$VERSION-linux-x86_64.sh
     sudo sh cmake-$VERSION-linux-x86_64.sh --skip-license --prefix=/usr/local/
@@ -42,12 +42,9 @@ Some notes on the development of the m8ec project.
 
 2. Install Arm GNU Toolchain:
 
-    > for more details see
-    > [this](https://lindevs.com/install-arm-gnu-toolchain-on-ubuntu)  
-
     ```bash
-    ARM_TOOLCHAIN_VERSION=$(curl -s https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads | grep -Po '<h4>Version \K.+(?=</h4>)')
-    curl -Lo gcc-arm-none-eabi.tar.xz "https://developer.arm.com/-/media/Files/downloads/gnu/${ARM_TOOLCHAIN_VERSION}/binrel/arm-gnu-toolchain-${ARM_TOOLCHAIN_VERSION}-x86_64-arm-none-eabi.tar.xz"
+    VERSION=$(curl -s https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads | grep -Po '<h4>Version \K.+(?=</h4>)')
+    curl -Lo gcc-arm-none-eabi.tar.xz "https://developer.arm.com/-/media/Files/downloads/gnu/${VERSION}/binrel/arm-gnu-toolchain-${VERSION}-x86_64-arm-none-eabi.tar.xz"
     sudo mkdir /opt/gcc-arm-none-eabi
     sudo tar xf gcc-arm-none-eabi.tar.xz --strip-components=1 -C /opt/gcc-arm-none-eabi
     echo 'export PATH=$PATH:/opt/gcc-arm-none-eabi/bin' | sudo tee -a /etc/profile.d/gcc-arm-none-eabi.sh
@@ -87,44 +84,35 @@ Some notes on the development of the m8ec project.
     source ~/.bashrc
     ```
 
-## Building the Firmware
+## Building and Flashing the Firmware
 
-1. Clone the project and its submodules:
+The application firmware (m8ec) is based on project
+[lukasnee/W25Q64_STM32H750VB-DevEBox](https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git).
+It has a [`bl_iram`](../extern/W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md)
+bootloader firmware that enables running application firmware from MCU's
+internal RAM. The application firmware is loaded into the volatile RAM from a
+file every time the MCU boots. The file is stored in a file system that is
+mounted on the external flash memory (W25Q64). Application firmware file can be
+uploaded from your PC via serial interface using a client command tool
+[`tools/m8ec.py`](../tools/m8ec.py).
+
+First, clone the project and its submodules:
 
     ```bash
     git clone https://github.com/lukasnee/m8ec.git
-    git checkout prototype
     git submodule update --init --recursive
     ```
 
-2. TODO: instruction for building and flashing the bootloader
-   [bl_iram](extern/W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md)
-   for STM32H750 (DevEBox) platform.
+Build and flash the `bl_iram` bootloader by following instructions
+[here](../extern/W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md).
 
-3. Build using the project tool:
 
-    ```bash
-    cmake --workflow STM32H750-rel
-    ```
+```bash
+cmake --workflow STM32H750-rel # release build
+cmake --workflow STM32H750-dbg # debug build
+```
 
-4. Build debug version:
-
-    ```bash
-    cmake --workflow STM32H750-dbg
-    ```
-
-> Run `python3 tools/m8ec.py -h` to see more options.
-
-## Flashing
-
-The firmware variant is based on
-[lukasnee/W25Q64_STM32H750VB-DevEBox](https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git)
-project. It has a [bl_iram](extern//W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md)
-bootloader that runs firmware from MCU's internal RAM. Firmware is loaded into
-the volatile RAM from a file every time the MCU boots. The file is stored in a
-file system that is mounted on the external flash memory (W25Q64). Firmware file
-can be updated from your PC via serial interface. The `tools/m8ec.py` has the
-bootloader communication protocol integrated, so the flashing is easy.
+then upload the application firmware to the MCU:
 
 ```bash
 python3 tools/m8ec.py -f
