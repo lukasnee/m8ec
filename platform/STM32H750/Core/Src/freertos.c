@@ -30,8 +30,8 @@
 #include "usb_host.h"
 
 #include "SEGGER_SYSVIEW.h"
-#include "fonas/fonas.h"
-#include "fonas/logger/logger.h"
+#include "ln/ln.h"
+#include "ln/logger/logger.h"
 
 /* USER CODE END Includes */
 
@@ -124,7 +124,7 @@ void startupTask(void *arg) {
   /* init code for USB_HOST */
   MX_USB_HOST_Init();
   /* USER CODE BEGIN 5 */
-  fonas_logger_enable();
+  ln_logger_enable();
   platform_app();
   //  static uint16_t audio_out_buffer[256];
   //  HAL_I2S_Transmit_DMA(&hi2s2, audio_out_buffer, 256);
@@ -188,6 +188,6 @@ void vApplicationIdleHook(void) {
 #endif
 }
 
-void vApplicationMallocFailedHook() { FONAS_PANIC(); }
+void vApplicationMallocFailedHook() { LN_PANIC(); }
 
 /* USER CODE END Application */

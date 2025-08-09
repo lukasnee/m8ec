@@ -20,8 +20,8 @@
 
 #include "usb_host.h"
 
-#include "fonas/fonas.hpp"
-#include "fonas/logger/logger.hpp"
+#include "ln/ln.hpp"
+#include "ln/logger/logger.hpp"
 
 #include <cstdio>
 
@@ -31,18 +31,18 @@ namespace m8ec {
 periph::UsbCdc &get_usb_cdc() {
     class UsbCdc : public periph::UsbCdc {
     public:
+        using periph::UsbCdc::UsbCdc;
         static UsbCdc &get_instance() {
-            static UsbCdc instance;
+            static FreeRTOS::StaticStreamBuffer<m8ec::Config::usb_cdc_rx_stream_buffer_size> rx_stream_buffer;
+            static UsbCdc instance(rx_stream_buffer);
             return instance;
         }
-
-        UsbCdc() : periph::UsbCdc(m8ec::Config::usb_cdc_rx_stream_buffer_size) {}
-        bool is_ready() final {
-            return usbh_ready();
-        }
+        bool is_ready() final { return usbh_ready(); }
     };
+
     return UsbCdc::get_instance();
 }
+
 M8Display &get_display() {
     static M8Display instance(Display::get_instance());
     return instance;
@@ -57,19 +57,21 @@ m8::protocol::Keys::Svc &get_key_svc() {
 }
 // #define M8EC_LIVENESS_DISPLAY_INDICATOR
 
-struct IdleMonitoringSvc : fonas::Thread {
+struct IdleMonitoringSvc : FreeRTOS::Task {
 
     static IdleMonitoringSvc &get_instance() {
         static IdleMonitoringSvc instance;
         return instance;
     }
 
-private:
-    IdleMonitoringSvc() : fonas::Thread("idle_mon", 1024, tskIDLE_PRIORITY) {}
+    bool init() { return true; }
 
-    void Run() final {
+private:
+    IdleMonitoringSvc() : FreeRTOS::Task(tskIDLE_PRIORITY, 1024, "idle_mon") {}
+
+    virtual void taskFunction() final {
         while (true) {
-            fonas_logger_flush_buffer();
+            ln_logger_flush_buffer();
 #ifdef M8EC_LIVENESS_DISPLAY_INDICATOR
             static const char loadingChars[] = {'|', '/', '-', '\\'};
             static uint8_t loadingCharIndex = 0;
@@ -83,36 +85,36 @@ private:
 
 static bool init_hw_periphs() {
 #if defined(STM32H750xx)
-    FONAS_ASSERT(periph::Uart4::get_instance().init());
+    LN_ASSERT(periph::Uart4::get_instance().init());
     LOG_INFO("UART4 OK");
 #elif defined(STM32F411xE)
-    FONAS_ASSERT(periph::Uart1::get_instance().init());
+    LN_ASSERT(periph::Uart1::get_instance().init());
     LOG_INFO("UART1 OK");
 #endif
-    FONAS_ASSERT(m8ec::get_usb_cdc().init());
+    LN_ASSERT(m8ec::get_usb_cdc().init());
     LOG_INFO("USB CDC OK");
     return true;
 }
 
 static bool init_sw_periphs() {
-    FONAS_ASSERT(Display::get_instance().init());
+    LN_ASSERT(Display::get_instance().init());
     LOG_INFO("Display OK");
     return true;
 }
 
 static bool init_services() {
-    FONAS_ASSERT(IdleMonitoringSvc::get_instance().Start());
-    FONAS_ASSERT(get_key_svc().Start());
+    LN_ASSERT(IdleMonitoringSvc::get_instance().init());
+    LN_ASSERT(get_key_svc().init());
     LOG_INFO("Keys::Svc::Service OK");
-    FONAS_ASSERT(get_m8_svc().init());
+    LN_ASSERT(get_m8_svc().init());
     LOG_INFO("m8::protocol::Service OK");
     return true;
 }
 
 void launch() {
-    FONAS_ASSERT(init_hw_periphs());
-    FONAS_ASSERT(init_sw_periphs());
-    FONAS_ASSERT(init_services());
+    LN_ASSERT(init_hw_periphs());
+    LN_ASSERT(init_sw_periphs());
+    LN_ASSERT(init_services());
 }
 
 } // namespace m8ec

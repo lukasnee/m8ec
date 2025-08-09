@@ -1,16 +1,17 @@
 #pragma once
 
-#include "fonas/EventDrivenStream.hpp"
-#include "fonas/StreamBuffer.hpp"
-#include "fonas/logger/logger.hpp"
+#include "ln/drivers/EventDrivenStream.hpp"
+#include "ln/logger/logger.hpp"
+
+#include "FreeRTOS/StreamBuffer.hpp"
 
 namespace m8ec::periph {
 
-class UsbCdc : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w> {
+class UsbCdc : public ln::drivers::EventDriven::Stream<ln::drivers::EventDriven::StreamType::w> {
 
 public:
-    UsbCdc(UBaseType_t rx_stream_buffer_size);
-   
+    UsbCdc(FreeRTOS::StreamBufferBase &rx_stream_buffer);
+
     /**
      * @brief Check if low-level implementation is ready for streaming.
      */
@@ -27,9 +28,9 @@ protected:
     bool ll_deinit() final override;
 
 private:
-    using fonas::EventDriven::Stream<fonas::EventDriven::StreamType::w>::ll_write_async;
+    using ln::drivers::EventDriven::Stream<ln::drivers::EventDriven::StreamType::w>::ll_write_async;
 
-    fonas::StreamBuffer rx_stream_buffer;
+    FreeRTOS::StreamBufferBase &rx_stream_buffer;
     bool initialized = false;
 
     LOG_MODULE_CLASS_MEMBER(m8ec::periph::UsbCdc, LOGGER_LEVEL_INFO);

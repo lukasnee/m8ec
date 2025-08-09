@@ -18,11 +18,15 @@
 #include "m8ec/periph/UsbCdc.hpp"
 #include "m8ec/slip.h"
 
+#include "FreeRTOS/Task.hpp"
+
 #include "usb_host.h" // TODO decouple
 
 #include <array>
 #include <cstdio>
 #include <cstring>
+
+using namespace std::literals::chrono_literals;
 
 namespace m8ec::m8::protocol {
 namespace cmd {
@@ -82,10 +86,7 @@ const char *id_to_name(uint8_t cmd_id) {
 
 } // namespace cmd
 
-Service::Service(Service::Display &display)
-    : fonas::Thread("m8svc", 3 * 1024 + Config::slip_buffer_size, 1), display(display) {}
-
-bool Service::init() { return this->fonas::Thread::Start(); }
+bool Service::init() { return true; }
 
 void Service::enable_display() {
     uint8_t buf[] = {'E'};
@@ -106,7 +107,7 @@ void Service::send_keys_state(Keys::State keys_state) {
 }
 
 // TODO separate out cmd parsing from the service into m8ec/m8
-void Service::Run() {
+void Service::taskFunction() {
     uint8_t slip_buffer[Config::slip_buffer_size];
     const slip_descriptor_s slip_descriptor = {
         .buf = slip_buffer,
@@ -199,7 +200,7 @@ void Service::Run() {
             else {
                 LOG_ERROR("Unknown command: %02x of payload size %lu", data[0], size - 1);
                 std::array<char, 256> buff;
-                LOG_ERROR("Received: %s", fonas::Logger::Hex::format(buff, data, size));
+                LOG_ERROR("Received: %s", ln::logger::Hex::format(buff, data, size));
                 return 0;
             }
             return 1;
@@ -217,7 +218,7 @@ void Service::Run() {
         if (first_run || !get_usb_cdc().is_ready()) {
             while (!get_usb_cdc().is_ready()) {
                 LOG_INFO("Waiting for USB virtual COM");
-                fonas::delay_ms(250);
+                this->delay(250ms);
             }
             enable_display();
             reset_display();
@@ -262,9 +263,6 @@ const char *key_to_string(Key key) {
     }
 }
 
-Svc::Svc(const char *Name, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service)
-    : fonas::Thread(Name, Svc::stack_size, Priority), protocol_service(protocol_service) {}
-
 void Svc::print_keys_change(const State &prev_keys_state, const State &keys_state) {
     for (const auto &key : Svc::keys) {
         if (prev_keys_state.get(key) != keys_state.get(key)) {
@@ -273,7 +271,7 @@ void Svc::print_keys_change(const State &prev_keys_state, const State &keys_stat
     }
 }
 
-void Svc::Run() {
+void Svc::taskFunction() {
     this->ll_init();
     State prev_keys_state = {};
     while (true) {
@@ -283,7 +281,7 @@ void Svc::Run() {
             print_keys_change(prev_keys_state, keys_state);
             prev_keys_state = keys_state;
         }
-        Thread::DelayUntil(m8ec::Config::keys_refresh_period);
+        this->delayUntil(m8ec::Config::keys_refresh_period);
     }
 }
 } // namespace Keys

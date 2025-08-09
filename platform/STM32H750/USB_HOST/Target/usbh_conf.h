@@ -1,30 +1,31 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : Target/usbh_conf.h
-  * @version        : v1.0_Cube
-  * @brief          : Header for usbh_conf.c file.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : Target/usbh_conf.h
+ * @version        : v1.0_Cube
+ * @brief          : Header for usbh_conf.c file.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USBH_CONF__H__
 #define __USBH_CONF__H__
 #ifdef __cplusplus
- extern "C" {
+extern "C"
+{
 #endif
-/* Includes ------------------------------------------------------------------*/
+  /* Includes ------------------------------------------------------------------*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,108 +36,107 @@
 #include "stm32h7xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "fonas/fonas.h"
+#include "ln/ln.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_HOST_LIBRARY
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup USBH_CONF
-  * @brief usb host low level driver configuration file
-  * @{
-  */
+ * @brief usb host low level driver configuration file
+ * @{
+ */
 
 /** @defgroup USBH_CONF_Exported_Variables USBH_CONF_Exported_Variables
-  * @brief Public variables.
-  * @{
-  */
+ * @brief Public variables.
+ * @{
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup USBH_CONF_Exported_Defines USBH_CONF_Exported_Defines
-  * @brief Defines for configuration of the Usb host.
-  * @{
-  */
+ * @brief Defines for configuration of the Usb host.
+ * @{
+ */
 
 /*----------   -----------*/
-#define USBH_MAX_NUM_ENDPOINTS      5U
+#define USBH_MAX_NUM_ENDPOINTS 5U
 
 /*----------   -----------*/
-#define USBH_MAX_NUM_INTERFACES      10U
+#define USBH_MAX_NUM_INTERFACES 10U
 
 /*----------   -----------*/
-#define USBH_MAX_NUM_CONFIGURATION      1U
+#define USBH_MAX_NUM_CONFIGURATION 1U
 
 /*----------   -----------*/
-#define USBH_KEEP_CFG_DESCRIPTOR      1U
+#define USBH_KEEP_CFG_DESCRIPTOR 1U
 
 /*----------   -----------*/
-#define USBH_MAX_NUM_SUPPORTED_CLASS      5U
+#define USBH_MAX_NUM_SUPPORTED_CLASS 5U
 
-#define USBH_MAX_NUM_ACTIVE_CLASSES       8// TODO figure why fifth M8 Headless class breaks everything
-
-/*----------   -----------*/
-#define USBH_MAX_SIZE_CONFIGURATION      1024U
+#define USBH_MAX_NUM_ACTIVE_CLASSES 8 // TODO figure why fifth M8 Headless class breaks everything
 
 /*----------   -----------*/
-#define USBH_MAX_DATA_BUFFER      1024U
+#define USBH_MAX_SIZE_CONFIGURATION 1024U
 
 /*----------   -----------*/
-#define USBH_DEBUG_LEVEL      2U
+#define USBH_MAX_DATA_BUFFER 1024U
 
 /*----------   -----------*/
-#define USBH_USE_OS      1U
+#define USBH_DEBUG_LEVEL 2U
 
-#define USBH_IN_NAK_PROCESS                   0
+/*----------   -----------*/
+#define USBH_USE_OS 1U
 
+#define USBH_IN_NAK_PROCESS 0
 
 /****************************************/
 /* #define for FS and HS identification */
-#define HOST_HS 		0
-#define HOST_FS 		1
+#define HOST_HS 0
+#define HOST_FS 1
 
 #if (USBH_USE_OS == 1)
-  #include "cmsis_os.h"
-  #define USBH_PROCESS_PRIO          1
-  #define USBH_PROCESS_STACK_SIZE    ((uint16_t)4 * 1024)
+#include "cmsis_os.h"
+#define USBH_PROCESS_PRIO 1
+#define USBH_PROCESS_STACK_SIZE ((uint16_t)4 * 1024)
 #endif /* (USBH_USE_OS == 1) */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup USBH_CONF_Exported_Macros USBH_CONF_Exported_Macros
-  * @brief Aliases.
-  * @{
-  */
+ * @brief Aliases.
+ * @{
+ */
 
 /* Memory management macros */
 
 /** Alias for memory allocation. */
-#define USBH_malloc         pvPortMalloc
+#define USBH_malloc pvPortMalloc
 
 /** Alias for memory release. */
-#define USBH_free           vPortFree
+#define USBH_free vPortFree
 
 /** Alias for memory set. */
-#define USBH_memset         memset
+#define USBH_memset memset
 
 /** Alias for memory copy. */
-#define USBH_memcpy         memcpy
+#define USBH_memcpy memcpy
 
-/* DEBUG macros */
+  /* DEBUG macros */
 
-#include "fonas/logger/logger.h"
+#include "ln/logger/logger.h"
 
-extern LoggerModule logmod_usbh;
+  extern LoggerModule logmod_usbh;
 
 #if (USBH_DEBUG_LEVEL > 0U)
 #define USBH_ErrLog(...)                                                                                                       \
   do {                                                                                                                         \
-    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_ERROR, __VA_ARGS__);                                                                 \
+    ln_logger_log(&logmod_usbh, LOGGER_LEVEL_ERROR, __VA_ARGS__);                                                              \
   } while (0)
 #else
 #define USBH_ErrLog(...)
@@ -145,7 +145,7 @@ extern LoggerModule logmod_usbh;
 #if (USBH_DEBUG_LEVEL > 1U)
 #define USBH_UsrLog(...)                                                                                                       \
   do {                                                                                                                         \
-    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_INFO, __VA_ARGS__);                                                                  \
+    ln_logger_log(&logmod_usbh, LOGGER_LEVEL_INFO, __VA_ARGS__);                                                               \
   } while (0)
 #else
 #define USBH_UsrLog(...)
@@ -154,7 +154,7 @@ extern LoggerModule logmod_usbh;
 #if (USBH_DEBUG_LEVEL > 2U)
 #define USBH_DbgLog(...)                                                                                                       \
   do {                                                                                                                         \
-    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG, __VA_ARGS__);                                                                 \
+    ln_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG, __VA_ARGS__);                                                              \
   } while (0)
 #else
 #define USBH_DbgLog(...)
@@ -163,46 +163,45 @@ extern LoggerModule logmod_usbh;
 #if (USBH_DEBUG_LEVEL > 3U)
 #define USBH_TrcLog(...)                                                                                                       \
   do {                                                                                                                         \
-    fonas_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG2, __VA_ARGS__);                                                                \
+    ln_logger_log(&logmod_usbh, LOGGER_LEVEL_DEBUG2, __VA_ARGS__);                                                             \
   } while (0)
 #else
 #define USBH_TrcLog(...)
 #endif
-/**
-  * @}
-  */
+  /**
+   * @}
+   */
 
-/** @defgroup USBH_CONF_Exported_Types USBH_CONF_Exported_Types
-  * @brief Types.
-  * @{
-  */
+  /** @defgroup USBH_CONF_Exported_Types USBH_CONF_Exported_Types
+   * @brief Types.
+   * @{
+   */
 
-/**
-  * @}
-  */
+  /**
+   * @}
+   */
 
-/** @defgroup USBH_CONF_Exported_FunctionsPrototype USBH_CONF_Exported_FunctionsPrototype
-  * @brief Declaration of public functions for Usb host.
-  * @{
-  */
+  /** @defgroup USBH_CONF_Exported_FunctionsPrototype USBH_CONF_Exported_FunctionsPrototype
+   * @brief Declaration of public functions for Usb host.
+   * @{
+   */
 
-/* Exported functions -------------------------------------------------------*/
+  /* Exported functions -------------------------------------------------------*/
 
-/**
-  * @}
-  */
+  /**
+   * @}
+   */
 
-/**
-  * @}
-  */
+  /**
+   * @}
+   */
 
-/**
-  * @}
-  */
+  /**
+   * @}
+   */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __USBH_CONF__H__ */
-

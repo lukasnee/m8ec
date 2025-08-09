@@ -22,12 +22,11 @@ target_link_options(m8ec PUBLIC -Wl,-Map=m8ec.map -Wl,--cref)
 
 target_link_libraries(
   m8ec
-  PUBLIC FreeRTOS-Cpp
+  PUBLIC ln::ln
          platform
          SeggerSysView
-         fonas
-         ILI9341-STM32-HAL
          littlefs_W25Q64
+         ILI9341-STM32-HAL
 )
 
 add_custom_command(

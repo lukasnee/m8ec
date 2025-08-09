@@ -1,6 +1,6 @@
 #include "m8ec/Keys.hpp"
 
-#include "fonas/fonas.hpp"
+#include "ln/ln.hpp"
 
 #include "stm32f4xx_hal.h"
 
@@ -9,7 +9,7 @@
 namespace m8ec {
 
 struct Config {
-    static constexpr std::size_t gpio_transient_delay_ms = 1;
+    static constexpr ln::Clock::duration gpio_transient_delay = std::chrono::milliseconds(1);
 };
 
 const uint16_t rows[] = {GPIO_PIN_13, GPIO_PIN_1, GPIO_PIN_0};
@@ -49,7 +49,7 @@ Keys::State Keys::ll_get_state() {
     // keyboard matrix with diodes
     for (size_t cIdx = 0; cIdx < ARRAY_SZ(columns); ++cIdx) {
         HAL_GPIO_WritePin(GPIOB, columns[cIdx], GPIO_PIN_RESET);
-        fonas::delay_ms(Config::gpio_transient_delay_ms);
+        this->delay(Config::gpio_transient_delay);
         for (size_t rIdx = 0; rIdx < ARRAY_SZ(rows); ++rIdx) {
             const bool is_pressed = HAL_GPIO_ReadPin(GPIOB, rows[rIdx]) == GPIO_PIN_RESET;
             state.set(key_map[cIdx][rIdx], is_pressed);

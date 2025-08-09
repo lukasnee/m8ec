@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "fonas/EventDrivenSpi.hpp"
+#include "ln/drivers/EventDrivenSpi.hpp"
 
 namespace m8ec::periph {
 
-class Spi1 : public fonas::EventDrivenSpi {
+class Spi1 : public ln::drivers::EventDrivenSpi {
 
 public:
     static Spi1 &get_instance();

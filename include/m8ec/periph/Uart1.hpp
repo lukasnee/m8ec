@@ -14,7 +14,7 @@
 
 namespace m8ec::periph {
 
-class Uart1 : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::rw> {
+class Uart1 : public ln::EventDriven::Stream<ln::EventDriven::StreamType::rw> {
 
 public:
     static Uart1 &get_instance();

@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "fonas/EventDrivenStream.hpp"
+#include "ln/drivers/EventDrivenStream.hpp"
 
 namespace m8ec::periph {
 
-class Uart4 : public fonas::EventDriven::Stream<fonas::EventDriven::StreamType::rw> {
+class Uart4 : public ln::drivers::EventDriven::Stream<ln::drivers::EventDriven::StreamType::rw> {
 
 public:
     static Uart4 &get_instance();

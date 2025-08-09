@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include "fonas/logger/logger.hpp"
 #include "m8ec/Display.hpp"
 #include "m8ec/m8/protocol.hpp"
+
+#include "ln/logger/logger.hpp"
 
 #include <cstddef>
 
@@ -39,7 +40,7 @@ private:
 
     m8ec::Display &display;
 
-    fonas::Logger::Module logger{"m8ec::M8Display"};
+    LOG_MODULE_CLASS_MEMBER("m8ec::M8Display", LOGGER_LEVEL_NOTSET);
 };
 
 } // namespace m8ec

@@ -15,7 +15,8 @@
 
 #include "ILI9341/ili9341.h"
 #include "ILI9341/ili9341_gfx.h"
-#include "fonas/logger/logger.hpp"
+
+#include "ln/logger/logger.hpp"
 
 namespace m8ec {
 
@@ -38,7 +39,7 @@ private:
 
     ili9341_color_t bg_color = ILI9341_BLACK;
 
-    fonas::Logger::Module logger{"m8ec::Display"};
+    LOG_MODULE_CLASS_MEMBER("m8ec::Display", LOGGER_LEVEL_DEBUG);
 };
 
 } // namespace m8ec

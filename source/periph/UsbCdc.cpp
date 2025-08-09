@@ -13,7 +13,7 @@ extern USBH_HandleTypeDef hUsbHostFS; // TODO decouple
 
 namespace m8ec::periph {
 
-UsbCdc::UsbCdc(UBaseType_t rx_stream_buffer_size) : rx_stream_buffer(rx_stream_buffer_size, sizeof(char)) {}
+UsbCdc::UsbCdc(FreeRTOS::StreamBufferBase &rx_stream_buffer) : rx_stream_buffer(rx_stream_buffer) {}
 
 std::uint8_t UsbCdc::read() {
     std::uint8_t byte = 0;

@@ -27,7 +27,7 @@ Display &Display::get_instance() {
 
 bool Display::init() {
     if (this->ili9341) {
-        logger.error("Display::init: already initialized");
+        LOG_ERROR("Display::init: already initialized");
         return false;
     }
     this->ili9341 = ili9341_new(
@@ -41,7 +41,7 @@ bool Display::init() {
         [](uint32_t delay_ms) { vTaskDelay(pdMS_TO_TICKS(delay_ms)); }, TFT_RESET_GPIO_Port, TFT_RESET_Pin,
         TFT_CS_GPIO_Port, TFT_CS_Pin, TFT_DC_GPIO_Port, TFT_DC_Pin, isoLandscape, NULL, 0, NULL, 0, itsNONE, itnNONE);
     if (!this->ili9341) {
-        logger.error("ili9341_new failed");
+        LOG_ERROR("ili9341_new failed");
         return false;
     }
     ili9341_fill_screen(this->ili9341, this->get_bg_color());

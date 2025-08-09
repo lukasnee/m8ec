@@ -1,5 +1,7 @@
 project(platform)
 
+include(config.cmake)
+
 add_library(platform INTERFACE)
 
 target_sources(
@@ -51,38 +53,13 @@ target_link_options(
   -Wl,--no-warn-rwx-segment
 )
 
-add_library(STM32H7xx_HAL_conf INTERFACE)
-target_include_directories(
-  STM32H7xx_HAL_conf INTERFACE Core/Inc # stm32h7xx_hal_conf.h
-)
-
-add_library(SeggerSysView_config INTERFACE)
-target_link_libraries(
-  SeggerSysView_config INTERFACE SeggerSysView_config_STM32H750
-)
-add_subdirectory(config/SEGGER_SYSVIEW)
-
-add_library(freertos_config INTERFACE)
-target_include_directories(
-  freertos_config
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config
-            Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
-)
-target_sources(
-  freertos_config
-  PUBLIC Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
-         Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-)
-if(SEGGER_SYSVIEW_ENABLED)
-  target_compile_options(
-    freertos_config
-    INTERFACE
-      -finstrument-functions-exclude-file-list=Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4,Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port
-  )
-endif()
-target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 target_link_libraries(
-  platform INTERFACE CMSIS STM32H7xx_HAL ucprof freertos_kernel
+  platform
+  INTERFACE CMSIS
+            STM32H7xx_HAL
+            freertos_kernel
+            CMSIS_RTOS_V2
+            ucprof
 )

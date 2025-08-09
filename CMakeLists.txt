@@ -6,6 +6,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
+include(platform/${PLATFORM}/config.cmake)
+
 add_compile_options(
   -fstack-usage
   -Wall
@@ -27,11 +29,14 @@ target_include_directories(
   ucprof_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config
 )
 
-add_subdirectory(platform/${PLATFORM})
-add_subdirectory(extern/W25Q64_STM32H750VB-DevEBox)
-
-add_subdirectory(extern/ucprof)
+# Platform independent libraries:
 add_subdirectory(extern/ln)
+add_subdirectory(extern/ucprof)
+
+# Platform specific libraries:
+add_subdirectory(extern/W25Q64_STM32H750VB-DevEBox)
+add_subdirectory(platform/${PLATFORM})
 add_subdirectory(extern/ILI9341-STM32-HAL)
 
+# Application:
 add_subdirectory(source)

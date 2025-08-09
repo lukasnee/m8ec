@@ -13,8 +13,10 @@
 
 #pragma once
 
-#include "fonas/fonas.hpp"
-#include "fonas/logger/logger.hpp"
+#include "ln/ln.hpp"
+#include "ln/logger/logger.hpp"
+
+#include "FreeRTOS/Task.hpp"
 
 #include <cstdint>
 
@@ -130,8 +132,7 @@ struct State {
 
 } // namespace Keys
 
-struct Service : public fonas::Thread {
-
+struct Service : public FreeRTOS::StaticTask<3 * 1024 + m8ec::Config::slip_buffer_size> {
     struct Display {
         virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
         virtual void draw_rectangle(const Rectangle &rectangle) = 0;
@@ -140,7 +141,7 @@ struct Service : public fonas::Thread {
         // virtual void view_changed(int view) = 0; // TODO
     };
 
-    Service(Display &display);
+    Service(Display &display) : FreeRTOS::StaticTask<3 * 1024>{(UBaseType_t)1, "m8svc"}, display(display) {}
 
     bool init();
 
@@ -149,7 +150,7 @@ struct Service : public fonas::Thread {
     void send_keys_state(Keys::State keys_state);
 
 private:
-    void Run() final;
+    virtual void taskFunction() final;
 
     Display &display;
 
@@ -157,14 +158,18 @@ private:
 };
 namespace Keys {
 
-struct Svc : fonas::Thread {
+struct Svc : FreeRTOS::StaticTask<2 * 1024> {
 
-    static constexpr uint16_t stack_size = 2 * 1024;
+    using State = Keys::State;
 
     static constexpr Key keys[] = {Key::edit,  Key::option, Key::right, Key::play,
                                    Key::shift, Key::down,   Key::up,    Key::left};
-    Svc(const char *Name, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service);
+    Svc(const char *Name, UBaseType_t Priority, m8ec::m8::protocol::Service &protocol_service)
+        : FreeRTOS::StaticTask<2 * 1024>(Priority, Name), protocol_service(protocol_service) {}
+
     virtual ~Svc() = default;
+
+    bool init() { return true; }
 
 protected:
     bool ll_init();
@@ -173,7 +178,7 @@ protected:
 private:
     Svc(const Svc &) = delete;
     Svc &operator=(const Svc &) = delete;
-    void Run() final override;
+    virtual void taskFunction() final;
 
     void print_keys_change(const State &prev_keys_state, const State &keys_state);
 
