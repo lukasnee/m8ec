@@ -9,7 +9,7 @@ target_sources(
           m8/protocol.cpp
           m8/protocol/DisplayAdaptorILI9341.cpp
           drivers/DisplayILI9341.cpp
-          slip.c
+          m8/protocol/slip.c
           periph/UartCallbacks.cpp
           periph/Uart4.cpp
           periph/SpiCallbacks.cpp
