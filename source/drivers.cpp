@@ -39,7 +39,7 @@ periph::UsbCdc &get_usb_cdc() {
 }
 
 M8Display &get_display() {
-    static M8Display instance(Display::get_instance());
+    static M8Display instance(DisplayILI9341::get_instance());
     return instance;
 }
 
@@ -53,6 +53,8 @@ bool init() {
 #endif
     LN_ASSERT(drivers::get_usb_cdc().init());
     LOG_INFO("USB CDC OK");
+    LN_ASSERT(DisplayILI9341::get_instance().init());
+    LOG_INFO("DisplayILI9341 OK");
     return true;
 }
 

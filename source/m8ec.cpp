@@ -18,21 +18,10 @@
 
 #include <cstdio>
 
-LOG_MODULE(m8ec, LOGGER_LEVEL_INFO);
-
 namespace m8ec {
-
-
-static bool init_sw_periphs() {
-    LN_ASSERT(Display::get_instance().init());
-    LOG_INFO("Display OK");
-    return true;
-}
-
 
 void launch() {
     LN_ASSERT(drivers::init());
-    LN_ASSERT(init_sw_periphs());
     LN_ASSERT(services::init());
 }
 
@@ -46,5 +35,5 @@ extern "C" void platform_print_freertos_stats(const char *buff) {
                                    .bg_color = ILI9341_BLACK,
                                    .origin = {.x = 0, .y = 0},
                                    .h_wrap = ILI9341_H_WRAP_OFF};
-    ili9341_draw_string(m8ec::Display::get_instance().lcd(), attr, buff);
+    ili9341_draw_string(m8ec::drivers::DisplayILI9341::get_instance().get_ili9341_t(), attr, buff);
 }

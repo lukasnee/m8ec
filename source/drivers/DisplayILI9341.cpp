@@ -8,7 +8,7 @@
  * (at your option) any later version.
  */
 
-#include "m8ec/Display.hpp"
+#include "m8ec/drivers/DisplayILI9341.hpp"
 
 #include "ILI9341/ili9341.h"
 #include "ILI9341/ili9341_gfx.h"
@@ -18,16 +18,18 @@
 
 extern SPI_HandleTypeDef hspi1; // main.c
 
-namespace m8ec {
+namespace m8ec::drivers {
 
-Display &Display::get_instance() {
-    static Display instance;
+DisplayILI9341 &DisplayILI9341::get_instance() {
+    static DisplayILI9341 instance;
     return instance;
 }
 
-bool Display::init() {
+ili9341_t *DisplayILI9341::get_ili9341_t() { return this->ili9341; }
+
+bool DisplayILI9341::init() {
     if (this->ili9341) {
-        LOG_ERROR("Display::init: already initialized");
+        LOG_ERROR("DisplayILI9341::init: already initialized");
         return false;
     }
     this->ili9341 = ili9341_new(
@@ -48,6 +50,4 @@ bool Display::init() {
     return true;
 }
 
-ili9341_t *Display::lcd() { return this->ili9341; }
-
-} // namespace m8ec
+} // namespace m8ec::drivers

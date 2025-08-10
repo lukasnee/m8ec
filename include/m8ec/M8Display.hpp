@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "m8ec/Display.hpp"
+#include "m8ec/drivers/DisplayILI9341.hpp"
 #include "m8ec/m8/protocol.hpp"
 
 #include "ln/logger/logger.hpp"
@@ -24,7 +24,7 @@ namespace m8ec {
 
 struct M8Display : public m8::protocol::Service::Display {
 
-    M8Display(m8ec::Display &display) : display(display) {}
+    M8Display(m8ec::drivers::DisplayILI9341 &displayILI9341) : displayILI9341(displayILI9341) {}
 
     using Character = m8::protocol::Character;
     using Rectangle = m8::protocol::Rectangle;
@@ -36,9 +36,9 @@ struct M8Display : public m8::protocol::Service::Display {
     void set_large_mode(int enabled);
 
 private:
-    ili9341_t *lcd() { return this->display.lcd(); }
+    ili9341_t *lcd() { return this->displayILI9341.get_ili9341_t(); }
 
-    m8ec::Display &display;
+    m8ec::drivers::DisplayILI9341 &displayILI9341;
 
     LOG_MODULE_CLASS_MEMBER("m8ec::M8Display", LOGGER_LEVEL_NOTSET);
 };

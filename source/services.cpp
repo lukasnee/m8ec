@@ -34,7 +34,8 @@ void IdleMonitoringSvc::taskFunction() {
                                            .h_wrap = ILI9341_H_WRAP_OFF};
             static const char loadingChars[] = {'|', '/', '-', '\\'};
             static uint8_t loadingCharIndex = 0;
-            ili9341_draw_char(Display::get_instance().lcd(), attr, loadingChars[loadingCharIndex]);
+            ili9341_draw_char(drivers::DisplayILI9341::get_instance().get_ili9341_t(), attr,
+                              loadingChars[loadingCharIndex]);
             loadingCharIndex = (loadingCharIndex + 1) % sizeof(loadingChars);
         }
         this->delay(100ms);

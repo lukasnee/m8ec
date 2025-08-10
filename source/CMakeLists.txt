@@ -8,7 +8,7 @@ target_sources(
           m8ec.cpp
           m8/protocol.cpp
           M8Display.cpp
-          Display.cpp
+          drivers/DisplayILI9341.cpp
           slip.c
           periph/UartCallbacks.cpp
           periph/Uart4.cpp

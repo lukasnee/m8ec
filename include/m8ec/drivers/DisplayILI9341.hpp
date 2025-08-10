@@ -18,28 +18,27 @@
 
 #include "ln/logger/logger.hpp"
 
-namespace m8ec {
+namespace m8ec::drivers {
 
 // The hardware-bound display singleton.
-struct Display {
+struct DisplayILI9341 {
 
-    static Display &get_instance();
+    static DisplayILI9341 &get_instance();
+    ili9341_t *get_ili9341_t();
 
     bool init();
-
-    ili9341_t *lcd();
 
     ili9341_color_t get_bg_color() { return this->bg_color; }
     void set_bg_color(ili9341_color_t color) { this->bg_color = color; }
 
 private:
-    Display() = default;
+    DisplayILI9341() = default;
 
     ili9341_t *ili9341 = nullptr;
 
     ili9341_color_t bg_color = ILI9341_BLACK;
 
-    LOG_MODULE_CLASS_MEMBER("m8ec::Display", LOGGER_LEVEL_DEBUG);
+    LOG_MODULE_CLASS_MEMBER("m8ec::DisplayILI9341", LOGGER_LEVEL_DEBUG);
 };
 
-} // namespace m8ec
+} // namespace m8ec::drivers

@@ -14,7 +14,7 @@
 
 #include "m8ec/M8Display.hpp"
 
-#include "m8ec/Display.hpp"
+#include "m8ec/drivers/DisplayILI9341.hpp"
 #include "m8ec/m8/protocol.hpp"
 
 #include <array>
@@ -46,7 +46,7 @@ void M8Display::draw_rectangle(const m8::protocol::Rectangle &rectangle) {
     ili9341_color_t color = __ILI9341_COLOR565(rectangle.color.r, rectangle.color.g, rectangle.color.b);
     ili9341_fill_rect(this->lcd(), color, rectangle.pos.x, rectangle.pos.y, rectangle.size.w, rectangle.size.h);
     if (rectangle.size.h >= this->lcd()->screen_size.height || rectangle.size.w >= this->lcd()->screen_size.width) {
-        this->display.set_bg_color(color); // remember the screen clear color
+        this->displayILI9341.set_bg_color(color); // remember the screen clear color
     }
 }
 
@@ -94,7 +94,7 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->display.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
+    ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->displayILI9341.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
                            bmp_buff.data());
     was_blank = is_blank;
 }
