@@ -12,6 +12,8 @@
 #include "m8ec/drivers.hpp"
 #include "m8ec/config.hpp"
 
+#include "m8ec/drivers/DisplayILI9341.hpp"
+
 #include "ln/logger/logger.hpp"
 
 LOG_MODULE(m8ec::services, LOGGER_LEVEL_INFO);
@@ -43,7 +45,7 @@ void IdleMonitoringSvc::taskFunction() {
 }
 
 m8::protocol::Service &get_m8_svc() {
-    static m8::protocol::Service instance(drivers::get_display());
+    static m8::protocol::Service instance(drivers::get_m8_protocol_display());
     return instance;
 }
 m8::protocol::Keys::Svc &get_key_svc() {

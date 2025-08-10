@@ -10,6 +10,8 @@
 
 #include "m8ec/drivers.hpp"
 
+#include "m8ec/m8/protocol/DisplayAdaptorILI9341.hpp"
+
 #include "ln/logger/logger.hpp"
 
 #include "usb_host.h" // for usbh_ready()
@@ -38,8 +40,8 @@ periph::UsbCdc &get_usb_cdc() {
     return UsbCdc::get_instance();
 }
 
-M8Display &get_display() {
-    static M8Display instance(DisplayILI9341::get_instance());
+m8::protocol::Display &get_m8_protocol_display() {
+    static m8::protocol::DisplayAdaptorILI9341 instance(DisplayILI9341::get_instance());
     return instance;
 }
 

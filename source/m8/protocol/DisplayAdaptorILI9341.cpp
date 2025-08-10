@@ -12,18 +12,18 @@
 // Copyright 2021 Jonne Kokkonen
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
-#include "m8ec/M8Display.hpp"
+#include "m8ec/m8/protocol/DisplayAdaptorILI9341.hpp"
 
 #include "m8ec/drivers/DisplayILI9341.hpp"
 #include "m8ec/m8/protocol.hpp"
 
 #include <array>
 
-namespace m8ec {
+namespace m8ec::m8::protocol {
 
-void M8Display::set_large_mode(int enabled) { LOG_ERROR("set_large_mode: %d: not implemented", enabled); }
+void DisplayAdaptorILI9341::set_large_mode(int enabled) { LOG_ERROR("set_large_mode: %d: not implemented", enabled); }
 
-int M8Display::draw_character(const m8::protocol::Character &character) {
+int DisplayAdaptorILI9341::draw_character(const m8::protocol::Character &character) {
     if (!this->lcd()) {
         return -1;
     }
@@ -39,7 +39,7 @@ int M8Display::draw_character(const m8::protocol::Character &character) {
     return character.c;
 }
 
-void M8Display::draw_rectangle(const m8::protocol::Rectangle &rectangle) {
+void DisplayAdaptorILI9341::draw_rectangle(const m8::protocol::Rectangle &rectangle) {
     if (!this->lcd()) {
         return;
     }
@@ -60,7 +60,7 @@ struct Canvas {
 constexpr auto canvas_max = Canvas{0, 0, 320, 25};
 std::array<uint8_t, (canvas_max.w * canvas_max.h / 8)> bmp_buff = {0};
 
-void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t waveform_width) {
+void DisplayAdaptorILI9341::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t waveform_width) {
     if (!this->lcd()) {
         return;
     }
@@ -94,8 +94,8 @@ void M8Display::draw_waveform(const m8::protocol::Waveform &waveform, uint16_t w
         bmp_buff[byte_index] |= 1 << (7 - byte_bit);
     }
     const ili9341_color_t fg_color = __ILI9341_COLOR565(waveform.color.r, waveform.color.g, waveform.color.b);
-    ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->displayILI9341.get_bg_color(), canvas.x, canvas.y, canvas.w, canvas.h,
-                           bmp_buff.data());
+    ili9341_draw_bitmap_1b(this->lcd(), fg_color, this->displayILI9341.get_bg_color(), canvas.x, canvas.y, canvas.w,
+                           canvas.h, bmp_buff.data());
     was_blank = is_blank;
 }
-} // namespace m8ec
+} // namespace m8ec::m8::protocol

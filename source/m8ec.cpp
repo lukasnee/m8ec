@@ -29,6 +29,8 @@ void launch() {
 
 extern "C" void platform_app() { m8ec::launch(); }
 
+#include "m8ec/drivers/DisplayILI9341.hpp"
+
 extern "C" void platform_print_freertos_stats(const char *buff) {
     const ili9341_text_attr_t attr{.font = &ili9341_font_trash80_stealth57,
                                    .fg_color = ILI9341_WHITE,

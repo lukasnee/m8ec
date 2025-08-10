@@ -20,11 +20,11 @@
 
 #include <cstddef>
 
-namespace m8ec {
+namespace m8ec::m8::protocol {
 
-struct M8Display : public m8::protocol::Service::Display {
+struct DisplayAdaptorILI9341 : public m8::protocol::Display {
 
-    M8Display(m8ec::drivers::DisplayILI9341 &displayILI9341) : displayILI9341(displayILI9341) {}
+    DisplayAdaptorILI9341(m8ec::drivers::DisplayILI9341 &displayILI9341) : displayILI9341(displayILI9341) {}
 
     using Character = m8::protocol::Character;
     using Rectangle = m8::protocol::Rectangle;
@@ -40,7 +40,7 @@ private:
 
     m8ec::drivers::DisplayILI9341 &displayILI9341;
 
-    LOG_MODULE_CLASS_MEMBER("m8ec::M8Display", LOGGER_LEVEL_NOTSET);
+    LOG_MODULE_CLASS_MEMBER("m8ec::DisplayAdaptorILI9341", LOGGER_LEVEL_NOTSET);
 };
 
-} // namespace m8ec
+} // namespace m8ec::m8::protocol

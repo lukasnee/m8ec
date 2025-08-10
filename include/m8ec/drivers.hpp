@@ -13,14 +13,13 @@
 #include "m8ec/m8ec.h"
 #include "m8ec/config.hpp"
 
-#include "m8ec/M8Display.hpp"
 #include "m8ec/m8/protocol.hpp"
 #include "m8ec/periph/UsbCdc.hpp"
 
 namespace m8ec::drivers {
 
 periph::UsbCdc &get_usb_cdc();
-M8Display &get_display();
+m8::protocol::Display &get_m8_protocol_display();
 
 bool init();
 

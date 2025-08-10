@@ -134,14 +134,15 @@ struct State {
 
 } // namespace Keys
 
+struct Display {
+    virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
+    virtual void draw_rectangle(const Rectangle &rectangle) = 0;
+    virtual int draw_character(const Character &character) = 0;
+    virtual void set_large_mode(int enabled) = 0;
+    // virtual void view_changed(int view) = 0; // TODO
+};
+
 struct Service : public FreeRTOS::StaticTask<config::service_stack_size> {
-    struct Display {
-        virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
-        virtual void draw_rectangle(const Rectangle &rectangle) = 0;
-        virtual int draw_character(const Character &character) = 0;
-        virtual void set_large_mode(int enabled) = 0;
-        // virtual void view_changed(int view) = 0; // TODO
-    };
 
     Service(Display &display)
         : FreeRTOS::StaticTask<config::service_stack_size>{(UBaseType_t)1, "m8svc"}, display(display) {}
