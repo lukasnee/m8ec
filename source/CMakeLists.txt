@@ -3,6 +3,8 @@ add_executable(m8ec)
 target_sources(
   m8ec
   PRIVATE syscalls.cpp
+          drivers.cpp
+          services.cpp
           m8ec.cpp
           m8/protocol.cpp
           M8Display.cpp

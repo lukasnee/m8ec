@@ -12,10 +12,9 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 #include "m8ec/m8/protocol.hpp"
+#include "m8ec/drivers.hpp"
 
 #include "ILI9341/ili9341_gfx.h"
-#include "m8ec/m8ec.hpp" // LOG
-#include "m8ec/periph/UsbCdc.hpp"
 #include "m8ec/slip.h"
 
 #include "FreeRTOS/Task.hpp"
@@ -90,25 +89,25 @@ bool Service::init() { return true; }
 
 void Service::enable_display() {
     uint8_t buf[] = {'E'};
-    const auto res = get_usb_cdc().write(buf, 1);
+    const auto res = drivers::get_usb_cdc().write(buf, 1);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "enable_display");
 }
 
 void Service::reset_display() {
     uint8_t buf[] = {'R'};
-    const auto res = get_usb_cdc().write(buf, 1);
+    const auto res = drivers::get_usb_cdc().write(buf, 1);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "reset_display");
 }
 
 void Service::send_keys_state(Keys::State keys_state) {
     uint8_t buf[2] = {'C', keys_state.underlying};
-    const auto res = get_usb_cdc().write(buf, 2);
+    const auto res = drivers::get_usb_cdc().write(buf, 2);
     LOG(res ? LOGGER_LEVEL_DEBUG : LOGGER_LEVEL_ERROR, "send_keys_state: 0x%02x", keys_state.underlying);
 }
 
 // TODO separate out cmd parsing from the service into m8ec/m8
 void Service::taskFunction() {
-    uint8_t slip_buffer[Config::slip_buffer_size];
+    uint8_t slip_buffer[config::slip_buffer_size];
     const slip_descriptor_s slip_descriptor = {
         .buf = slip_buffer,
         .buf_size = sizeof(slip_buffer),
@@ -215,8 +214,8 @@ void Service::taskFunction() {
 
     bool first_run = true;
     while (true) {
-        if (first_run || !get_usb_cdc().is_ready()) {
-            while (!get_usb_cdc().is_ready()) {
+        if (first_run || !drivers::get_usb_cdc().is_ready()) {
+            while (!drivers::get_usb_cdc().is_ready()) {
                 LOG_INFO("Waiting for USB virtual COM");
                 this->delay(250ms);
             }
@@ -224,8 +223,8 @@ void Service::taskFunction() {
             reset_display();
             first_run = false;
         }
-        std::uint8_t buffer[Config::usbcdc_to_slip_buffer_size];
-        const auto bytes_read = get_usb_cdc().read(buffer, sizeof(buffer));
+        std::uint8_t buffer[config::usbcdc_to_slip_buffer_size];
+        const auto bytes_read = drivers::get_usb_cdc().read(buffer, sizeof(buffer));
         for (std::size_t i = 0; i < bytes_read; i++) {
             const slip_error_t n = slip_read_byte(&slip, buffer[i]);
             if (n != SLIP_NO_ERROR) {
@@ -281,7 +280,7 @@ void Svc::taskFunction() {
             print_keys_change(prev_keys_state, keys_state);
             prev_keys_state = keys_state;
         }
-        this->delayUntil(m8ec::Config::keys_refresh_period);
+        this->delayUntil(config::keys_refresh_period);
     }
 }
 } // namespace Keys

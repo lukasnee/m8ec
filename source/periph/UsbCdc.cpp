@@ -1,7 +1,7 @@
 #include "m8ec/periph/UsbCdc.hpp"
 
 #include "m8ec/m8/protocol.hpp"
-#include "m8ec/m8ec.hpp"
+#include "m8ec/drivers.hpp"
 
 #include "stm32xxxx_hal.h"
 #include "usb_host.h"
@@ -68,12 +68,12 @@ bool UsbCdc::ll_rx_input(const uint8_t *data, size_t size) {
 
 extern "C" void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost) {
     if (phost == &hUsbHostFS) {
-        m8ec::get_usb_cdc().ll_async_write_completed_cb();
+        m8ec::drivers::get_usb_cdc().ll_async_write_completed_cb();
     }
 }
 
 extern "C" void USBH_CDC_ReceiveCallback(USBH_HandleTypeDef *phost, const uint8_t *data, uint32_t size) {
     if (phost == &hUsbHostFS) {
-        m8ec::get_usb_cdc().ll_rx_input(data, size);
+        m8ec::drivers::get_usb_cdc().ll_rx_input(data, size);
     }
 }

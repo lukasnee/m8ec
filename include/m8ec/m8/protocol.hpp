@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "m8ec/config.hpp"
+
 #include "ln/ln.hpp"
 #include "ln/logger/logger.hpp"
 
@@ -132,7 +134,7 @@ struct State {
 
 } // namespace Keys
 
-struct Service : public FreeRTOS::StaticTask<3 * 1024 + m8ec::Config::slip_buffer_size> {
+struct Service : public FreeRTOS::StaticTask<config::service_stack_size> {
     struct Display {
         virtual void draw_waveform(const Waveform &waveform, uint16_t waveform_width) = 0;
         virtual void draw_rectangle(const Rectangle &rectangle) = 0;
@@ -141,7 +143,8 @@ struct Service : public FreeRTOS::StaticTask<3 * 1024 + m8ec::Config::slip_buffe
         // virtual void view_changed(int view) = 0; // TODO
     };
 
-    Service(Display &display) : FreeRTOS::StaticTask<3 * 1024>{(UBaseType_t)1, "m8svc"}, display(display) {}
+    Service(Display &display)
+        : FreeRTOS::StaticTask<config::service_stack_size>{(UBaseType_t)1, "m8svc"}, display(display) {}
 
     bool init();
 
