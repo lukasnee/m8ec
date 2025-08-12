@@ -46,7 +46,7 @@ add_custom_command(
 add_custom_target(
   m8ec_flash
   DEPENDS m8ec
-  COMMAND python3 ${PROJECT_SOURCE_DIR}/tools/m8ec.py -fr
+  COMMAND extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 ${PROJECT_SOURCE_DIR}/tools/m8ec.py -fr
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMENT "Flashing the device"
   VERBATIM USES_TERMINAL

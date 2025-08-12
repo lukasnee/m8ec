@@ -14,6 +14,7 @@ if not os.path.exists(comm_relpath):
 # autopep8: off
 sys.path.append(comm_relpath)
 from comm import Comm
+import time
 # autopep8: on
 
 
@@ -27,7 +28,7 @@ def sys_cmd(cmd):
 
 
 def reset_target():
-    sys_cmd(["openocd", "-f", "openocd.jlink.cfg",
+    sys_cmd(["openocd", "-f", "config/openocd.jlink.cfg",
             "-c", "init;reset;shutdown"])
 
 
@@ -70,6 +71,8 @@ def main():
     # flashing requires reset to enter bootloader
     if args.reset or args.flash:
         reset_target()
+        if args.flash:
+            time.sleep(0.1)
 
     if args.flash:
         comm = Comm(args.serial_dev, log_level=args.log_level)
