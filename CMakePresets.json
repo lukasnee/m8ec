@@ -1,34 +1,15 @@
 {
-    "version": 6,
-    "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 21
-    },
+    "version": 10,
+    "include": [
+        "extern/STM32H7-DevEBox/CMakePresets.json"
+    ],
     "configurePresets": [
         {
             "name": "STM32H750",
             "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": ".build",
-            "toolchainFile": "extern/STM32H7-DevEBox/cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
                 "PLATFORM": "STM32H750",
                 "SEGGER_SYSVIEW_ENABLED": "OFF"
-            }
-        },
-        {
-            "name": "STM32H750-dbg",
-            "inherits": "STM32H750",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "STM32H750-rel",
-            "inherits": "STM32H750",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
@@ -41,45 +22,11 @@
     ],
     "buildPresets": [
         {
-            "name": "STM32H750-dbg",
-            "configurePreset": "STM32H750-dbg"
-        },
-        {
-            "name": "STM32H750-rel",
-            "configurePreset": "STM32H750-rel"
-        },
-        {
             "name": "STM32H750-sysview",
             "configurePreset": "STM32H750-sysview"
         }
     ],
     "workflowPresets": [
-        {
-            "name": "STM32H750-dbg",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "STM32H750-dbg"
-                },
-                {
-                    "type": "build",
-                    "name": "STM32H750-dbg"
-                }
-            ]
-        },
-        {
-            "name": "STM32H750-rel",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "STM32H750-rel"
-                },
-                {
-                    "type": "build",
-                    "name": "STM32H750-rel"
-                }
-            ]
-        },
         {
             "name": "STM32H750-sysview",
             "steps": [
