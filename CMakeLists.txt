@@ -6,16 +6,9 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
+add_compile_options(-Wall -Wextra -Werror)
+
 include(platform/${PLATFORM}/config.cmake)
-
-add_compile_options(-fstack-usage -Wall -Wextra -Werror)
-
-add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
-
-add_library(ucprof_config INTERFACE)
-target_include_directories(
-  ucprof_config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/config
-)
 
 # Platform independent libraries:
 add_subdirectory(extern/ln)

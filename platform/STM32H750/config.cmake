@@ -8,14 +8,18 @@ target_include_directories(
 
 add_library(freertos_config INTERFACE)
 target_include_directories(
-  freertos_config INTERFACE ${CMAKE_CURRENT_LIST_DIR}/config
+  freertos_config INTERFACE ${CMAKE_CURRENT_LIST_DIR}/config # FreeRTOSConfig.h
 )
-# target_link_libraries(freertos_config INTERFACE STM32H7xx_HAL ucprof)
 set(FREERTOS_PORT
     GCC_ARM_CM7
     CACHE STRING ""
 )
 set(FREERTOS_HEAP 4)
+
+add_library(ucprof_config INTERFACE)
+target_include_directories(
+  ucprof_config INTERFACE ${CMAKE_CURRENT_LIST_DIR}/config # ucprof_config.h
+)
 
 if(SEGGER_SYSVIEW_ENABLED)
   add_library(SeggerSysView_config STATIC)
