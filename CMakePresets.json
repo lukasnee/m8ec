@@ -10,7 +10,7 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": ".build",
-            "toolchainFile": "cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake",
+            "toolchainFile": "extern/STM32H7-DevEBox/cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "PLATFORM": "STM32H750",

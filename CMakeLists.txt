@@ -8,19 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(platform/${PLATFORM}/config.cmake)
 
-add_compile_options(
-  -fstack-usage
-  -Wall
-  -Wextra
-  -Werror
-  -fno-exceptions # big change in code size and performace
-  # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-  # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
-  -g
-  $<$<CONFIG:Debug>:-gdwarf-2>
-  $<$<CONFIG:Debug>:-Og>
-  $<$<CONFIG:Release>:-O1>
-)
+add_compile_options(-fstack-usage -Wall -Wextra -Werror)
 
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
