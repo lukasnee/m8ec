@@ -6,7 +6,7 @@ Some notes on the development of the m8ec project.
 ## Prototype Hardware
 
 - MCU dev board:
-  [lukasnee/W25Q64_STM32H750VB-DevEBox](https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git)
+  [lukasnee/STM32H7-DevEBox](https://github.com/lukasnee/STM32H7-DevEBox.git)
 - Display: 2.8" TFT LCD (ILI9341) module via SPI interface.
 - Keypad: hand-built mechanical key matrix driven directly via MCU GPIO pins.
 - Audio out: PCM5102A module (not yet implemented).
@@ -30,14 +30,14 @@ git submodule update --init --recursive
 > [!Note] This project was originally and is primarily developed in WSL Ubuntu.
 
 Follow the bootloader [Environment
-Setup](extern/W25Q64_STM32H750VB-DevEBox/docs/env_setup.md) instructions which
+Setup](extern/STM32H7-DevEBox/docs/env_setup.md) instructions which
 are applicable to the m8ec project as well.
 
 ## Building and Flashing the Firmware
 
 The application firmware (m8ec) is based on project
-[lukasnee/W25Q64_STM32H750VB-DevEBox](https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git).
-It has a [`bl_iram`](../extern/W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md)
+[lukasnee/STM32H7-DevEBox](https://github.com/lukasnee/STM32H7-DevEBox.git).
+It has a [`bl_iram`](../extern/STM32H7-DevEBox/docs/bl_iram.md)
 bootloader firmware that enables running application firmware from MCU's
 internal RAM. The application firmware is loaded into the volatile RAM from a
 file every time the MCU boots. The file is stored in a file system that is
@@ -46,7 +46,7 @@ uploaded from your PC via serial interface using a client command tool
 [`tools/m8ec.py`](../tools/m8ec.py).
 
 Build and flash the `bl_iram` bootloader by following instructions
-[here](../extern/W25Q64_STM32H750VB-DevEBox/docs/bl_iram.md).
+[here](../extern/STM32H7-DevEBox/docs/bl_iram.md).
 
 ```bash
 cmake --workflow STM32H750-rel # release build
@@ -56,7 +56,7 @@ cmake --workflow STM32H750-dbg # debug build
 then upload the application firmware to the MCU:
 
 ```bash
-extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 tools/m8ec.py -f
+extern/STM32H7-DevEBox/.venv/bin/python3 tools/m8ec.py -f
 ```
 
 > [!Note]
@@ -77,7 +77,7 @@ extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 tools/m8ec.py -f
 2. Open a terminal using the project tool.
 
     ```bash
-    extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 tools/m8ec.py --serial
+    extern/STM32H7-DevEBox/.venv/bin/python3 tools/m8ec.py --serial
     ```
 
 ### SEGGER SystemView + ST-Link as J-Link
@@ -93,7 +93,7 @@ extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 tools/m8ec.py -f
 2. Flash the firmware to the target MCU.
 
     ```bash
-    extern/W25Q64_STM32H750VB-DevEBox/.venv/bin/python3 tools/m8ec.py -f
+    extern/STM32H7-DevEBox/.venv/bin/python3 tools/m8ec.py -f
     ```
 
 3. Install latest [SEGGER

@@ -15,12 +15,12 @@
             "rtos": "FreeRTOS",
             "cwd": "${workspaceRoot}/source",
             "executable": "${workspaceRoot}/.build/source/m8ec",
-            // "executable": "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            // "executable": "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
             // https://github.com/Marus/cortex-debug/issues/1007
             // "symbolFiles": [
             //     "${workspaceRoot}/.build/source/m8ec",
-            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            //     "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
             "preAttachCommands": [
                 "monitor tpiu config internal itm.fifo uart off 240000000"
@@ -43,7 +43,7 @@
             // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
             // "symbolFiles": [
             //     "${workspaceRoot}/.build/source/m8ec",
-            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            //     "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
             "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
             "interface": "swd",
@@ -65,7 +65,7 @@
             // ATTENTION: RTOS-awareness does not work when using "symbolFiles" instead of "executable"
             // "symbolFiles": [
             //     "${workspaceRoot}/.build/source/m8ec",
-            //     "${workspaceRoot}/extern/W25Q64_STM32H750VB-DevEBox/.build/bl_iram/bl_iram.elf",
+            //     "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
             "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
             "interface": "swd",

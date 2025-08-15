@@ -4,9 +4,9 @@
 [submodule "extern/ucprof"]
 	path = extern/ucprof
 	url = https://github.com/lukasnee/ucprof.git
-[submodule "extern/W25Q64_STM32H750VB-DevEBox"]
-	path = extern/W25Q64_STM32H750VB-DevEBox
-	url = https://github.com/lukasnee/W25Q64_STM32H750VB-DevEBox.git
+[submodule "extern/STM32H7-DevEBox"]
+	path = extern/STM32H7-DevEBox
+	url = https://github.com/lukasnee/STM32H7-DevEBox.git
 [submodule "extern/ln"]
 	path = extern/ln
 	url = https://github.com/lukasnee/ln.git

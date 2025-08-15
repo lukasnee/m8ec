@@ -8,7 +8,7 @@ import logging
 log = logging.getLogger("m8ec")
 
 comm_relpath = os.path.normpath(os.path.join(os.path.dirname(__file__), "..",
-                                             "extern", "W25Q64_STM32H750VB-DevEBox", "tools", "comm"))
+                                             "extern", "STM32H7-DevEBox", "tools", "comm"))
 if not os.path.exists(comm_relpath):
     raise Exception(f"comm does exist at {comm_relpath}")
 # autopep8: off
