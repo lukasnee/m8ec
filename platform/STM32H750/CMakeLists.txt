@@ -1,5 +1,3 @@
-project(platform)
-
 include(config.cmake)
 
 add_library(platform INTERFACE)
@@ -49,8 +47,8 @@ if(SEGGER_SYSVIEW_ENABLED)
 endif()
 
 target_link_options(
-  platform INTERFACE -T${CMAKE_CURRENT_LIST_DIR}/STM32H750VBTx_RAM.ld
-  -Wl,--no-warn-rwx-segment
+  platform INTERFACE
+  -T${PROJECT_SOURCE_DIR}/extern/STM32H7-DevEBox/linker/bl_iram_app.ld
 )
 
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
