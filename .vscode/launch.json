@@ -25,7 +25,7 @@
             "preAttachCommands": [
                 "monitor tpiu config internal itm.fifo uart off 240000000"
             ],
-            "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
+            "svdFile": "${workspaceRoot}/extern/STM32H7-DevEBox/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
             // "runToEntryPoint": "main"
@@ -45,7 +45,7 @@
             //     "${workspaceRoot}/.build/source/m8ec",
             //     "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
-            "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
+            "svdFile": "${workspaceRoot}/extern/STM32H7-DevEBox/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
             // "runToEntryPoint": "main"
@@ -67,7 +67,7 @@
             //     "${workspaceRoot}/.build/source/m8ec",
             //     "${workspaceRoot}/extern/STM32H7-DevEBox/.build/bl_iram/bl_iram.elf",
             // ],
-            "svdFile": "${workspaceRoot}/tools/STM32H753.svd",
+            "svdFile": "${workspaceRoot}/extern/STM32H7-DevEBox/STM32H753.svd",
             "interface": "swd",
             "breakAfterReset": true,
             // "runToEntryPoint": "main"
