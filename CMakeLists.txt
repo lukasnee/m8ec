@@ -21,4 +21,4 @@ add_subdirectory(platform/${PLATFORM})
 add_subdirectory(extern/ILI9341-STM32-HAL)
 
 # Application:
-add_subdirectory(source)
+add_subdirectory(m8ec)
