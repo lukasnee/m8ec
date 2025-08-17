@@ -1,6 +1,7 @@
 include_guard(GLOBAL)
 
 add_library(STM32H7xx_HAL_conf INTERFACE)
+target_compile_definitions(STM32H7xx_HAL_conf INTERFACE -DSTM32H750xx)
 target_include_directories(
   STM32H7xx_HAL_conf
   INTERFACE ${CMAKE_CURRENT_LIST_DIR}/Core/Inc # stm32h7xx_hal_conf.h
