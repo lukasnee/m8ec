@@ -1,20 +1,44 @@
 {
     "version": 10,
     "include": [
-        "extern/STM32H7-DevEBox/CMakePresets.json"
+        "extern/STM32H7-DevEBox/cmake/presets/STM32H750.json"
     ],
     "configurePresets": [
         {
-            "name": "STM32H750",
+            "name": "toolchain",
             "hidden": true,
+            "toolchainFile": "extern/STM32H7-DevEBox/cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake"
+        },
+        {
+            "name": "m8ec-base",
+            "hidden": true,
+            "inherits": [
+                "build_dir",
+                "ninja",
+                "toolchain"
+            ],
             "cacheVariables": {
                 "PLATFORM": "STM32H750",
                 "SEGGER_SYSVIEW_ENABLED": "OFF"
             }
         },
         {
-            "name": "STM32H750-sysview",
-            "inherits": "STM32H750-rel",
+            "name": "m8ec-dbg",
+            "inherits": [
+                "m8ec-base",
+                "dbg"
+            ]
+        },
+        {
+            "name": "m8ec-rel",
+            "inherits": [
+                "m8ec-base",
+                "rel"
+            ]
+        },
+        {
+            "name": "m8ec-sysview",
+            "inherits": "m8ec-rel",
             "cacheVariables": {
                 "SEGGER_SYSVIEW_ENABLED": "ON"
             }
@@ -22,21 +46,55 @@
     ],
     "buildPresets": [
         {
-            "name": "STM32H750-sysview",
-            "configurePreset": "STM32H750-sysview"
+            "name": "m8ec-dbg",
+            "configurePreset": "m8ec-dbg"
+        },
+        {
+            "name": "m8ec-rel",
+            "configurePreset": "m8ec-rel"
+        },
+        {
+            "name": "m8ec-sysview",
+            "configurePreset": "m8ec-sysview"
         }
     ],
     "workflowPresets": [
         {
-            "name": "STM32H750-sysview",
+            "name": "m8ec-dbg",
             "steps": [
                 {
                     "type": "configure",
-                    "name": "STM32H750-sysview"
+                    "name": "m8ec-dbg"
                 },
                 {
                     "type": "build",
-                    "name": "STM32H750-sysview"
+                    "name": "m8ec-dbg"
+                }
+            ]
+        },
+        {
+            "name": "m8ec-rel",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "m8ec-rel"
+                },
+                {
+                    "type": "build",
+                    "name": "m8ec-rel"
+                }
+            ]
+        },
+        {
+            "name": "m8ec-sysview",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "m8ec-sysview"
+                },
+                {
+                    "type": "build",
+                    "name": "m8ec-sysview"
                 }
             ]
         }
