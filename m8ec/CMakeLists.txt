@@ -25,7 +25,7 @@ target_link_libraries(
   PUBLIC ln::ln
          platform
          SeggerSysView
-         littlefs_W25Q64
+         lfsapp_W25Q64
          ILI9341-STM32-HAL
 )
 
