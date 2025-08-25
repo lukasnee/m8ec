@@ -1,9 +1,11 @@
 
-# Development Notes
+# Development Information
 
-Some notes on the development of the m8ec project.
+This document provides information on m8ec development.
 
-## Prototype Hardware
+## Hardware
+
+Currently there is only a single prototype hardware version. It consists of:
 
 - MCU dev board:
   [lukasnee/STM32H7-DevEBox](https://github.com/lukasnee/STM32H7-DevEBox.git)
@@ -14,50 +16,44 @@ Some notes on the development of the m8ec project.
 - Development instrumentation: STM32 Nucleo board for ST-Link SWD + integrated
   serial interface.
 
-| Left Side View | Front View | Right Side View |
-:-------------------------:|:-------------------------:|:-------------------------:
-![](images/prototype1-left-side.jpg)|![](images/prototype1-front.jpg)|![](images/prototype1-right-side.jpg)
+> TODO: Add schematic.
 
-## Getting Started
+## Firmware
 
-First, clone the project and its submodules:
+This project is primarily developed on WSL Ubuntu (Linux). The
+instructions below only cover setting up for that environment.
 
-```bash
-git clone https://github.com/lukasnee/m8ec.git
-git submodule update --init --recursive
-```
+The m8ec application firmware is based on project
+[lukasnee/STM32H7-DevEBox](https://github.com/lukasnee/STM32H7-DevEBox.git) and
+requires the [`bl_iram`](../extern/STM32H7-DevEBox/docs/bl_iram.md) bootloader
+to be flashed to the MCU first. `bl_iram` is a bootloader that loads application
+firmware into MCU's internal RAM and runs it from there.
 
-> [!Note] This project was originally and is primarily developed in WSL Ubuntu.
+1. First, clone the m8ec project and its submodules:
 
-Follow the bootloader [Environment
-Setup](extern/STM32H7-DevEBox/docs/env_setup.md) instructions which
-are applicable to the m8ec project as well.
+    ```bash
+    git clone https://github.com/lukasnee/m8ec.git
+    git submodule update --init --recursive
+    ```
 
-## Building and Flashing the Firmware
+2. Follow the [STM32H7-DevEBox Development Environment
+Setup](../extern/STM32H7-DevEBox/docs/dev_env.md). It applies to m8ec as well.
 
-The application firmware (m8ec) is based on project
-[lukasnee/STM32H7-DevEBox](https://github.com/lukasnee/STM32H7-DevEBox.git).
-It has a [`bl_iram`](../extern/STM32H7-DevEBox/docs/bl_iram.md)
-bootloader firmware that enables running application firmware from MCU's
-internal RAM. The application firmware is loaded into the volatile RAM from a
-file every time the MCU boots. The file is stored in a file system that is
-mounted on the external flash memory (W25Q64). Application firmware file can be
-uploaded from your PC via serial interface using a client command tool
-[`tools/m8ec.py`](../tools/m8ec.py).
+3. Build and flash the `bl_iram` bootloader by following the [STM32H7-DevEBox
+Development Guide](../extern/STM32H7-DevEBox/DEVELOPMENT.md).
+ 
+4. Once that is done, you can build the m8ec application firmware:
 
-Build and flash the `bl_iram` bootloader by following instructions
-[here](../extern/STM32H7-DevEBox/docs/bl_iram.md).
+    ```bash
+    cmake --workflow STM32H750-rel # release build
+    cmake --workflow STM32H750-dbg # debug build
+    ```
 
-```bash
-cmake --workflow STM32H750-rel # release build
-cmake --workflow STM32H750-dbg # debug build
-```
+5. And upload it to the MCU's file system:
 
-then upload the application firmware to the MCU:
-
-```bash
-extern/STM32H7-DevEBox/.venv/bin/python3 tools/m8ec.py -f
-```
+    ```bash
+    extern/STM32H7-DevEBox/.venv/bin/python3 tools/m8ec.py -f
+    ```
 
 > [!Note]
 >
