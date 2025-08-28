@@ -12,7 +12,6 @@
 
 #include "ILI9341/ili9341.h"
 #include "ILI9341/ili9341_gfx.h"
-#include "m8ec/m8ec.h" // LOG
 #include "m8ec/periph/Spi1.hpp"
 #include "main.h"
 

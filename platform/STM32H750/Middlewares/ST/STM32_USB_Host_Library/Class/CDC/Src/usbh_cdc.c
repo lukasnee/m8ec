@@ -48,7 +48,6 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_cdc.h"
 
-#include "m8ec/m8ec.h"
 #include "SEGGER_SYSVIEW.h"
 
 /** @addtogroup USBH_LIB

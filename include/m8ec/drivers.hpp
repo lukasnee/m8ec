@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "m8ec/m8ec.h"
 #include "m8ec/config.hpp"
 
 #include "m8ec/m8/protocol.hpp"
