@@ -7,6 +7,3 @@
 [submodule "extern/STM32H7-DevEBox"]
 	path = extern/STM32H7-DevEBox
 	url = https://github.com/lukasnee/STM32H7-DevEBox.git
-[submodule "extern/ln"]
-	path = extern/ln
-	url = https://github.com/lukasnee/ln.git

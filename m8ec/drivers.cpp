@@ -47,15 +47,15 @@ m8::protocol::Display &get_m8_protocol_display() {
 
 bool init() {
 #if defined(STM32H750xx)
-    LN_ASSERT(periph::Uart4::get_instance().init());
+    LN_ASSERT_PANIC(periph::Uart4::get_instance().init());
     LOG_INFO("UART4 OK");
 #elif defined(STM32F411xE)
-    LN_ASSERT(periph::Uart1::get_instance().init());
+    LN_ASSERT_PANIC(periph::Uart1::get_instance().init());
     LOG_INFO("UART1 OK");
 #endif
-    LN_ASSERT(drivers::get_usb_cdc().init());
+    LN_ASSERT_PANIC(drivers::get_usb_cdc().init());
     LOG_INFO("USB CDC OK");
-    LN_ASSERT(DisplayILI9341::get_instance().init());
+    LN_ASSERT_PANIC(DisplayILI9341::get_instance().init());
     LOG_INFO("DisplayILI9341 OK");
     return true;
 }

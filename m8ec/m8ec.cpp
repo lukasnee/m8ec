@@ -21,8 +21,8 @@
 namespace m8ec {
 
 void launch() {
-    LN_ASSERT(drivers::init());
-    LN_ASSERT(services::init());
+    LN_ASSERT_PANIC(drivers::init());
+    LN_ASSERT_PANIC(services::init());
 }
 
 } // namespace m8ec

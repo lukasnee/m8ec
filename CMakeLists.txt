@@ -7,12 +7,13 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(LN_FREERTOS ON)
+
 add_compile_options(-Wall -Wextra -Werror)
 
 include(platform/${PLATFORM}/config.cmake)
 
 # Platform independent libraries:
-add_subdirectory(extern/ln)
 add_subdirectory(extern/ucprof)
 
 # Platform specific libraries:

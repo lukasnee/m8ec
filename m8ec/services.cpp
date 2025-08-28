@@ -54,10 +54,10 @@ m8::protocol::Keys::Svc &get_key_svc() {
 }
 
 bool init() {
-    LN_ASSERT(services::IdleMonitoringSvc::get_instance().init());
-    LN_ASSERT(services::get_key_svc().init());
+    LN_ASSERT_PANIC(services::IdleMonitoringSvc::get_instance().init());
+    LN_ASSERT_PANIC(services::get_key_svc().init());
     LOG_INFO("Keys::Svc::Service OK");
-    LN_ASSERT(services::get_m8_svc().init());
+    LN_ASSERT_PANIC(services::get_m8_svc().init());
     LOG_INFO("m8::protocol::Service OK");
     return true;
 }
