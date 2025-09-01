@@ -51,8 +51,6 @@ target_link_options(
   -T${PROJECT_SOURCE_DIR}/extern/STM32H7-DevEBox/linker/bl_iram_app.ld
 )
 
-add_subdirectory(Middlewares/Third_Party/FreeRTOS)
-
 target_link_libraries(
   platform
   INTERFACE CMSIS
