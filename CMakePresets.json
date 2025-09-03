@@ -1,13 +1,13 @@
 {
     "version": 10,
     "include": [
-        "extern/STM32H7-DevEBox/cmake/presets/STM32H750.json"
+        "extern/STM32H7-DevEBox/extern/ln/cmake/presets/STM32H750.json"
     ],
     "configurePresets": [
         {
             "name": "toolchain",
             "hidden": true,
-            "toolchainFile": "extern/STM32H7-DevEBox/cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake"
+            "toolchainFile": "extern/STM32H7-DevEBox/extern/ln/cmake/toolchains/arm-none-eabi-gcc.STM32H750.cmake"
         },
         {
             "name": "m8ec-base",
