@@ -52,28 +52,23 @@ immediately wanted to get one. As an embedded systems engineer, I was deeply
 impressed and inspired by what Timothy of Trash80 managed to create on the
 Teensy platform - huge respect for the guy!
 
-Anyway, things like limited product availability, potentially high shipping
-costs to my country and my financial situation gave me doubts if I really buy
-the M8 🫠. These doubts lead me to experiment with the M8 headless firmware and
-the [laamaa/m8c](https://github.com/laamaa/m8c) client software that is made to
-work with it. m8c is an open source project which got me curious how it
-interfaces with the M8 headless firmware, so I took a look at the code. I soon
-realized that making M8 headless client on a microcontroller might be feasible,
-and I already have basically all the hardware parts lying around. This seemed
+Anyway, reasons like the cost, limited product availability, potentially high shipping
+costs to my country gave me doubts if I really need to buy the thing 🫠. These doubts lead me to experiment with the M8 headless firmware and
+the [laamaa/m8c](https://github.com/laamaa/m8c) client software made to
+work with it. I got curious how m8c interfaces with the M8 headless firmware. Since it is open source, I took a look at the code. I soon
+realized that making M8 headless client on a microcontroller is feasible,
+and I already have all the hardware parts lying around for a prototype. This seemed
 like a fun challenge, a great project to learn something new and also,
-potentially, a very exciting result for me personally - a portable M8 headless
-experience 😋.
+potentially, a fulfilling result - portable M8 headless experience 😋.
 
-Having said that, I understand that this project has the potential to do more
-harm than good to the Dirtywave and its creator(s). I'd be happy to discuss this
-project and its course with the creator(s) if it raises any concerns. I have no
+Having said that, I understand that this project could potential harm Dirtywave company. If it raises any concerns, I am happy to talk with M8 creator(s) about the course of my project. I have no
 intention to compete or profit from this project and I want to be responsible and
 respectful to the [original M8 hardware
 product](https://dirtywave.com/products/m8-tracker-model-02).
 
 ## Current Status
 
-I must admit, I really underestimated how difficult the USB par is going to be -
+I must admit, I really underestimated how difficult the USB part is going to be -
 it is not common to have a USB **host** on an embedded system especially with
 composite interface support for audio, CDC and MIDI.
 
