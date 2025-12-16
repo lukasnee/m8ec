@@ -49,8 +49,7 @@ Some pictures of my prototype hardware:
 
 Some time around the spring of 2023, I discovered the M8 tracker on YouTube and
 immediately wanted to get one. As an embedded systems engineer, I was deeply
-impressed and inspired by what Timothy of Trash80 managed to create on the
-Teensy platform - huge respect for the guy!
+impressed and inspired by what Timothy of Trash80 managed to create on the Teensy platform.
 
 Anyway, reasons like the cost, limited product availability, potentially high shipping
 costs to my country gave me doubts if I really need to buy the thing 🫠. These doubts lead me to experiment with the M8 headless firmware and
